@@ -17,5 +17,12 @@
 - 📄 Know about my experiences [https://www.linkedin.com/in/adityafullstackdeveloper/](https://www.linkedin.com/in/adityafullstackdeveloper/)
 
 
+<p><img align="center" class="bigscreen rounded mx-auto d-block" src="https://github-readme-stats.vercel.app/api/top-langs?username=adityafullstackdeveloper&show_icons=true&locale=en&layout=compact" alt="adityafullstackdeveloper" /></p>
+
+<p>&nbsp;<img align="center" class="bigscreen rounded mx-auto d-block" src="https://github-readme-stats.vercel.app/api?username=adityafullstackdeveloper&show_icons=true&locale=en" alt="adityafullstackdeveloper" /></p>
+<br/>
+<p><img align="center" class="bigscreen rounded mx-auto d-block" src="https://github-readme-streak-stats.herokuapp.com/?user=adityafullstackdeveloper&" alt="adityafullstackdeveloper" /></p>
+
+
 
  
