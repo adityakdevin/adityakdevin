@@ -72,6 +72,14 @@ I’m a Full Stack Web Developer living in Lucknow, Uttar Pradesh, India. I am a
 <a href="https://github.com/adityakdevin" align="left"><img src="https://github-readme-stats.vercel.app/api/top-langs/?username=adityakdevin&langs_count=10&title_color=0891b2&text_color=ffffff&icon_color=0891b2&bg_color=1c1917&hide_border=true&locale=en&custom_title=Top%20%Languages" alt="Top Languages" /></a>
 
 
+
+### A small 🐍 game on my commit's 😉
+
+![GitHub Snake Light](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake.svg#gh-light-mode-only)
+![GitHub Snake dark](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake-dark.svg#gh-dark-mode-only)
+
+
+
 ### ✍️ Random Dev Quote
 ![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=radical)
 
