@@ -87,6 +87,5 @@ I’m a Full Stack Web Developer living in Lucknow, Uttar Pradesh, India. I am a
 
 ### Support Me
 
-<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="200" /></a>
-
+<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a pizza&emoji=&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
