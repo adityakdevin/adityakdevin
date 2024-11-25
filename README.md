@@ -14,6 +14,7 @@ I’m a Full Stack Web Developer living in Lucknow, Uttar Pradesh, India. I am a
 *   🤝  I'm open to collaborating on exciting projects as a Full Stack Web Developer or Open Source Projects
 
 
+![](https://komarev.com/ghpvc/?username=your-github-username&abbreviated=true)
 <a href="https://www.github.com/adityakdevin" target="_blank" rel="noreferrer">
   <img src="https://img.shields.io/github/followers/adityakdevin?logo=github&style=for-the-badge&color=0891b2&labelColor=1c1917" />
 </a>
