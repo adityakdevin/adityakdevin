@@ -86,6 +86,10 @@ input, textarea {
 input:hover, textarea:hover { border-color: var(--muted); }
 input:focus, textarea:focus { border-color: var(--accent); }
 
+/* Terminal suggestion chips */
+.term-chip { transition: color 150ms ease-out, border-color 150ms ease-out; }
+.term-chip:hover { color: var(--dark-accent); border-color: var(--dark-accent); }
+
 /* FAQ affordance */
 details summary { transition: color 150ms ease-out; }
 details summary:hover { color: var(--accent); }

@@ -4,11 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { profile } from "@/content/data/profile";
 
-type Line = { kind: "cmd" | "out" | "accent"; text: string };
+type Line = { kind: "cmd" | "out" | "accent"; text: string; cursor?: boolean };
 
 const BOOT: Line[] = [
   { kind: "accent", text: "AskAditya v1.0 — type 'help' or just ask." },
 ];
+
+const SUGGESTIONS = [
+  "what does an AI chatbot cost?",
+  "can he take over my codebase?",
+  "what's his stack?",
+] as const;
 
 /**
  * The widget (SPEC §6) — offline commands always work; free text streams from
@@ -63,13 +69,19 @@ export function Terminal() {
     setLines((prev) => [...prev, ...next]);
   }
 
-  function replaceLast(line: Line) {
-    setLines((prev) => [...prev.slice(0, -1), line]);
+  // The stream owns ONE line by index — other prints stay safe while it runs.
+  const streamIdx = useRef(-1);
+
+  function replaceStreamLine(line: Line) {
+    setLines((prev) => prev.map((l, i) => (i === streamIdx.current ? line : l)));
   }
 
   async function ask(message: string) {
     busy.current = true;
-    print({ kind: "out", text: "…" });
+    setLines((prev) => {
+      streamIdx.current = prev.length;
+      return [...prev, { kind: "out", text: "", cursor: true }]; // blinking cursor = thinking
+    });
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -78,7 +90,7 @@ export function Terminal() {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { reason?: string };
-        replaceLast({
+        replaceStreamLine({
           kind: "accent",
           text:
             data.reason === "budget"
@@ -98,13 +110,15 @@ export function Terminal() {
         const { done, value } = await reader.read();
         if (done) break;
         acc += decoder.decode(value, { stream: true });
-        replaceLast({ kind: "out", text: acc });
+        replaceStreamLine({ kind: "out", text: acc, cursor: true });
       }
       if (!acc.trim()) {
-        replaceLast({ kind: "accent", text: "no answer came back — ask again, or try 'help'." });
+        replaceStreamLine({ kind: "accent", text: "no answer came back — ask again, or try 'help'." });
+      } else {
+        replaceStreamLine({ kind: "out", text: acc }); // done — cursor off
       }
     } catch {
-      replaceLast({ kind: "accent", text: "connection dropped — ask again, or try 'help'." });
+      replaceStreamLine({ kind: "accent", text: "connection dropped — ask again, or try 'help'." });
     } finally {
       busy.current = false;
     }
@@ -113,7 +127,6 @@ export function Terminal() {
   function run(raw: string) {
     const cmd = raw.trim();
     if (!cmd) return;
-    if (busy.current) return; // one answer at a time — keeps the streaming line stable
     print({ kind: "cmd", text: cmd });
 
     switch (cmd.toLowerCase()) {
@@ -193,7 +206,11 @@ export function Terminal() {
         setOpen(false);
         break;
       default:
-        void ask(cmd);
+        if (busy.current) {
+          print({ kind: "accent", text: "still answering — one question at a time." });
+        } else {
+          void ask(cmd);
+        }
     }
   }
 
@@ -220,7 +237,7 @@ export function Terminal() {
         aria-hidden={!open}
         className={`fixed z-50 flex flex-col overflow-hidden border shadow-2xl transition-all duration-250 ease-in-out ${
           open ? "visible pointer-events-auto opacity-100" : "invisible pointer-events-none opacity-0"
-        } inset-0 md:inset-auto md:bottom-6 md:right-6 md:h-[480px] md:w-[420px] md:rounded-lg`}
+        } inset-0 md:inset-auto md:bottom-6 md:right-6 md:h-[560px] md:w-[460px] md:rounded-lg`}
         style={{ background: "var(--dark-bg)", borderColor: "var(--dark-border)" }}
       >
         <div
@@ -252,9 +269,27 @@ export function Terminal() {
             >
               {line.kind === "cmd" ? <span style={{ color: "var(--dark-accent)" }}>$ </span> : null}
               {line.text}
+              {line.cursor ? <span className="cursor" aria-hidden /> : null}
             </p>
           ))}
         </div>
+
+        {/* First-run affordance: what CAN I ask? Chips vanish after the first input, return on 'clear'. */}
+        {lines.length === 1 && (
+          <div className="flex flex-wrap gap-2 px-4 pb-3">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => run(s)}
+                className="term-chip mono cursor-pointer rounded-full border px-3 py-1.5 text-xs"
+                style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
 
         <form
           onSubmit={(e) => {
@@ -278,7 +313,7 @@ export function Terminal() {
             maxLength={300}
             className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
             style={{ color: "var(--dark-text)" }}
-            placeholder="help"
+            placeholder="ask anything — or 'help'"
           />
         </form>
       </div>

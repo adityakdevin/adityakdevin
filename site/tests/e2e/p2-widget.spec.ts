@@ -125,6 +125,19 @@ test.describe("terminal widget (offline mode)", () => {
     await expect(page.getByText(/rate limit: 10 questions\/hour/)).toBeVisible();
   });
 
+  test("suggestion chips show on boot, ask on click, and hide after input", async ({ page }) => {
+    await page.route("**/api/chat", (route) =>
+      route.fulfill({ status: 200, contentType: "text/plain", body: "PHP, Laravel, Vue, React, and LLM APIs." }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: /open askaditya terminal/i }).click();
+    const chip = page.getByRole("button", { name: "what's his stack?" });
+    await expect(chip).toBeVisible();
+    await chip.click();
+    await expect(page.getByRole("dialog").getByText(/Laravel, Vue, React/)).toBeVisible();
+    await expect(chip).not.toBeVisible(); // chips vanish once the conversation starts
+  });
+
   test("sudo hire-aditya opens the booking page", async ({ page, context }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /open askaditya terminal/i }).click();
