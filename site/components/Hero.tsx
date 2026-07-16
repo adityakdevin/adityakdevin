@@ -9,7 +9,7 @@ import { TypingCaption } from "@/components/TypingCaption";
 export function Hero() {
   return (
     <section
-      className="relative flex min-h-[min(92svh,860px)] flex-col justify-center overflow-hidden"
+      className="relative flex min-h-[min(84svh,760px)] flex-col justify-center overflow-hidden"
       style={{ background: "var(--hero-bg)", color: "var(--hero-text)" }}
     >
       {/* "Professionally lit": one soft cyan key light behind the composition */}

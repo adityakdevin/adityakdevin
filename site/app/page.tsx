@@ -46,7 +46,7 @@ export default async function Home() {
       {/* 2 — Metric strip: one inline strip, no tile boxes; static build-time numbers */}
       <section className="border-b" style={{ borderColor: "var(--border)" }}>
         <Reveal>
-          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-12 md:flex md:items-baseline md:justify-between md:py-14">
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
             {profile.metrics.map((m) => (
               <div key={m.label} className="flex items-baseline gap-2">
                 <span className="mono text-4xl font-semibold md:text-5xl" style={{ color: "var(--accent)" }}>
