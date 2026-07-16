@@ -11,9 +11,17 @@
   --focus: #22b8d4;
   --error: #f85149;
   --on-accent: #06222a; /* text on accent-filled buttons */
-  /* hero stays dark in BOTH themes */
-  --hero-bg: #0d1117;
-  --hero-text: #e6edf3;
+  /* Theme-locked dark palette — hero + terminal stay dark in BOTH themes.
+     Components that must ignore the theme use these, never the themed tokens above. */
+  --dark-bg: #0d1117;
+  --dark-surface: #161b22;
+  --dark-text: #e6edf3;
+  --dark-muted: #8b949e;
+  --dark-border: #30363d;
+  --dark-accent: #22b8d4;
+  --dark-on-accent: #06222a;
+  --hero-bg: var(--dark-bg);
+  --hero-text: var(--dark-text);
 }
 
 [data-theme="light"] {
@@ -26,17 +34,6 @@
   --focus: #0e7490;
   --error: var(--error);
   --on-accent: #ffffff; /* white on cyan-700 = 4.9:1 */
-}
-
-@theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-fg: var(--text);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-line: var(--border);
-  --font-mono: var(--font-plex-mono);
-  --font-sans: var(--font-plex-sans);
 }
 
 html {
@@ -81,13 +78,13 @@ main a:not(.btn):visited { text-decoration-color: color-mix(in srgb, var(--accen
   background: var(--accent);
 }
 
-/* Form fields must stand off their surface in both themes */
+/* Form fields must stand off their surface in both themes — CSS owns field backgrounds */
 input, textarea {
-  background: var(--bg) !important;
+  background: var(--bg);
   transition: border-color 150ms ease-out;
 }
-input:hover, textarea:hover { border-color: var(--muted) !important; }
-input:focus, textarea:focus { border-color: var(--accent) !important; }
+input:hover, textarea:hover { border-color: var(--muted); }
+input:focus, textarea:focus { border-color: var(--accent); }
 
 /* FAQ affordance */
 details summary { transition: color 150ms ease-out; }
