@@ -15,8 +15,7 @@ export const profile = {
   // TODO(§13.1): confirm correct number before rendering — two variants exist on the old site.
   phone: null as string | null,
   website: "https://adityadev.in",
-  // TODO(§13.3): replace with the real cal.com event URL once the account exists.
-  bookingUrl: "https://cal.com/adityakdevin/intro",
+  bookingUrl: "https://cal.com/adityakdevin/30min",
   github: "https://github.com/adityakdevin",
   linkedin: "https://www.linkedin.com/in/adityakdevin",
   twitter: "https://twitter.com/adityakdevin",
