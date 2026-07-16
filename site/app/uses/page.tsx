@@ -3,7 +3,7 @@ import { profile } from "@/content/data/profile";
 
 export const metadata: Metadata = {
   title: "Uses",
-  description: `The tools ${profile.name} uses daily: PhpStorm, Claude Code, Laravel toolchain, Docker, and the stack behind 7+ years of shipped products.`,
+  description: `The tools ${profile.name} uses daily: PhpStorm, Claude Code, Laravel toolchain, Docker, and the stack behind 9+ years of shipped products.`,
   alternates: { canonical: "/uses" },
 };
 
@@ -19,7 +19,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "Backend",
     items: [
-      { name: "Laravel + PHP", note: "the workhorse — 7+ years of production systems" },
+      { name: "Laravel + PHP", note: "the workhorse — 9+ years of production systems" },
       { name: "Python", note: "AI/data work: embeddings, pipelines, scripts" },
       { name: "Node.js", note: "tooling and the odd service where JS fits better" },
       { name: "MySQL / PostgreSQL / Redis", note: "data layer; Redis for queues, cache, and rate limiting" },

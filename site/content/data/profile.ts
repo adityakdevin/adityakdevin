@@ -9,7 +9,7 @@ export const profile = {
   valueLine: "I build Laravel & AI products that ship.",
   role: "Tech Lead",
   company: "MM Nova Tech",
-  yearsExperience: "7+",
+  yearsExperience: "9+",
   location: "Lucknow, Uttar Pradesh, India",
   email: "contact@adityadev.in",
   // TODO(§13.1): confirm correct number before rendering — two variants exist on the old site.
@@ -24,7 +24,7 @@ export const profile = {
   devtoUsername: "adityakdevin",
 
   metrics: [
-    { value: "7+", label: "years shipping" },
+    { value: "9+", label: "years shipping" },
     { value: "60+", label: "projects delivered" },
     { value: "8.3k+", label: "GitHub contributions" },
     { value: "1", label: "Laravel + AI series" },
@@ -45,7 +45,7 @@ export const profile = {
       title: "Full Stack Delivery",
       claim: "End-to-end web products, backend to pixels",
       lines: [
-        "Laravel, Vue/Nuxt, React/Next.js — 7+ years of shipped systems for real businesses.",
+        "Laravel, Vue/Nuxt, React/Next.js — 9+ years of shipped systems for real businesses.",
         "Payments (Stripe, Razorpay), integrations, and the unglamorous plumbing done right.",
       ],
     },
@@ -94,7 +94,7 @@ export const profile = {
       note: "read the actual articles",
     },
     {
-      claim: "7+ years, currently Tech Lead @ MM Nova Tech",
+      claim: "9+ years, currently Tech Lead @ MM Nova Tech",
       href: "https://www.linkedin.com/in/adityakdevin",
       note: "career history on LinkedIn",
     },
