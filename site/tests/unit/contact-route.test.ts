@@ -1,11 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 
-const sendMock = vi.fn();
-vi.mock("resend", () => ({
-  Resend: class {
-    emails = { send: sendMock };
-  },
-}));
+// The route sends via plain fetch to Mailtrap — stub the global.
+const fetchMock = vi.fn();
+vi.stubGlobal("fetch", fetchMock);
 
 import { POST } from "@/app/api/contact/route";
 
@@ -21,15 +18,21 @@ const valid = { name: "Test Person", email: "test@example.com", message: "Hello,
 
 describe("POST /api/contact", () => {
   beforeEach(() => {
-    sendMock.mockReset();
-    sendMock.mockResolvedValue({ error: null });
-    process.env.RESEND_API_KEY = "re_test_key";
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ success: true, message_ids: ["m1"] }), { status: 200 }),
+    );
+    process.env.MAILTRAP_API_TOKEN = "mt_test_token";
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 
   it("silently accepts honeypot submissions without sending", async () => {
     const res = await POST(makeReq({ ...valid, website: "spam.com" }, "9.9.9.1"));
     expect(res.status).toBe(200);
-    expect(sendMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("rejects invalid fields with 422", async () => {
@@ -41,7 +44,7 @@ describe("POST /api/contact", () => {
       const res = await POST(makeReq(bad, "9.9.9.2"));
       expect(res.status).toBe(422);
     }
-    expect(sendMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("rejects malformed JSON with 400", async () => {
@@ -54,29 +57,42 @@ describe("POST /api/contact", () => {
     expect(res.status).toBe(400);
   });
 
-  it("sends via Resend and returns ok on the happy path", async () => {
+  it("sends via Mailtrap and returns ok on the happy path", async () => {
     const res = await POST(makeReq(valid, "9.9.9.4"));
     expect(res.status).toBe(200);
-    expect(sendMock).toHaveBeenCalledOnce();
-    const arg = sendMock.mock.calls[0][0];
-    expect(arg.replyTo).toBe(valid.email);
-    expect(arg.text).toContain(valid.message);
+    expect(fetchMock).toHaveBeenCalledOnce();
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://send.api.mailtrap.io/api/send");
+    expect(init.headers["Api-Token"]).toBe("mt_test_token");
+    const sent = JSON.parse(init.body);
+    expect(sent.reply_to.email).toBe(valid.email);
+    expect(sent.text).toContain(valid.message);
+    expect(sent.from.email).toBe("contact@adityadev.in");
   });
 
-  it("returns 502 without leaking details when Resend fails", async () => {
-    sendMock.mockRejectedValue(new Error("resend exploded: key sk-secret"));
+  it("returns 502 without leaking details when Mailtrap fails", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ success: false, errors: ["token mt-secret invalid"] }), { status: 401 }),
+    );
     const res = await POST(makeReq(valid, "9.9.9.5"));
     expect(res.status).toBe(502);
     const body = await res.json();
-    expect(JSON.stringify(body)).not.toContain("sk-secret");
-    expect(JSON.stringify(body)).not.toContain("resend");
+    expect(JSON.stringify(body)).not.toContain("mt-secret");
+    expect(JSON.stringify(body)).not.toContain("mailtrap");
   });
 
-  it("returns 503 when RESEND_API_KEY is missing", async () => {
-    delete process.env.RESEND_API_KEY;
+  it("returns 502 when the network call itself throws", async () => {
+    fetchMock.mockRejectedValue(new Error("ECONNRESET"));
+    const res = await POST(makeReq(valid, "9.9.9.8"));
+    expect(res.status).toBe(502);
+  });
+
+  it("returns 503 when MAILTRAP_API_TOKEN is missing", async () => {
+    delete process.env.MAILTRAP_API_TOKEN;
     const res = await POST(makeReq(valid, "9.9.9.6"));
     expect(res.status).toBe(503);
-    expect(sendMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("rate limits the 6th message from one IP within an hour", async () => {

@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         <div>
           <h2 className="mono text-xl font-semibold">Contact form</h2>
           <p className="mt-2">
-            When you send a message, your name, email, and message are emailed to me via Resend
+            When you send a message, your name, email, and message are emailed to me via Mailtrap
             and land in my inbox ({profile.email}). They are not stored in any database, not
             shared with anyone, and not added to any mailing list. Server errors are logged for
             30 days without message contents.

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { profile } from "@/content/data/profile";
 
 /**
  * Contact handler (SPEC §10): validation + honeypot + rate limit + error contract.
+ * Sends via Mailtrap's transactional API (plain POST — no SDK needed).
  * Errors are logged server-side only — the client never sees vendor details.
  */
 
-// ponytail: in-memory per-instance rate limit — Upstash lands with /api/chat in P3,
-// which is when a shared store exists anyway; a single Vercel instance covers P1a traffic.
+// ponytail: in-memory per-instance rate limit — Upstash lands with /api/chat's
+// counters when the account exists; a single Vercel instance covers P1a traffic.
 const hits = new Map<string, { count: number; reset: number }>();
 const LIMIT = 5;
 const WINDOW_MS = 60 * 60 * 1000;
@@ -57,22 +57,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many messages — try again later." }, { status: 429 });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.error("contact: RESEND_API_KEY not configured");
+  const apiToken = process.env.MAILTRAP_API_TOKEN;
+  if (!apiToken) {
+    console.error("contact: MAILTRAP_API_TOKEN not configured");
     return NextResponse.json({ error: "Sending is temporarily unavailable." }, { status: 503 });
   }
 
   try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: "Portfolio <contact@adityadev.in>",
-      to: [profile.email],
-      replyTo: email,
-      subject: `Portfolio contact from ${name}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
+    const res = await fetch("https://send.api.mailtrap.io/api/send", {
+      method: "POST",
+      headers: { "Api-Token": apiToken, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: { email: "contact@adityadev.in", name: "Portfolio" },
+        to: [{ email: profile.email }],
+        reply_to: { email },
+        subject: `Portfolio contact from ${name}`,
+        text: `From: ${name} <${email}>\n\n${message}`,
+      }),
     });
-    if (error) throw error;
+    if (!res.ok) throw new Error(`mailtrap ${res.status}`);
     return NextResponse.json({ ok: true });
   } catch (err) {
     // Log without message bodies (SPEC §10: 30-day retention is Vercel's log default)
