@@ -57,7 +57,7 @@ export default function UsesPage() {
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> which --all everything
       </p>
-      <h1 className="mono text-4xl font-semibold">Uses</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold">Uses</h1>
       <p className="mt-3" style={{ color: "var(--muted)" }}>
         The tools behind the work. No affiliate links, no gear-acquisition syndrome — just what
         actually ships software.

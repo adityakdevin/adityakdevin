@@ -19,7 +19,7 @@ export default function NowPage() {
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> date && cat now.md
       </p>
-      <h1 className="mono text-4xl font-semibold">What I&apos;m doing now</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold">What I&apos;m doing now</h1>
       <p className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
         last updated: {LAST_UPDATED} · inspired by{" "}
         <a href="https://nownownow.com/about">nownownow.com</a>

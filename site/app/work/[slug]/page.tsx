@@ -45,7 +45,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat work/{study.slug}.md
       </p>
-      <h1 className="mono text-4xl font-semibold leading-tight">{study.title}</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">{study.title}</h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
         {study.summary}
       </p>

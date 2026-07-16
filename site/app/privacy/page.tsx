@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat privacy.md
       </p>
-      <h1 className="mono text-4xl font-semibold">Privacy, in plain language</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold">Privacy, in plain language</h1>
       <p className="mt-4" style={{ color: "var(--muted)" }}>
         Last updated: July 2026. This is a personal portfolio site. Here is everything it does
         with data — written by a human, for humans.

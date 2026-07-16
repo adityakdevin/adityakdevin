@@ -16,7 +16,7 @@ function Eyebrow({ cmd }: { cmd: string }) {
 
 function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <h2 id={id} className="mono scroll-mt-20 text-3xl font-semibold md:text-4xl">
+    <h2 id={id} className="mono h2-rule scroll-mt-20 text-3xl font-semibold tracking-tight md:text-4xl">
       {children}
     </h2>
   );
@@ -48,7 +48,7 @@ export default async function Home() {
           <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-12 md:flex md:items-baseline md:justify-between md:py-14">
             {profile.metrics.map((m) => (
               <div key={m.label} className="flex items-baseline gap-2">
-                <span className="mono text-3xl font-semibold md:text-4xl" style={{ color: "var(--accent)" }}>
+                <span className="mono text-4xl font-semibold md:text-5xl" style={{ color: "var(--accent)" }}>
                   {m.value}
                 </span>
                 <span className="text-sm" style={{ color: "var(--muted)" }}>

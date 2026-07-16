@@ -15,10 +15,10 @@
 }
 
 [data-theme="light"] {
-  --bg: #fafaf8;
+  --bg: #f2f4f7;
   --surface: #ffffff;
   --text: #1f2328;
-  --muted: #57606a;
+  --muted: #4d5761;
   --accent: #0891b2;
   --border: #d0d7de;
   --focus: #0891b2;
@@ -64,6 +64,31 @@ main a:not(.btn):hover { text-decoration-color: var(--accent); color: var(--acce
 main a:not(.btn):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
 
 .btn:active { transform: translateY(1px); }
+.btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
+.btn:hover { filter: brightness(1.08); }
+
+/* Signature rule: cyan bar under every section heading — carries brand below the hero */
+.h2-rule::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin-top: 14px;
+  background: var(--accent);
+}
+
+/* Form fields must stand off their surface in both themes */
+input, textarea {
+  background: var(--bg) !important;
+  transition: border-color 150ms ease-out;
+}
+input:hover, textarea:hover { border-color: var(--muted) !important; }
+input:focus, textarea:focus { border-color: var(--accent) !important; }
+
+/* FAQ affordance */
+details summary { transition: color 150ms ease-out; }
+details summary:hover { color: var(--accent); }
+details[open] summary { color: var(--accent); }
 
 /* Motion #1: hero command-type reveal (600ms ease-out, once) + cursor blink 1.06s step */
 @keyframes type-reveal { from { width: 0; } to { width: 100%; } }

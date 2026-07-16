@@ -34,7 +34,7 @@ export const profile = {
     {
       n: "01",
       title: "AI Integration",
-      claim: "I ship AI features into production apps",
+      claim: "Chatbots, automations, and AI workflows that survive real users",
       lines: [
         "LLM chatbots, streaming interfaces, and automation wired into real products — not demos.",
         "OpenAI & Claude APIs, prompt architecture, cost-hardened endpoints.",

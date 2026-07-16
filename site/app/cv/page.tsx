@@ -23,7 +23,7 @@ export default function CvPage() {
 
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="mono text-4xl font-semibold">{profile.name}</h1>
+          <h1 className="mono h2-rule text-4xl font-semibold">{profile.name}</h1>
           <p className="mt-2 text-lg" style={{ color: "var(--muted)" }}>
             {profile.headline}
           </p>

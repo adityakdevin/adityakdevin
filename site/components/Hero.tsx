@@ -9,17 +9,26 @@ import { profile } from "@/content/data/profile";
 export function Hero() {
   return (
     <section
-      className="relative flex min-h-[92svh] flex-col justify-center overflow-hidden"
+      className="relative flex min-h-[min(92svh,860px)] flex-col justify-center overflow-hidden"
       style={{ background: "var(--hero-bg)", color: "var(--hero-text)" }}
     >
-      <div className="mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_320px] md:gap-16">
+      {/* "Professionally lit": one soft cyan key light behind the composition */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
+        }}
+      />
+      <div className="relative mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_360px] md:gap-16">
         <div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "#8b949e" }}>
             <span style={{ color: "#22b8d4" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal cursor">whoami</span>
           </p>
 
-          <h1 className="mono text-5xl font-semibold leading-[1.05] md:text-[64px]">
+          <h1 className="mono text-5xl font-semibold leading-[1.05] tracking-tight md:text-[72px]">
             {profile.name}
           </h1>
 
@@ -51,10 +60,10 @@ export function Hero() {
         </div>
 
         {/* Anchor: real photo, duotone/cyan treatment so it belongs to the terminal world */}
-        <div className="relative mx-auto hidden w-full max-w-xs md:block">
+        <div className="relative mx-auto hidden w-full max-w-sm md:block">
           <div
-            className="overflow-hidden rounded-lg border"
-            style={{ borderColor: "#30363d", background: "#161b22" }}
+            className="overflow-hidden rounded-lg border shadow-2xl"
+            style={{ borderColor: "#30363d", background: "#161b22", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
           >
             <div
               className="mono flex items-center gap-1.5 border-b px-3 py-2 text-xs"
