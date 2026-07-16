@@ -14,7 +14,7 @@ export function Hero() {
     >
       <div className="mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_320px] md:gap-16">
         <div>
-          <p className="mono mb-6 text-sm" style={{ color: "#8b949e" }}>
+          <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "#8b949e" }}>
             <span style={{ color: "#22b8d4" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal cursor">whoami</span>
           </p>
