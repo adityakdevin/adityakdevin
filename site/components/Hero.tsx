@@ -1,4 +1,5 @@
 import { profile } from "@/content/data/profile";
+import { TypingCaption } from "@/components/TypingCaption";
 
 /**
  * Hero (SPEC §5.1) — brand-first, full-bleed, ONE composition, dark in BOTH themes.
@@ -82,10 +83,17 @@ export function Hero() {
             />
             <a
               href={profile.github}
-              className="mono block border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
+              className="mono block whitespace-nowrap border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
               style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
             >
-              Full Stack Developer + AI Engineer →
+              <TypingCaption
+                phrases={[
+                  "Full Stack Developer + AI Engineer",
+                  `Tech Lead @ ${profile.company}`,
+                  "Laravel · Vue · React · LLM apps",
+                  "github.com/adityakdevin →",
+                ]}
+              />
             </a>
           </div>
         </div>
