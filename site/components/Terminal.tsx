@@ -315,6 +315,15 @@ export function Terminal() {
             style={{ color: "var(--dark-text)" }}
             placeholder="ask anything — or 'help'"
           />
+          <button
+            type="submit"
+            aria-label="Send"
+            disabled={!input.trim()}
+            className="mono flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded border text-base transition-opacity disabled:cursor-default disabled:opacity-40"
+            style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
+          >
+            ↵
+          </button>
         </form>
       </div>
     </div>
