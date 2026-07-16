@@ -110,8 +110,13 @@ details[open] summary { color: var(--accent); }
 @keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .settle-in { animation: settle 400ms ease-out both; }
 
-/* prefers-reduced-motion disables ALL motion (§4) */
+/* prefers-reduced-motion disables ALL motion — keyframes AND transitions (§4, FINDING-005) */
 @media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   .type-reveal, .settle-in { animation: none; }
   .cursor::after { animation: none; opacity: 1; }
   html { scroll-behavior: auto; }
