@@ -1,22 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { streamText } from "ai";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { costUsd } from "@/lib/cost";
 
 /**
- * /api/chat (SPEC §6) — Claude Haiku streaming behind the widget.
- * Ships dormant: without ANTHROPIC_API_KEY it answers 503 "unconfigured" and
- * the widget stays offline-commands-only. Guardrails are non-negotiable:
+ * /api/chat (SPEC §6) — Claude Haiku streaming via Vercel AI Gateway.
+ * Auth is ambient: VERCEL_OIDC_TOKEN on Vercel deployments (auto-injected),
+ * AI_GATEWAY_API_KEY elsewhere. Without either it answers 503 "unconfigured"
+ * and the widget stays offline-commands-only. Guardrails are non-negotiable:
  * 300-char input cap, 500-token response cap, 10 msg/hr per IP, and a hard
  * monthly spend circuit breaker at $10 — an alarm alone is not enforcement.
  */
 
-const MODEL = "claude-haiku-4-5";
+const MODEL = "anthropic/claude-haiku-4.5"; // gateway slug — dots, not hyphens
 const MAX_INPUT_CHARS = 300;
 const MAX_OUTPUT_TOKENS = 500;
 
-// ponytail: in-memory per-instance rate limit + spend counter — same tradeoff
-// as /api/contact; swap both for Upstash when the account exists (TODOS/T3).
+// ponytail: in-memory per-instance rate limit + spend counter — swap for the
+// gateway's per-user limits + Upstash once traffic justifies it (TODOS/T3).
 const hits = new Map<string, { count: number; reset: number }>();
 const LIMIT = 10;
 const WINDOW_MS = 60 * 60 * 1000;
@@ -52,7 +53,7 @@ function recordSpend(usd: number) {
   spend.usd += usd;
 }
 
-// Frozen at module load — byte-stable across requests so the prompt cache hits.
+// Frozen at module load — byte-stable across requests so provider caching can engage.
 const SYSTEM_PROMPT = buildSystemPrompt();
 
 export async function POST(req: NextRequest) {
@@ -79,8 +80,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) {
     return NextResponse.json(
       { error: "AI mode is not configured yet.", reason: "unconfigured" },
       { status: 503 },
@@ -94,27 +94,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const client = new Anthropic({ apiKey });
-  const stream = client.messages.stream({
+  const result = streamText({
     model: MODEL,
-    max_tokens: MAX_OUTPUT_TOKENS,
-    system: [
-      { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
-    ],
-    messages: [{ role: "user", content: message }],
+    system: SYSTEM_PROMPT,
+    prompt: message,
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+    providerOptions: { gateway: { tags: ["feature:askaditya"], user: ip } },
   });
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of stream) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
+        for await (const chunk of result.textStream) {
+          controller.enqueue(encoder.encode(chunk));
         }
-        const final = await stream.finalMessage();
-        recordSpend(costUsd(final.usage));
+        const usage = await result.usage;
+        recordSpend(
+          costUsd({
+            input_tokens: usage.inputTokens ?? 0,
+            output_tokens: usage.outputTokens ?? 0,
+          }),
+        );
       } catch (err) {
         // Mid-stream failure → friendly line, never a frozen cursor (§6).
         console.error("chat: stream failed", err instanceof Error ? err.message : "unknown");

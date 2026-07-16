@@ -1,45 +1,29 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const streamMock = vi.fn();
-vi.mock("@anthropic-ai/sdk", () => ({
-  default: class {
-    messages = { stream: streamMock };
-  },
-}));
+const streamTextMock = vi.hoisted(() => vi.fn());
+vi.mock("ai", () => ({ streamText: streamTextMock }));
 
 import { POST } from "@/app/api/chat/route";
 import { costUsd } from "@/lib/cost";
 import { buildSystemPrompt } from "@/lib/prompt";
 
-type Usage = {
-  input_tokens: number;
-  output_tokens: number;
-  cache_creation_input_tokens?: number;
-  cache_read_input_tokens?: number;
-};
+type Usage = { inputTokens: number; outputTokens: number };
 
-const tinyUsage: Usage = {
-  input_tokens: 300,
-  cache_read_input_tokens: 20_000,
-  cache_creation_input_tokens: 0,
-  output_tokens: 200,
-};
+const tinyUsage: Usage = { inputTokens: 2000, outputTokens: 200 };
 
-function makeStream(chunks: string[], opts: { failAfter?: number; usage?: Usage } = {}) {
+function makeResult(chunks: string[], opts: { failAfter?: number; usage?: Usage } = {}) {
   return {
-    async *[Symbol.asyncIterator]() {
+    textStream: (async function* () {
       let i = 0;
       for (const text of chunks) {
         if (opts.failAfter !== undefined && i >= opts.failAfter) {
-          throw new Error("anthropic 529: overloaded sk-secret");
+          throw new Error("gateway 529: overloaded sk-secret");
         }
         i += 1;
-        yield { type: "content_block_delta", delta: { type: "text_delta", text } };
+        yield text;
       }
-    },
-    async finalMessage() {
-      return { usage: opts.usage ?? tinyUsage };
-    },
+    })(),
+    usage: Promise.resolve(opts.usage ?? tinyUsage),
   };
 }
 
@@ -79,15 +63,16 @@ describe("lib/prompt buildSystemPrompt", () => {
 
   it("contains no secrets or env values", () => {
     const p = buildSystemPrompt();
-    expect(p).not.toMatch(/sk-ant|api[_-]?key|ANTHROPIC/i);
+    expect(p).not.toMatch(/sk-ant|api[_-]?key|GATEWAY|OIDC/i);
   });
 });
 
 describe("POST /api/chat", () => {
   beforeEach(() => {
-    streamMock.mockReset();
-    streamMock.mockImplementation(() => makeStream(["Aditya ", "builds ", "things."]));
-    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    streamTextMock.mockReset();
+    streamTextMock.mockImplementation(() => makeResult(["Aditya ", "builds ", "things."]));
+    process.env.AI_GATEWAY_API_KEY = "vck_test";
+    delete process.env.VERCEL_OIDC_TOKEN;
   });
 
   it("rejects malformed JSON with 400", async () => {
@@ -105,32 +90,39 @@ describe("POST /api/chat", () => {
       const res = await POST(makeReq({ message }, "8.8.8.2"));
       expect(res.status).toBe(422);
     }
-    expect(streamMock).not.toHaveBeenCalled();
+    expect(streamTextMock).not.toHaveBeenCalled();
   });
 
-  it("returns 503 unconfigured when ANTHROPIC_API_KEY is missing", async () => {
-    delete process.env.ANTHROPIC_API_KEY;
+  it("returns 503 unconfigured when no gateway credential exists", async () => {
+    delete process.env.AI_GATEWAY_API_KEY;
     const res = await POST(makeReq({ message: "who is aditya?" }, "8.8.8.3"));
     expect(res.status).toBe(503);
     expect((await res.json()).reason).toBe("unconfigured");
-    expect(streamMock).not.toHaveBeenCalled();
+    expect(streamTextMock).not.toHaveBeenCalled();
   });
 
-  it("streams the answer with the cached corpus prompt and a 500-token cap", async () => {
+  it("accepts ambient VERCEL_OIDC_TOKEN as the credential", async () => {
+    delete process.env.AI_GATEWAY_API_KEY;
+    process.env.VERCEL_OIDC_TOKEN = "eyJ.test.jwt";
+    const res = await POST(makeReq({ message: "who is aditya?" }, "8.8.8.9"));
+    expect(res.status).toBe(200);
+  });
+
+  it("streams the answer with the corpus prompt and a 500-token cap via the gateway", async () => {
     const res = await POST(makeReq({ message: "who is aditya?" }, "8.8.8.4"));
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/plain");
     expect(await res.text()).toBe("Aditya builds things.");
 
-    const params = streamMock.mock.calls[0][0];
-    expect(params.model).toBe("claude-haiku-4-5");
-    expect(params.max_tokens).toBe(500);
-    expect(params.system[0].cache_control).toEqual({ type: "ephemeral" });
-    expect(params.system[0].text).toContain("Aditya Kumar");
+    const params = streamTextMock.mock.calls[0][0];
+    expect(params.model).toBe("anthropic/claude-haiku-4.5");
+    expect(params.maxOutputTokens).toBe(500);
+    expect(params.system).toContain("Aditya Kumar");
+    expect(params.prompt).toBe("who is aditya?");
   });
 
   it("ends a mid-stream failure with a friendly line, never a frozen cursor", async () => {
-    streamMock.mockImplementation(() => makeStream(["Aditya is a ", "Tech Lead"], { failAfter: 1 }));
+    streamTextMock.mockImplementation(() => makeResult(["Aditya is a ", "Tech Lead"], { failAfter: 1 }));
     const res = await POST(makeReq({ message: "role?" }, "8.8.8.5"));
     expect(res.status).toBe(200);
     const text = await res.text();
@@ -153,9 +145,9 @@ describe("POST /api/chat", () => {
 
   // LAST on purpose: trips the module-level monthly spend counter for good.
   it("hard-refuses once the monthly $10 spend cap is hit", async () => {
-    streamMock.mockImplementation(() =>
-      makeStream(["expensive answer"], {
-        usage: { input_tokens: 0, output_tokens: 3_000_000 }, // $15 > $10 cap
+    streamTextMock.mockImplementation(() =>
+      makeResult(["expensive answer"], {
+        usage: { inputTokens: 0, outputTokens: 3_000_000 }, // $15 > $10 cap
       }),
     );
     const first = await POST(makeReq({ message: "big one" }, "8.8.8.7"));
@@ -165,6 +157,6 @@ describe("POST /api/chat", () => {
     const second = await POST(makeReq({ message: "after the cap" }, "8.8.8.8"));
     expect(second.status).toBe(503);
     expect((await second.json()).reason).toBe("budget");
-    expect(streamMock).toHaveBeenCalledTimes(1); // no LLM call past the cap
+    expect(streamTextMock).toHaveBeenCalledTimes(1); // no LLM call past the cap
   });
 });
