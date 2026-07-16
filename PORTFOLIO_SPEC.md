@@ -77,14 +77,39 @@ Scope of the rule: structured FACTS live in profile.ts/faq.ts. Page prose, SEO c
 - **DNS cutover (staged, §12):** TTL→300s at T-3 days → verify on preview domain → cut → old files kept 7 days (rollback = re-point DNS) → cleanup commit.
 - **Email DNS is part of the cutover:** inventory current MX/SPF/DKIM/DMARC for adityadev.in BEFORE any DNS change; carry records over; verify domain in Resend during P1 week 1; send/receive test after cutover. A broken contact@ during launch week is the worst-case failure.
 
-## 4. Design system
+## 4. Design system (v3 — design review, all values committed)
 
-- **Feel:** "senior engineer's terminal, professionally lit" — not CRT cosplay. Recruiter can skim in 30s; dev finds depth.
-- **Type:** monospace display font for headings/prompts, humanist sans for body. Never body-text-in-mono.
-- **Dark (default):** near-black `#0d1117`-family bg, cyan `#0891b2` accent, warm white text. **Light:** true designed light theme; terminal blocks stay dark in both.
-- **Terminal accents:** `$`-prefixed section headers, blinking cursor in hero, command-style nav hints, subtle scanline texture on hero only. One restrained entrance animation max; `prefers-reduced-motion` fully respected (cursor blink + scanlines off).
-- **Accessibility (acceptance criteria, not vibes):** WCAG AA contrast in BOTH themes (cyan-on-dark verified), keyboard-navigable widget & nav, focus states visible, ASCII portrait `aria-hidden` with real alt text elsewhere.
-- **Performance budget:** Lighthouse ≥ 95 all categories; LCP < 1.5s on 4G; zero layout shift. `next/image` for raster images only — SVG/ASCII assets ship as plain files.
+- **Feel:** "senior engineer's terminal, professionally lit" — not CRT cosplay. Recruiter can skim in 30s; dev finds depth. Layout language: **editorial composition, not card grids** (cards only where the card IS the interaction — see §5).
+- **Type (committed):** **IBM Plex Mono** (display, headings, prompts, metric numerals) + **IBM Plex Sans** (body) — one engineered family, self-hosted, terminal heritage. Never body-text-in-mono. Type scale (desktop / mobile):
+  | Role | Size / weight / line-height |
+  |---|---|
+  | Hero name (H1) | 64px/56px · Plex Mono 600 · 1.05 |
+  | Hero value line | 24px/20px · Plex Sans 400 · 1.4 |
+  | Section heading (H2) | 36px/28px · Plex Mono 600 · 1.2 |
+  | Sub-heading (H3) | 22px/20px · Plex Mono 500 · 1.3 |
+  | Body | 17px/16px · Plex Sans 400 · 1.6 (never <16px) |
+  | Caption/prompt eyebrow | 14px · Plex Mono 400 · 1.4 |
+- **Spacing:** 8px base scale (8/16/24/32/48/64/96/128). Section vertical rhythm: 96px desktop / 64px mobile — deliberately varied per section, no cookie-cutter equal heights.
+- **Tokens (CSS variables, both themes, required — no raw hex in components):**
+  | Token | Dark (default) | Light |
+  |---|---|---|
+  | `--bg` | `#0d1117` | `#fafaf8` |
+  | `--surface` | `#161b22` | `#ffffff` |
+  | `--text` | `#e6edf3` | `#1f2328` |
+  | `--muted` | `#8b949e` | `#57606a` |
+  | `--accent` | `#22b8d4` (AA-checked on dark) | `#0891b2` |
+  | `--border` | `#30363d` | `#d0d7de` |
+  | `--focus` | `#22b8d4` 2px ring, 2px offset | `#0891b2` 2px ring, 2px offset |
+- **Light-mode rule (decided):** the **hero stays dark in both themes** — one designed first screen, full stop. The light page begins at the metric strip; a designed gradient/border seam handles the dark→light transition. All other terminal blocks (code, widget) also stay dark.
+- **Motion (exactly 3, nothing else moves; `prefers-reduced-motion` disables all):**
+  1. Hero command-type reveal — 600ms ease-out, once per load; cursor blink 1.06s step.
+  2. Metric strip settle-in — 400ms ease-out on first scroll-enter.
+  3. Widget open/close — 250ms ease-in-out.
+  **Scanlines: cut** (design review — texture behind text competes with type on an editorial layout).
+- **Terminal accents:** `$`-prefixed section eyebrows, command-style nav hints. The prompt is a *device*, never the headline (see §5.1).
+- **Interactive states (global):** hover = accent underline/arrow-shift 150ms; active = 1px translate-down; focus = `--focus` ring on ALL interactive elements; visited links keep a distinguishable tint.
+- **Accessibility (acceptance criteria, not vibes):** WCAG AA contrast in BOTH themes (verified per token pair above), keyboard-navigable widget & nav, touch targets ≥44px, ASCII portrait `aria-hidden` with real alt text elsewhere.
+- **Performance budget:** Lighthouse ≥ 95 all categories; LCP < 1.5s on 4G; zero layout shift. `next/image` for raster images only — SVG/ASCII assets ship as plain files. Hero text server-rendered (see §5A state matrix).
 
 ## 5. Pages & information architecture
 
@@ -99,14 +124,42 @@ Scope of the rule: structured FACTS live in profile.ts/faq.ts. Page prose, SEO c
 | `/api/contact` | P1a | Form handler |
 | 404 | P1a | `command not found` + `ls` of real pages |
 
-**Homepage sections (in order):**
-1. **Hero** — `aditya@dev:~$ whoami` → typed: "Full Stack Developer · AI Engineer · Solution Architect". Sub-line: 7+ yrs / Tech Lead @ MM Novatech / Lucknow, India. Primary button **"Book a call →"** (cal.com hosted page, styled prominent link — no embed at launch), secondary "Ask my AI ↗" (P3). ASCII-art portrait as decoration (`aria-hidden`).
-2. **Proof bar** — 4 stat tiles: years, projects shipped, GitHub contributions, Dev.to series.
-3. **What I do** — 3 service cards: AI Integration / Full Stack Delivery / Architecture & Leadership.
-4. **Featured work (P1a = own work, zero permission risk):** BudgetGen, payments & integrations set, the Laravel+AI Dev.to series. Client cards with names + metrics REPLACE these in P2, only once written permission exists.
-5. **Writing** — latest 3 Dev.to posts, build-time fetch + daily ISR. **Failure contract:** fetch wrapped, on error reuse last successful payload; if none, hide section entirely. A Dev.to outage must never fail a build or render an empty section.
-6. **FAQ** — 5-6 hire-intent Q&As from `content/data/faq.ts` (single source: section + schema + bot). Substantive answers — thin/promotional FAQ schema can backfire (rich-result eligibility is Google's call, never a core outcome).
-7. **Contact / booking** — "Book a call →" link (primary) + form (fallback) + email/phone/socials.
+**Global chrome (design review 3A):** slim **sticky header** appears after scrolling past the hero — name · nav links (`~/work`, `~/cv`, `~/now`) · compact "Book a call" button. On mobile: sticky bottom **"Book a call →" bar** instead. This is both the site nav (previously unspecified) and the persistent CTA.
+
+**Homepage sections (in order — headings are claims, not labels; terminal `$` eyebrows decorate, never replace them):**
+1. **Hero (brand-first, full-bleed, ONE composition — both themes dark):** eyebrow line types `aditya@dev:~$ whoami` (14px Plex Mono) → the *output* renders as the page's largest text: **"Aditya Kumar"** (H1) + plain-language value line **"I build Laravel & AI products that ship."** + roles line "Full Stack Developer · AI Engineer · Solution Architect — Tech Lead @ MM Novatech · Lucknow, India". **Anchor:** professional photo, duotone/cyan edge-light treatment so it belongs to the dark composition (photo = P1a blocker, §13.9); ASCII portrait survives as secondary texture inside the composition (`aria-hidden`, hidden <768px). Primary button "Book a call →", secondary ghost "Ask my AI ↗" (P3). Visible hint of the metric strip at the fold.
+2. **Metric strip** (was "proof bar" — now one inline strip, no tile boxes): 7+ years · 60+ projects · 8k+ contributions · Laravel+AI series. Static build-time numbers, no live fetch above the fold.
+3. **"I ship AI features into production apps"** (services — numbered editorial rows 01/02/03, full-width, NOT cards): AI Integration / Full Stack Delivery / Architecture & Leadership — each a claim + two lines. Non-interactive at P1a and styled as prose (no card affordance); rows gain links in P2.
+4. **"Proof: systems that run businesses"** (featured work): ONE lead project as a narrative row (BudgetGen — problem → build → outcome) + two compact links (payments/integrations set, the Dev.to series). Clickable case-study cards return in P2 once written permission exists — cards only when they're truly clickable.
+5. **"Verify me yourself"** (trust beat — design review 5A): externally checkable claims with live links — GitHub contribution graph, Dev.to series, live client sites, years. A designed **testimonial slot ships hidden**; the first real quote (§13.8) switches it on with no redesign.
+6. **"Field notes from Laravel + AI work"** (writing): latest 3 Dev.to posts as a plain dated list (`ls -la` styling), build-time fetch + daily ISR. **Failure contract:** on error reuse last successful payload; if none, hide section entirely — never fail a build, never render empty.
+7. **"Before you book"** (FAQ): 5-6 hire-intent Q&As from `content/data/faq.ts` (single source: section + schema + bot). Substantive answers only.
+8. **Contact / booking:** "Book a call →" link (primary) + form (fallback) + email/phone/socials.
+
+### 5A. Interaction state matrix (design review 4A — what the user SEES)
+
+| Surface | Loading | Empty | Error | Success | Notes |
+|---|---|---|---|---|---|
+| Hero | full text server-rendered in HTML — animation is enhancement only | n/a | n/a | n/a | protects LCP, no-JS, reduced-motion in one rule |
+| Metric strip | static (build-time) — never a spinner above the fold | n/a | build fails loud in CI, never at runtime | n/a | numbers updated per deploy |
+| Contact form | button → "Sending…" + disabled, field lock | inline field validation on blur (specific messages, labels always visible — no placeholder-as-label) | "Couldn't send — try again or email contact@adityadev.in" (link) | inline success panel "Got it — I reply within 24h" replaces form | honeypot invisible to users |
+| Writing list | build-time, none | section hidden entirely | section hidden (last-good payload first) | — | per §5.6 contract |
+| Widget (P3) | streaming block cursor while tokens arrive | boot line + `help` hint | mid-stream: "…connection hiccup — try once more?" in-terminal | — | degraded mode: amber notice "AI is resting (budget cap) — commands still work" |
+| Theme toggle | instant, no flash (inline script reads preference pre-paint) | — | — | — | choice persisted in localStorage |
+
+### 5B. Responsive spec (design review 9A — intentional, not stacked)
+
+| Section | <768px behavior |
+|---|---|
+| Hero | photo full-width above name-output; prompt eyebrow shrinks to 12px; ASCII portrait hidden; buttons full-width stacked |
+| Sticky chrome | header collapses to name + menu; sticky bottom "Book a call →" bar (44px+ tap target) |
+| Metric strip | 2×2 compact grid, numbers 28px |
+| Service rows | stacked, numbered rail (01/02/03) kept left |
+| Work narrative | image/terminal block above text |
+| Verify/Writing/FAQ | single column, list rhythm preserved |
+| Widget | full-screen takeover (already specced §6) |
+
+All rules Playwright-asserted at 375px; zero-CLS budget applies to every breakpoint.
 
 ## 6. Terminal chatbot ("the widget") — Phase 3
 
@@ -125,7 +178,7 @@ Scope of the rule: structured FACTS live in profile.ts/faq.ts. Page prose, SEO c
 - **Metadata:** per-page title/description from central config; canonicals everywhere.
 - **JSON-LD:** `Person` + `ProfilePage` (home), occupation detail (cv), `CreativeWork` (work), `FAQPage` (from faq.ts), `Service` — one shared `@id` graph. Generators in `lib/jsonld.ts` consume profile.ts/faq.ts only.
 - **llms.txt:** generated at build from profile.ts. Zero manual effort — 2026 measurements show AI crawlers rarely fetch it and it doesn't correlate with citations; it ships because it's free, not because it's a lever.
-- **OG images:** `next/og` per page, terminal-styled. Known risk: custom-font loading in the OG runtime is finicky on Vercel — budget a fallback (system mono) if the font path fights back.
+- **OG images:** `next/og` per page — template (design review 10A): 1200×630, `--bg` dark, prompt eyebrow (`aditya@dev:~$ <page>`), name/title in Plex Mono 600, role line in `--muted`, 4px cyan accent bar bottom, 64px safe area all sides. Known risk: custom-font loading in the OG runtime is finicky on Vercel — fallback: system mono.
 - **Sitemap + robots:** standard; explicitly allow GPTBot/ClaudeBot/PerplexityBot.
 - **What actually earns AEO citations:** entity consistency (same name/title/links everywhere), crawlable substantive content, and external corroboration (Dev.to series, GitHub) — the JSON-LD graph supports this; no checkbox file substitutes for it.
 
@@ -280,13 +333,14 @@ Synthesized from this review's findings. Each task derives from a specific findi
 | Review | Trigger | Why | Runs | Status | Findings |
 |--------|---------|-----|------|--------|----------|
 | CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
-| Codex Review | `/codex review` | Independent 2nd opinion | 1 | CLEAR (outside voice) | 30 raw points → 6 decisions, all resolved |
+| Codex Review | `/codex review` | Independent 2nd opinion | 2 | CLEAR (outside voices ×2) | eng: 30 pts → 6 decisions · design: 7 findings, litmus 5/7 FAIL → all fixed |
 | Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | CLEAR (PLAN) | 8 issues + 24 test gaps → all folded, 0 critical gaps |
-| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR (FULL) | score: 6/10 → 9/10, 10 decisions, 0 unresolved |
 | DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
 
-- **CODEX:** outside voice (GPT-5.5) ran on the spec; substantive additions: P1 split (accepted), email-DNS checklist (accepted), own-work launch proof (accepted), link-first booking (accepted, overriding Claude's embed preference), privacy page (accepted), 10 hygiene notes (accepted).
-- **CROSS-MODEL:** overlap on spend-gate enforcement, Dev.to fallback, KV deprecation — both models agree; one genuine tension (embed vs link) resolved by user in Codex's favor.
-- **VERDICT:** ENG CLEARED — ready to implement (P1a).
+- **CODEX:** design pass (GPT-5.5): classified HYBRID; flagged weak brand-first hero, card creep, generic headlines, decorative motion, unlocked tokens — all resolved (Issues 1–10).
+- **CROSS-MODEL:** Codex + independent Claude design subagent CONFIRMED-failed litmus checks 1/2/3/5/6 (brand, anchor, scannability, cards, motion); all five repaired: name-as-output hero + photo anchor, claim headings, editorial recomposition, 3 pinned motions (scanlines cut). One disagreement (premium-without-shadows) mooted by the flat token system.
+- **DESIGN DECISIONS (10):** name-as-output hero · photo-in-composition anchor · claim-shaped headings · sticky header + mobile CTA bar · full interaction state matrix · verifiable-proof trust section + hidden testimonial slot · editorial recomposition (cards only when clickable) · IBM Plex Mono+Sans + full token/type/spacing system · hero stays dark in light mode · pinned motion values + OG template, scanlines cut.
+- **VERDICT:** ENG + DESIGN CLEARED — ready to implement (P1a). Mockup pass deferred to TODOS (designer needs OpenAI key).
 
 NO UNRESOLVED DECISIONS
