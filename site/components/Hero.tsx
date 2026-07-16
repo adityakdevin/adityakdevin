@@ -21,7 +21,7 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_440px] md:gap-16">
+      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_520px] md:gap-16">
         <div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
