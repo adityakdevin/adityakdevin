@@ -96,7 +96,7 @@ export function ContactForm() {
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? "cf-name-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ background: "var(--surface)", borderColor: errors.name ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+            style={{ borderColor: errors.name ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.name ? (
             <p id="cf-name-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
@@ -117,7 +117,7 @@ export function ContactForm() {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "cf-email-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ background: "var(--surface)", borderColor: errors.email ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+            style={{ borderColor: errors.email ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.email ? (
             <p id="cf-email-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
@@ -140,7 +140,7 @@ export function ContactForm() {
           aria-invalid={!!errors.message}
           aria-describedby={errors.message ? "cf-message-err" : undefined}
           className="w-full rounded border px-3 py-2"
-          style={{ background: "var(--surface)", borderColor: errors.message ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+          style={{ borderColor: errors.message ? "var(--error)" : "var(--border)", color: "var(--text)" }}
         />
         {errors.message ? (
           <p id="cf-message-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>

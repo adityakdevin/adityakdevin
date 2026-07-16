@@ -70,7 +70,7 @@ export default async function Home() {
               <span className="mono text-sm" style={{ color: "var(--accent)" }}>
                 {s.n}
               </span>
-              <h3 className="mono text-xl font-medium">{s.title}</h3>
+              <h3 className="text-xl font-medium">{s.title}</h3>
               <div>
                 <p className="font-medium">{s.claim}</p>
                 {s.lines.map((line) => (
@@ -87,7 +87,7 @@ export default async function Home() {
       {/* 4 — Featured work: ONE lead narrative + compact links (cards return in P2 when clickable) */}
       <section
         id="work"
-        className="scroll-mt-14 border-y"
+        className="scroll-mt-20 border-y"
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
         <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
@@ -95,7 +95,7 @@ export default async function Home() {
           <H2>Proof: systems that run businesses</H2>
           <div className="mt-10 grid gap-10 md:grid-cols-[3fr_2fr]">
             <article>
-              <h3 className="mono text-xl font-medium">
+              <h3 className="text-xl font-medium">
                 <a href="/work/budgetgen">{profile.featuredWork.lead.title}</a>
               </h3>
               <p className="mt-3" style={{ color: "var(--muted)" }}>
@@ -188,7 +188,7 @@ export default async function Home() {
       ) : null}
 
       {/* 7 — FAQ (single source: faq.ts → section + JSON-LD + bot) */}
-      <section id="faq" className="mx-auto max-w-5xl scroll-mt-14 px-6 py-20 md:py-24">
+      <section id="faq" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 md:py-24">
         <Eyebrow cmd="man hiring-aditya" />
         <H2>Before you book</H2>
         <div className="mt-8 max-w-3xl space-y-3">
@@ -212,7 +212,7 @@ export default async function Home() {
       {/* 8 — Contact / booking */}
       <section
         id="contact"
-        className="scroll-mt-14 border-t"
+        className="scroll-mt-20 border-t"
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
         <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
