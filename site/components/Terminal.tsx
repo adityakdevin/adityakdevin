@@ -22,9 +22,14 @@ export function Terminal() {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
 
+  const wasOpen = useRef(false);
   useEffect(() => {
     if (open) inputRef.current?.focus();
+    else if (wasOpen.current) launcherRef.current?.focus(); // return focus on close, never on mount
+    wasOpen.current = open;
   }, [open]);
 
   useEffect(() => {
@@ -34,6 +39,19 @@ export function Terminal() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
+      // Focus trap: aria-modal promises Tab stays inside the dialog
+      if (e.key === "Tab" && panelRef.current && !panelRef.current.classList.contains("invisible")) {
+        const focusables = panelRef.current.querySelectorAll<HTMLElement>("button, input");
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -136,6 +154,7 @@ export function Terminal() {
     <div data-no-print>
       {/* Floating launcher */}
       <button
+        ref={launcherRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open AskAditya terminal"
@@ -147,6 +166,7 @@ export function Terminal() {
 
       {/* Panel — full-screen on mobile */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="AskAditya terminal"
@@ -154,21 +174,21 @@ export function Terminal() {
         className={`fixed z-50 flex flex-col overflow-hidden border shadow-2xl transition-all duration-250 ease-in-out ${
           open ? "visible pointer-events-auto opacity-100" : "invisible pointer-events-none opacity-0"
         } inset-0 md:inset-auto md:bottom-6 md:right-6 md:h-[480px] md:w-[420px] md:rounded-lg`}
-        style={{ background: "#0d1117", borderColor: "var(--border)" }}
+        style={{ background: "var(--dark-bg)", borderColor: "var(--dark-border)" }}
       >
         <div
           className="mono flex items-center justify-between border-b px-4 py-2.5 text-xs"
-          style={{ borderColor: "#30363d", color: "#8b949e" }}
+          style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
         >
           <span>
-            <span style={{ color: "#22b8d4" }}>aditya@dev</span>:~/ask
+            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~/ask
           </span>
           <button
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close terminal"
             className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-base"
-            style={{ color: "#8b949e" }}
+            style={{ color: "var(--dark-muted)" }}
           >
             ✕
           </button>
@@ -179,10 +199,10 @@ export function Terminal() {
             <p
               key={i}
               style={{
-                color: line.kind === "accent" ? "#22b8d4" : line.kind === "cmd" ? "#e6edf3" : "#8b949e",
+                color: line.kind === "accent" ? "var(--dark-accent)" : line.kind === "cmd" ? "var(--dark-text)" : "var(--dark-muted)",
               }}
             >
-              {line.kind === "cmd" ? <span style={{ color: "#22b8d4" }}>$ </span> : null}
+              {line.kind === "cmd" ? <span style={{ color: "var(--dark-accent)" }}>$ </span> : null}
               {line.text}
             </p>
           ))}
@@ -195,9 +215,9 @@ export function Terminal() {
             setInput("");
           }}
           className="flex items-center gap-2 border-t px-4 py-3"
-          style={{ borderColor: "#30363d" }}
+          style={{ borderColor: "var(--dark-border)" }}
         >
-          <span className="mono text-sm" style={{ color: "#22b8d4" }}>
+          <span className="mono text-sm" style={{ color: "var(--dark-accent)" }}>
             $
           </span>
           <input
@@ -208,7 +228,7 @@ export function Terminal() {
             autoComplete="off"
             spellCheck={false}
             className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
-            style={{ color: "#e6edf3" }}
+            style={{ color: "var(--dark-text)" }}
             placeholder="help"
           />
         </form>

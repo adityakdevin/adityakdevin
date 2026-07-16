@@ -33,14 +33,14 @@ export function Hero() {
               priority
               className="h-24 w-24 rounded-lg border object-cover object-top"
               style={{
-                borderColor: "#30363d",
+                borderColor: "var(--dark-border)",
                 filter: "grayscale(0.85) contrast(1.05) brightness(0.95)",
                 boxShadow: "0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(34,184,212,0.1)",
               }}
             />
           </div>
-          <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "#8b949e" }}>
-            <span style={{ color: "#22b8d4" }}>aditya@dev</span>:~$&nbsp;
+          <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
+            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal cursor">whoami</span>
           </p>
 
@@ -48,11 +48,11 @@ export function Hero() {
             {profile.name}
           </h1>
 
-          <p className="mt-5 max-w-xl text-lg md:text-2xl" style={{ color: "#e6edf3" }}>
+          <p className="mt-5 max-w-xl text-lg md:text-2xl" style={{ color: "var(--dark-text)" }}>
             {profile.valueLine}
           </p>
 
-          <p className="mono mt-4 text-sm md:text-base" style={{ color: "#8b949e" }}>
+          <p className="mono mt-4 text-sm md:text-base" style={{ color: "var(--dark-muted)" }}>
             {profile.headline} — {profile.role} @ {profile.company} · {profile.yearsExperience} yrs
             · Lucknow, India
           </p>
@@ -62,14 +62,14 @@ export function Hero() {
               href={profile.bookingUrl}
               className="btn mono min-h-11 rounded px-6 py-3 text-center text-base font-semibold no-underline"
               // theme-locked dark hero: literal pair, NOT tokens (light-theme --on-accent is white)
-              style={{ background: "#22b8d4", color: "#06222a" }}
+              style={{ background: "var(--dark-accent)", color: "var(--dark-on-accent)" }}
             >
               Book a call →
             </a>
             <a
               href="#work"
               className="btn mono min-h-11 rounded border px-6 py-3 text-center text-base no-underline"
-              style={{ borderColor: "#30363d", color: "#e6edf3" }}
+              style={{ borderColor: "var(--dark-border)", color: "var(--dark-text)" }}
             >
               See the work ↓
             </a>
@@ -80,15 +80,15 @@ export function Hero() {
         <div className="relative mx-auto hidden w-full max-w-sm md:block">
           <div
             className="overflow-hidden rounded-lg border shadow-2xl"
-            style={{ borderColor: "#30363d", background: "#161b22", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
+            style={{ borderColor: "var(--dark-border)", background: "var(--dark-surface)", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
           >
             <div
               className="mono flex items-center gap-1.5 border-b px-3 py-2 text-xs"
-              style={{ borderColor: "#30363d", color: "#8b949e" }}
+              style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
             >
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "#30363d" }} />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "#30363d" }} />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "#22b8d4" }} />
+              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
+              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
+              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-accent)" }} />
               <span className="ml-2">aditya.jpg</span>
             </div>
             <Image
@@ -111,8 +111,8 @@ export function Hero() {
 
       {/* Fold hint: seam into the light/next content */}
       <div className="mx-auto w-full max-w-5xl px-6 pb-5">
-        <p className="mono text-xs" style={{ color: "#8b949e" }}>
-          <span style={{ color: "#22b8d4" }}>$</span> scroll --to proof ↓
+        <p className="mono text-xs" style={{ color: "var(--dark-muted)" }}>
+          <span style={{ color: "var(--dark-accent)" }}>$</span> scroll --to proof ↓
         </p>
       </div>
       <div aria-hidden className="h-1 w-full" style={{ background: "linear-gradient(90deg, #22b8d4, transparent)" }} />
