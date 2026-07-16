@@ -9,7 +9,8 @@ import { TypingCaption } from "@/components/TypingCaption";
 export function Hero() {
   return (
     <section
-      className="relative flex min-h-[min(84svh,760px)] flex-col justify-center overflow-hidden"
+      // content + fixed padding sizes the hero — svh-proportional heights left huge voids on tall monitors
+      className="relative flex flex-col justify-center overflow-hidden"
       style={{ background: "var(--hero-bg)", color: "var(--hero-text)" }}
     >
       {/* "Professionally lit": one soft cyan key light behind the composition */}
@@ -21,7 +22,7 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_680px] md:gap-16">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-10 pt-12 md:grid-cols-[1fr_680px] md:gap-16 md:pb-12 md:pt-16">
         <div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
