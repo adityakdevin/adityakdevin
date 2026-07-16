@@ -64,8 +64,13 @@ export default function RootLayout({
         {children}
         <Footer />
         <Terminal />
-        {/* GA4 — deferred: never in the critical path (SPEC §9) */}
-        {process.env.NEXT_PUBLIC_GA_ID ? (
+        {/* Tag management — deferred: never in the critical path (SPEC §9).
+            GTM wins when set (manage GA4 inside GTM); direct gtag is the fallback. */}
+        {process.env.NEXT_PUBLIC_GTM_ID ? (
+          <Script id="gtm" strategy="lazyOnload">
+            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');`}
+          </Script>
+        ) : process.env.NEXT_PUBLIC_GA_ID ? (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
