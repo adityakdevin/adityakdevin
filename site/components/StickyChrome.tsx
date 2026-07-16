@@ -2,23 +2,29 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { profile } from "@/content/data/profile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
- * Global chrome (SPEC §5, design review 3A):
- * - Desktop: slim sticky header appears after scrolling past the hero.
+ * Global chrome (SPEC §5, design review 3A + FINDING-001):
+ * - Home: header appears after scrolling past the hero (the hero IS the identity).
+ * - Every other page: header visible immediately — trunk test requires site ID + nav on landing.
  * - Mobile: sticky bottom "Book a call →" bar instead.
  */
 export function StickyChrome() {
-  const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
+  const visible = isHome ? scrolled : true;
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.8);
+    if (!isHome) return;
+    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHome]);
 
   return (
     <div data-no-print>
@@ -55,6 +61,19 @@ export function StickyChrome() {
           </nav>
         </div>
       </header>
+
+      {/* Mobile top identity bar — subpages only (trunk test: whose site is this?) */}
+      {!isHome ? (
+        <div
+          className="flex items-center justify-between border-b px-4 py-3 md:hidden"
+          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+        >
+          <Link href="/" className="mono text-sm font-semibold no-underline" style={{ color: "var(--text)" }}>
+            ~ {profile.handle}
+          </Link>
+          <ThemeToggle />
+        </div>
+      ) : null}
 
       {/* Mobile bottom CTA bar (≥44px tap target) */}
       <div
