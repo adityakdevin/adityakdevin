@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import Script from "next/script";
 import { profile } from "@/content/data/profile";
@@ -35,6 +35,12 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
   twitter: { card: "summary_large_image", creator: `@${profile.handle}` },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: profile.handle },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d1117",
+  viewportFit: "cover", // safe-area env() insets on notched phones
 };
 
 /** Theme boot: runs pre-paint so there is never a flash (SPEC §5A). */
@@ -51,7 +57,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${plexMono.variable} ${plexSans.variable} min-h-full flex flex-col antialiased`}
+        // mobile: reserve room for the fixed bottom tab bar (h-14 + safe-area)
+        className={`${plexMono.variable} ${plexSans.variable} flex min-h-full flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
         <StickyChrome />
         {children}

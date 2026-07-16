@@ -222,7 +222,7 @@ export function Terminal() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open AskAditya terminal"
-        className={`mono fixed bottom-16 right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-lg font-semibold shadow-lg transition-opacity duration-250 md:bottom-6 md:right-6 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        className={`mono fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-lg font-semibold shadow-lg transition-opacity duration-250 md:bottom-6 md:right-6 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
         style={{ background: "var(--surface)", borderColor: "var(--accent)", color: "var(--accent)" }}
       >
         {">_"}
@@ -237,7 +237,7 @@ export function Terminal() {
         aria-hidden={!open}
         className={`fixed z-50 flex flex-col overflow-hidden border shadow-2xl transition-all duration-250 ease-in-out ${
           open ? "visible pointer-events-auto opacity-100" : "invisible pointer-events-none opacity-0"
-        } inset-0 md:inset-auto md:bottom-6 md:right-6 md:h-[560px] md:w-[460px] md:rounded-lg`}
+        } inset-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] md:inset-auto md:bottom-6 md:right-6 md:h-[560px] md:w-[460px] md:rounded-lg md:pt-0 md:pb-0`}
         style={{ background: "var(--dark-bg)", borderColor: "var(--dark-border)" }}
       >
         <div

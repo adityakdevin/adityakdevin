@@ -92,17 +92,20 @@ test.describe("contact form states (§5A)", () => {
 });
 
 test.describe("responsive §5B", () => {
-  test("mobile shows bottom CTA bar after scroll; desktop shows sticky header", async ({
+  test("mobile shows bottom tab bar; desktop shows sticky header after scroll", async ({
     page,
     isMobile,
   }) => {
     await page.goto("/");
-    await page.mouse.wheel(0, 3000);
-    await page.waitForTimeout(300);
     if (isMobile) {
-      const bar = page.locator("div.md\\:hidden a", { hasText: "Book a call" });
+      // tab bar is always visible — no scroll needed (native-app nav)
+      const bar = page.locator("nav.md\\:hidden");
       await expect(bar).toBeVisible();
+      await expect(bar.getByRole("link", { name: "work" })).toBeVisible();
+      await expect(bar.getByRole("link", { name: /book/ })).toBeVisible();
     } else {
+      await page.mouse.wheel(0, 3000);
+      await page.waitForTimeout(300);
       await expect(page.getByRole("banner")).toBeVisible();
       await expect(page.getByRole("banner").getByText("adityakdevin")).toBeVisible();
     }

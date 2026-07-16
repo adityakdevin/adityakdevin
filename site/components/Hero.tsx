@@ -76,16 +76,17 @@ export function Hero() {
               <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-accent)" }} />
               <span className="ml-2">adityakdevin@github</span>
             </div>
-            {/* ASCII portrait (cropped from the README card) + stats as real, legible HTML text */}
-            <div className="flex items-stretch">
+            {/* ASCII portrait (cropped from the README card) + stats as real, legible HTML text.
+                Mobile: stacked (portrait on top, full-width stats) so key/value rows never wrap. */}
+            <div className="flex flex-col items-stretch sm:flex-row">
               {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
               <img
                 src="/ascii-portrait.svg"
                 alt="ASCII-art portrait of adityakdevin"
-                className="w-[44%] object-contain object-left"
+                className="h-48 w-full object-contain pt-4 sm:h-auto sm:w-[44%] sm:object-left sm:pt-0"
               />
               {/* ponytail: stats snapshot, refresh when the README card regenerates */}
-              <div className="mono flex-1 self-center py-5 pl-2 pr-5 text-[14px] leading-relaxed">
+              <div className="mono flex-1 self-center px-5 py-5 text-[14px] leading-relaxed sm:pl-2 sm:pr-5">
                 <p className="mb-2 font-semibold" style={{ color: "var(--dark-accent)" }}>
                   — {profile.handle}@github
                 </p>
