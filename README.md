@@ -91,9 +91,9 @@ $ git log --stat adityakdevin
 <img src="profile-summary-card-output/tokyonight/1-repos-per-language.svg" alt="Repos per language — adityakdevin" height="165" />
 <img src="profile-summary-card-output/tokyonight/3-stats.svg" alt="GitHub stats — Aditya Kumar (adityakdevin)" height="165" />
 
-<img src="profile-summary-card-output/tokyonight/0-profile-details.svg" alt="GitHub profile details — Aditya Kumar (adityakdevin)" width="100%" />
-
 <img src="https://streak-stats.demolab.com?user=adityakdevin&theme=tokyonight&hide_border=true" alt="GitHub contribution streak — adityakdevin" />
+
+<img src="profile-summary-card-output/tokyonight/0-profile-details.svg" alt="GitHub profile details — Aditya Kumar (adityakdevin)" width="100%" />
 
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=adityakdevin&theme=tokyo-night&hide_border=true" alt="Contribution activity graph — adityakdevin" />
 
