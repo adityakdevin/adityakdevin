@@ -6,6 +6,87 @@ import { usePathname } from "next/navigation";
 import { profile } from "@/content/data/profile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+/* Tab-bar building blocks — 20px stroke icons, 10px mono labels, top indicator on active */
+function Tab({
+  href,
+  label,
+  active,
+  children,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className="relative flex min-h-16 flex-col items-center justify-center gap-1 no-underline"
+      style={{ color: active ? "var(--accent)" : "var(--muted)" }}
+    >
+      {active ? (
+        <span
+          aria-hidden
+          className="absolute top-0 h-0.5 w-8 rounded-full"
+          style={{ background: "var(--accent)" }}
+        />
+      ) : null}
+      {children}
+      <span className="text-[10px]">{label}</span>
+    </Link>
+  );
+}
+
+const iconProps = {
+  width: 20,
+  height: 20,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true,
+} as const;
+
+function HomeIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="m3 11 9-8 9 8" />
+      <path d="M5 10v11h14V10" />
+    </svg>
+  );
+}
+
+function CodeIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="m8 7-5 5 5 5" />
+      <path d="m16 7 5 5-5 5" />
+    </svg>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M14 2H6v20h12V6z" />
+      <path d="M14 2v4h4" />
+      <path d="M9 13h6M9 17h6" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M8 3v4M16 3v4M3 10h18" />
+    </svg>
+  );
+}
+
 /**
  * Global chrome (SPEC §5, design review 3A + FINDING-001):
  * - Home: header appears after scrolling past the hero (the hero IS the identity).
@@ -78,45 +159,35 @@ export function StickyChrome() {
         </div>
       ) : null}
 
-      {/* Mobile bottom tab bar — native-app nav, ≥44px targets, notch-safe */}
+      {/* Mobile bottom tab bar — native-app nav: icon+label tabs, active indicator, notch-safe */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
-        style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+        className="fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+        style={{
+          background: "color-mix(in srgb, var(--surface) 88%, transparent)",
+          borderColor: "var(--border)",
+        }}
         aria-label="Site"
       >
-        <div className="mono grid grid-cols-5 items-stretch text-[13px]">
-          <Link
-            href="/"
-            aria-current={isHome ? "page" : undefined}
-            className={`flex min-h-14 items-center justify-center no-underline ${isHome ? "font-semibold" : ""}`}
-            style={{ color: isHome ? "var(--accent)" : "var(--muted)" }}
-          >
-            ~/
-          </Link>
-          <Link
-            href="/#work"
-            className="flex min-h-14 items-center justify-center no-underline"
-            style={{ color: "var(--muted)" }}
-          >
-            work
-          </Link>
-          <Link
-            href="/cv"
-            aria-current={pathname === "/cv" ? "page" : undefined}
-            className={`flex min-h-14 items-center justify-center no-underline ${pathname === "/cv" ? "font-semibold" : ""}`}
-            style={{ color: pathname === "/cv" ? "var(--accent)" : "var(--muted)" }}
-          >
-            cv
-          </Link>
-          <div className="flex min-h-14 items-center justify-center">
-            <ThemeToggle />
+        <div className="mono grid grid-cols-5 items-stretch">
+          <Tab href="/" label="home" active={isHome}>
+            <HomeIcon />
+          </Tab>
+          <Tab href="/#work" label="work" active={false}>
+            <CodeIcon />
+          </Tab>
+          <Tab href="/cv" label="cv" active={pathname === "/cv"}>
+            <FileIcon />
+          </Tab>
+          <div className="flex items-stretch justify-center">
+            <ThemeToggle variant="tab" />
           </div>
           <a
             href={profile.bookingUrl}
-            className="btn mono m-2 flex items-center justify-center rounded text-[13px] font-semibold no-underline"
+            className="btn m-2 flex flex-col items-center justify-center gap-0.5 rounded-lg no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
-            book →
+            <CalendarIcon />
+            <span className="text-[10px] font-semibold">book</span>
           </a>
         </div>
       </nav>

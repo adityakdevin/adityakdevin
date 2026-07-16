@@ -222,7 +222,7 @@ export function Terminal() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open AskAditya terminal"
-        className={`mono fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-lg font-semibold shadow-lg transition-opacity duration-250 md:bottom-6 md:right-6 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        className={`mono fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-lg font-semibold shadow-lg transition-opacity duration-250 md:bottom-6 md:right-6 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
         style={{ background: "var(--surface)", borderColor: "var(--accent)", color: "var(--accent)" }}
       >
         {">_"}

@@ -57,8 +57,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        // mobile: reserve room for the fixed bottom tab bar (h-14 + safe-area)
-        className={`${plexMono.variable} ${plexSans.variable} flex min-h-full flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] antialiased md:pb-0`}
+        // mobile: reserve room for the fixed bottom tab bar (h-16 + safe-area)
+        className={`${plexMono.variable} ${plexSans.variable} flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
         <StickyChrome />
         {children}
