@@ -2,3 +2,5 @@ node_modules/
 test-results/
 .gstack/
 .turbo/
+.vercel
+.env*
