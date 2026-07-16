@@ -21,7 +21,7 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_520px] md:gap-16">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_680px] md:gap-16">
         <div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
@@ -84,32 +84,51 @@ export function Hero() {
                 className="w-[44%] object-contain object-left"
               />
               {/* ponytail: stats snapshot, refresh when the README card regenerates */}
-              <div className="mono flex-1 space-y-1 self-center py-4 pr-4 text-[13px] leading-relaxed">
-                <p className="border-b pb-1 font-semibold" style={{ color: "var(--dark-accent)", borderColor: "var(--dark-border)" }}>
+              <div className="mono flex-1 self-center py-5 pl-2 pr-5 text-[14px] leading-relaxed">
+                <p className="mb-2 font-semibold" style={{ color: "var(--dark-accent)" }}>
                   — {profile.handle}@github
                 </p>
-                <p style={{ color: "var(--dark-muted)" }}>
-                  uptime <span style={{ color: "var(--dark-text)" }}>9+ years on GitHub</span>
-                </p>
-                <p style={{ color: "var(--dark-muted)" }}>
-                  location <span style={{ color: "var(--dark-text)" }}>Lucknow, India</span>
-                </p>
-                <p style={{ color: "var(--dark-muted)" }}>
-                  languages <span style={{ color: "var(--dark-text)" }}>PHP · JS · Python</span>
-                </p>
-                <p className="border-b pb-1 pt-2 font-semibold" style={{ color: "var(--dark-accent)", borderColor: "var(--dark-border)" }}>
+                {(
+                  [
+                    ["uptime", "9+ years on GitHub"],
+                    ["location", "Lucknow, India"],
+                    ["languages", "PHP · JS · Python"],
+                  ] as const
+                ).map(([k, v]) => (
+                  <p key={k} className="flex items-baseline gap-2">
+                    <span style={{ color: "var(--dark-muted)" }}>{k}</span>
+                    <span
+                      aria-hidden
+                      className="flex-1 border-b border-dotted"
+                      style={{ borderColor: "var(--dark-border)" }}
+                    />
+                    <span style={{ color: "var(--dark-text)" }}>{v}</span>
+                  </p>
+                ))}
+                <p className="mb-2 mt-4 font-semibold" style={{ color: "var(--dark-accent)" }}>
                   — stats
                 </p>
-                <p style={{ color: "var(--dark-muted)" }}>
-                  repos <span style={{ color: "var(--dark-text)" }}>64</span> · commits{" "}
-                  <span style={{ color: "var(--dark-text)" }}>8.3k+</span>
-                </p>
-                <p style={{ color: "var(--dark-muted)" }}>
-                  series <span style={{ color: "var(--dark-text)" }}>Laravel + AI on dev.to</span>
-                </p>
-                <p className="pt-2">
+                {(
+                  [
+                    ["repos", "64"],
+                    ["commits", "8.3k+"],
+                    ["series", "Laravel + AI on dev.to"],
+                  ] as const
+                ).map(([k, v]) => (
+                  <p key={k} className="flex items-baseline gap-2">
+                    <span style={{ color: "var(--dark-muted)" }}>{k}</span>
+                    <span
+                      aria-hidden
+                      className="flex-1 border-b border-dotted"
+                      style={{ borderColor: "var(--dark-border)" }}
+                    />
+                    <span style={{ color: "var(--dark-text)" }}>{v}</span>
+                  </p>
+                ))}
+                <p className="mt-4">
                   <span style={{ color: "var(--dark-accent)" }}>$</span>{" "}
                   <span style={{ color: "var(--dark-text)" }}>open github/adityakdevin</span>
+                  <span className="cursor" />
                 </p>
               </div>
             </div>
