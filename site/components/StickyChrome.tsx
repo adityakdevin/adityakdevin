@@ -6,6 +6,24 @@ import { usePathname } from "next/navigation";
 import { profile } from "@/content/data/profile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+/* Brand mark — same >_ tile as the PWA icon, sized for chrome bars */
+function Logo({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <rect width="24" height="24" rx="5.5" fill="#0d1117" stroke="#30363d" />
+      <polyline
+        points="7,7.9 11.4,12 7,16.1"
+        fill="none"
+        stroke="#22b8d4"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <rect x="13.2" y="15.2" width="5.3" height="1.9" rx="0.6" fill="#22b8d4" />
+    </svg>
+  );
+}
+
 /* Tab-bar building blocks — 20px stroke icons, 10px mono labels, top indicator on active */
 function Tab({
   href,
@@ -118,7 +136,12 @@ export function StickyChrome() {
         aria-hidden={!visible}
       >
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="mono text-sm font-semibold no-underline" style={{ color: "var(--text)" }}>
+          <Link
+            href="/"
+            className="mono flex items-center gap-2 text-sm font-semibold no-underline"
+            style={{ color: "var(--text)" }}
+          >
+            <Logo />
             {profile.handle}
           </Link>
           <nav className="mono flex items-center gap-6 text-sm" aria-label="Site">
@@ -151,10 +174,11 @@ export function StickyChrome() {
         >
           <Link
             href="/"
-            className="mono flex min-h-11 items-center text-sm font-semibold no-underline"
+            className="mono flex min-h-11 items-center gap-2 text-sm font-semibold no-underline"
             style={{ color: "var(--text)" }}
           >
-            ~ {profile.handle}
+            <Logo />
+            {profile.handle}
           </Link>
         </div>
       ) : null}
