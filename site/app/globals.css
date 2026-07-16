@@ -91,15 +91,17 @@ details summary { transition: color 150ms ease-out; }
 details summary:hover { color: var(--accent); }
 details[open] summary { color: var(--accent); }
 
-/* Motion #1: hero command-type reveal (600ms ease-out, once) + cursor blink 1.06s step */
-@keyframes type-reveal { from { width: 0; } to { width: 100%; } }
+/* Motion #1: hero command-type reveal (600ms, char-by-char, once) + cursor blink 1.06s step.
+   clip-path keeps the span a normal inline element — baseline stays aligned with the prompt.
+   clip-path lives only in the keyframes: reduced-motion (animation:none) shows the full text. */
+@keyframes type-reveal {
+  from { clip-path: inset(-30% 100% -30% 0); }
+  to { clip-path: inset(-30% -2% -30% 0); }
+}
 @keyframes blink { 50% { opacity: 0; } }
 .type-reveal {
-  display: inline-block;
-  overflow: hidden;
   white-space: nowrap;
-  vertical-align: bottom; /* overflow:hidden moves an inline-block's baseline; realign with the prompt text */
-  animation: type-reveal 600ms ease-out both;
+  animation: type-reveal 600ms steps(6, end) both;
 }
 .cursor::after {
   content: "▋";

@@ -25,7 +25,8 @@ export function Hero() {
         <div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
-            <span className="type-reveal cursor">whoami</span>
+            <span className="type-reveal">whoami</span>
+            <span className="cursor" aria-hidden />
           </p>
 
           <h1 className="mono text-5xl font-semibold leading-[1.05] tracking-tight md:text-[64px]">
