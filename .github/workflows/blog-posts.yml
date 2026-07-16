@@ -1,0 +1,22 @@
+name: Latest blog posts
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/blog-post-workflow@v1
+        # fails harmlessly until the first dev.to post exists
+        continue-on-error: true
+        with:
+          feed_list: "https://dev.to/feed/adityakdevin"
+          max_post_count: 5
+          commit_message: "chore: update latest blog posts"

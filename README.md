@@ -1,92 +1,145 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="dark_mode.svg" />
   <source media="(prefers-color-scheme: light)" srcset="light_mode.svg" />
-  <img alt="adityakdevin's GitHub profile" src="dark_mode.svg" />
+  <img alt="Aditya Kumar (adityakdevin) — Full Stack Developer & AI Engineer from Lucknow, India" src="dark_mode.svg" />
 </picture>
 
-Hi ![](https://user-images.githubusercontent.com/18350557/176309783-0785949b-9127-417c-8b55-ab5a4333674e.gif)My name is Aditya Kumar
-====================================================================================================================================
+<div align="center">
 
-Full Stack Web Developer
-------------------------
+<img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&weight=500&size=22&pause=1000&color=0891B2&center=true&vCenter=true&width=600&lines=Full+Stack+Developer+%2B+AI+Engineer;Tech+Lead+%40+MM+Novatech;Laravel+%E2%80%A2+Vue+%E2%80%A2+React+%E2%80%A2+LLM+Apps;Building+AI-powered+web+products" alt="Aditya Kumar — Full Stack Developer, AI Engineer, Tech Lead" />
 
-I’m a Full Stack Web Developer living in Lucknow, Uttar Pradesh, India. I am a fan of programming, and web development. I’m also interested in technology.
+</div>
 
-*   🌍  I'm based in India
-*   🖥️  See my portfolio at [portfolio](http://adityadev.in)
-*   ✉️  You can contact me at [contact@adityadev.in](mailto:contact@adityadev.in)
-*   🚀  I'm currently working on [Remaxmillennium](http://remaxmillennium.ca)
-*   🧠  I'm learning Python, and Data Science
-*   🤝  I'm open to collaborating on exciting projects as a Full Stack Web Developer or Open Source Projects
+# Aditya Kumar `adityakdevin`
 
+> **Full Stack Developer & AI Engineer** · Tech Lead @ MM Novatech · 7+ years · Lucknow, India 🇮🇳
 
-![](https://komarev.com/ghpvc/?username=adityakdevin&abbreviated=true)
-<a href="https://www.github.com/adityakdevin" target="_blank" rel="noreferrer">
-  <img src="https://img.shields.io/github/followers/adityakdevin?logo=github&style=for-the-badge&color=0891b2&labelColor=1c1917" />
-</a>
-<a href="https://www.twitter.com/adityakdevin" target="_blank" rel="noreferrer">
-  <img src="https://img.shields.io/twitter/follow/adityakdevin?logo=twitter&style=for-the-badge&color=0891b2&labelColor=1c1917" />
-</a>
-<a href="https://www.twitch.tv/adityakdevin" target="_blank" rel="noreferrer">
-  <img src="https://img.shields.io/twitch/status/adityakdevin?logo=twitchsx&style=for-the-badge&color=0891b2&labelColor=1c1917&label=TWITCH+STATUS" />
-</a>
+```bash
+$ whoami
+```
 
-### Skills
+```yaml
+name:        Aditya Kumar (adityakdevin)
+role:        Tech Lead @ MM Novatech
+experience:  7+ years building web platforms & AI-powered products
+location:    Lucknow, Uttar Pradesh, India
+website:     https://adityadev.in
+focus:
+  - Full Stack Engineering:  Laravel · Vue/Nuxt · React/Next.js · Tailwind
+  - AI Engineering:          LLM apps · RAG pipelines · AI chatbots · automation
+  - Architecture & DevOps:   solution design · CI/CD · cloud infrastructure
+currently:   shipping AI features into client products & building open-source LLM tools
+ai_native:   I build WITH AI (Claude Code, Copilot) and build AI INTO products
+open_to:     Tech Lead roles · AI + Laravel freelance projects · OSS collaboration
+```
 
+```bash
+$ ls ~/skills
+```
 
-<p align="left">
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/javascript-colored.svg" width="36" height="36" alt="JavaScript" /></a>
-<a href="https://developer.mozilla.org/en-US/docs/Glossary/HTML5" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/html5-colored.svg" width="36" height="36" alt="HTML5" /></a>
-<a href="https://reactjs.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/react-colored.svg" width="36" height="36" alt="React" /></a>
-<a href="https://nextjs.org/docs" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/nextjs-colored.svg" width="36" height="36" alt="NextJs" /></a>
-<a href="https://vuejs.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/vuejs-colored.svg" width="36" height="36" alt="Vue" /></a>
-<a href="https://nuxtjs.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/nuxtjs-colored.svg" width="36" height="36" alt="Nuxtjs" /></a>
-<a href="https://angular.io/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/angularjs-colored.svg" width="36" height="36" alt="Angular" /></a>
-<a href="https://jquery.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/jquery-colored.svg" width="36" height="36" alt="JQuery" /></a>
-<a href="https://www.w3.org/TR/CSS/#css" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/css3-colored.svg" width="36" height="36" alt="CSS3" /></a>
-<a href="https://sass-lang.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/sass-colored.svg" width="36" height="36" alt="Sass" /></a>
-<a href="https://tailwindcss.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/tailwindcss-colored.svg" width="36" height="36" alt="TailwindCSS" /></a>
-<a href="https://getbootstrap.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/bootstrap-colored.svg" width="36" height="36" alt="Bootstrap" /></a>
-<a href="https://chakra-ui.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/chakra-colored.svg" width="36" height="36" alt="Chakra UI" /></a>
-<a href="https://redux.js.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/redux-colored.svg" width="36" height="36" alt="Redux" /></a>
-<a href="https://vitejs.dev/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/vite-colored.svg" width="36" height="36" alt="Vite" /></a>
-<a href="https://nodejs.org/en/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/nodejs-colored.svg" width="36" height="36" alt="NodeJS" /></a>
-<a href="https://fastapi.tiangolo.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/fastapi-colored.svg" width="36" height="36" alt="Fast API" /></a>
-<a href="https://graphql.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/graphql-colored.svg" width="36" height="36" alt="GraphQL" /></a>
-<a href="https://www.mysql.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/mysql-colored.svg" width="36" height="36" alt="MySQL" /></a>
-<a href="https://www.postgresql.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/postgresql-colored.svg" width="36" height="36" alt="PostgreSQL" /></a>
-<a href="https://firebase.google.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/firebase-colored.svg" width="36" height="36" alt="Firebase" /></a>
-<a href="https://flask.palletsprojects.com/en/2.0.x/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/flask-colored.svg" width="36" height="36" alt="Flask" /></a>
-<a href="https://laravel.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/laravel-colored.svg" width="36" height="36" alt="Laravel" /></a>
-<a href="https://flutter.dev/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/flutter-colored.svg" width="36" height="36" alt="Flutter" /></a>
-<a href="https://www.figma.com/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/figma-colored.svg" width="36" height="36" alt="Figma" /></a>
+### Backend & AI
+
+<p>
+<img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP developer adityakdevin" />
+<img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel expert Aditya Kumar" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+<img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI API integration" />
+<img src="https://img.shields.io/badge/Claude_AI-D97757?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude AI / Anthropic API" />
+<img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain LLM apps" />
+<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
 </p>
 
-### Socials
+### Frontend
 
-<p align="left"> <a href="https://www.behance.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/behance.svg" width="32" height="32" /></a> <a href="https://www.codepen.io/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/codepen.svg" width="32" height="32" /></a> <a href="https://codesandbox.io/u/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/codesandbox.svg" width="32" height="32" /></a> <a href="https://www.dev.to/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/devdotto.svg" width="32" height="32" /></a> <a href="https://discord.com/users/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/discord.svg" width="32" height="32" /></a> <a href="https://www.dribbble.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/dribbble.svg" width="32" height="32" /></a> <a href="https://www.facebook.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/facebook.svg" width="32" height="32" /></a> <a href="https://www.github.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a> <a href="http://www.instagram.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/instagram.svg" width="32" height="32" /></a> <a href="https://www.linkedin.com/in/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/linkedin.svg" width="32" height="32" /></a> <a href="https://www.polywork.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/polywork.svg" width="32" height="32" /></a> <a href="http://www.medium.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/medium.svg" width="32" height="32" /></a> <a href="https://www.stackoverflow.com/users/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/stackoverflow.svg" width="32" height="32" /></a> <a href="https://www.twitter.com/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/twitter.svg" width="32" height="32" /></a> <a href="https://www.youtube.com/c/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/youtube.svg" width="32" height="32" /></a> <a href="https://www.twitch.tv/adityakdevin" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/twitch.svg" width="32" height="32" /></a></p>
+<p>
+<img src="https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue.js developer" />
+<img src="https://img.shields.io/badge/Nuxt-00DC82?style=for-the-badge&logo=nuxt&logoColor=white" alt="Nuxt" />
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React developer" />
+<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+</p>
 
-### Badges
+### Data & DevOps
 
-<b>My GitHub Stats</b>
+<p>
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
+<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+<img src="https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+<img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="AWS cloud" />
+<img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions CI/CD" />
+</p>
 
-<a href="http://www.github.com/adityakdevin"><img src="https://github-readme-streak-stats.herokuapp.com/?user=adityakdevin&stroke=ffffff&background=1c1917&ring=0891b2&fire=0891b2&currStreakNum=ffffff&currStreakLabel=0891b2&sideNums=ffffff&sideLabels=ffffff&dates=ffffff&hide_border=true" /></a>
+```bash
+$ cat featured-work.md
+```
 
+| Project | What it is | Stack |
+|---|---|---|
+| 🤖 **AI client integrations** | LLM-powered chatbots, RAG pipelines & workflow automation shipped into production client products (private code — ask me about it) | OpenAI · Claude · LangChain · Laravel |
+| 💰 **[BudgetGen](https://github.com/adityakdevin/budgetgen)** | Smart personal finance manager — budgets, tracking, reports | PHP · Laravel · MySQL |
+| 💳 **Payments & integrations** | [Stripe payments](https://github.com/adityakdevin/stripe-payments) · [Razorpay for WooCommerce](https://github.com/adityakdevin/razorpay-woocommerce) · [AWS S3 uploads](https://github.com/adityakdevin/s3upload) · [PDF watermarking](https://github.com/adityakdevin/add-watermark-pdf) | PHP · Stripe · Razorpay · AWS |
+| 🏠 **[Remax Millennium](http://remaxmillennium.ca)** | Real-estate platform for a Canadian brokerage — led development end to end | Full Stack |
 
+```bash
+$ git log --stat adityakdevin
+```
 
-### A small 🐍 game on my commit's 😉
+<div align="center">
 
-![GitHub Snake Light](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake.svg#gh-light-mode-only)
-![GitHub Snake dark](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake-dark.svg#gh-dark-mode-only)
+<img src="https://github-readme-stats.vercel.app/api?username=adityakdevin&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub stats — Aditya Kumar (adityakdevin)" height="165" />
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=adityakdevin&layout=compact&theme=tokyonight&hide_border=true" alt="Top programming languages — adityakdevin" height="165" />
 
+<img src="https://streak-stats.demolab.com?user=adityakdevin&theme=tokyonight&hide_border=true" alt="GitHub contribution streak — adityakdevin" />
 
+<img src="https://github-profile-trophy.vercel.app/?username=adityakdevin&theme=tokyonight&no-frame=true&column=7&margin-w=5" alt="GitHub trophies — adityakdevin" />
 
-### ✍️ Random Dev Quote
-![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=radical)
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=adityakdevin&theme=tokyo-night&hide_border=true" alt="Contribution activity graph — adityakdevin" />
 
+</div>
 
+### 🐍 Contribution snake
 
-### Support Me
+![GitHub contribution snake animation — adityakdevin](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake.svg#gh-light-mode-only)
+![GitHub contribution snake animation dark — adityakdevin](https://github.com/adityakdevin/adityakdevin/blob/output/github-snake-dark.svg#gh-dark-mode-only)
 
-<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a pizza&emoji=&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" /></a>
+```bash
+$ tail -f ~/blog/latest.log
+```
 
+<!-- BLOG-POST-LIST:START -->
+🚧 Fresh posts land here automatically once published on [dev.to/adityakdevin](https://dev.to/adityakdevin)
+<!-- BLOG-POST-LIST:END -->
+
+```bash
+$ ping adityakdevin
+```
+
+<p>
+<a href="https://adityadev.in"><img src="https://img.shields.io/badge/Portfolio-adityadev.in-0891b2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio — adityadev.in" /></a>
+<a href="mailto:contact@adityadev.in"><img src="https://img.shields.io/badge/Email-contact@adityadev.in-0891b2?style=for-the-badge&logo=gmail&logoColor=white" alt="Email Aditya Kumar" /></a>
+<a href="https://www.linkedin.com/in/adityakdevin"><img src="https://img.shields.io/badge/LinkedIn-adityakdevin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn — Aditya Kumar" /></a>
+<a href="https://twitter.com/adityakdevin"><img src="https://img.shields.io/badge/X-@adityakdevin-000000?style=for-the-badge&logo=x&logoColor=white" alt="X / Twitter — adityakdevin" /></a>
+<a href="https://dev.to/adityakdevin"><img src="https://img.shields.io/badge/Dev.to-adityakdevin-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white" alt="Dev.to blog — adityakdevin" /></a>
+<a href="https://www.twitch.tv/adityakdevin"><img src="https://img.shields.io/badge/Twitch-adityakdevin-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch — adityakdevin" /></a>
+</p>
+
+> 💼 **Open to:** Tech Lead / senior roles · AI + Laravel freelance projects · open-source collaboration
+> 📬 Fastest way to reach me: [contact@adityadev.in](mailto:contact@adityadev.in)
+
+<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a pizza&emoji=🍕&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" alt="Buy me a pizza — support adityakdevin" /></a>
+
+### ✍️ Random dev quote
+
+![Random developer quote](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
+
+---
+
+<div align="center">
+
+![Profile views — adityakdevin](https://komarev.com/ghpvc/?username=adityakdevin&abbreviated=true&color=0891b2)
+
+<sub>Aditya Kumar (<b>adityakdevin</b>) — Full Stack Developer & AI Engineer from Lucknow, India. Laravel · Vue · React · Next.js · Python · LLM apps · RAG · AI automation. → <a href="https://adityadev.in">adityadev.in</a></sub>
+
+</div>
