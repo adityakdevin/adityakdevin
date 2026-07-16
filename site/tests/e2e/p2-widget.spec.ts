@@ -63,7 +63,8 @@ test.describe("terminal widget (offline mode)", () => {
     await expect(page).toHaveURL(/\/cv$/, { timeout: 5000 });
   });
 
-  test("free text gets the AI-coming-soon notice; Escape closes", async ({ page }) => {
+  test("free text degrades to the wired-up notice while unconfigured; Escape closes", async ({ page }) => {
+    // No ANTHROPIC_API_KEY on the test server → the real route answers 503 "unconfigured".
     await page.goto("/");
     await page.getByRole("button", { name: /open askaditya terminal/i }).click();
     const input = page.getByLabel("Terminal command input");
@@ -72,6 +73,56 @@ test.describe("terminal widget (offline mode)", () => {
     await expect(page.getByText(/AI mode is being wired up/)).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
+
+  test("streams an AI answer into the terminal (mocked route)", async ({ page }) => {
+    await page.route("**/api/chat", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "text/plain; charset=utf-8",
+        body: "Aditya is a Tech Lead at MM Nova Tech with 9+ years shipping Laravel and AI products.",
+      }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: /open askaditya terminal/i }).click();
+    const input = page.getByLabel("Terminal command input");
+    await input.fill("who is aditya?");
+    await input.press("Enter");
+    await expect(
+      page.getByRole("dialog").getByText(/Tech Lead at MM Nova Tech with 9\+ years/),
+    ).toBeVisible();
+  });
+
+  test("shows the budget-cap notice when the spend gate trips (mocked route)", async ({ page }) => {
+    await page.route("**/api/chat", (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "AI is resting (monthly budget cap).", reason: "budget" }),
+      }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: /open askaditya terminal/i }).click();
+    const input = page.getByLabel("Terminal command input");
+    await input.fill("tell me everything");
+    await input.press("Enter");
+    await expect(page.getByText(/AI is resting \(budget cap\)/)).toBeVisible();
+  });
+
+  test("shows the rate-limit notice on 429 (mocked route)", async ({ page }) => {
+    await page.route("**/api/chat", (route) =>
+      route.fulfill({
+        status: 429,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Rate limit: 10 questions per hour.", reason: "rate" }),
+      }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: /open askaditya terminal/i }).click();
+    const input = page.getByLabel("Terminal command input");
+    await input.fill("question eleven");
+    await input.press("Enter");
+    await expect(page.getByText(/rate limit: 10 questions\/hour/)).toBeVisible();
   });
 
   test("sudo hire-aditya opens the booking page", async ({ page, context }) => {

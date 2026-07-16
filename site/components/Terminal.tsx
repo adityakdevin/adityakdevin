@@ -11,8 +11,9 @@ const BOOT: Line[] = [
 ];
 
 /**
- * The widget (SPEC §6) — offline commands ship now; free text gets the
- * "AI mode coming soon" notice until /api/chat lands in P3.
+ * The widget (SPEC §6) — offline commands always work; free text streams from
+ * /api/chat. When the route is dormant (no API key) or degraded (rate/budget
+ * caps), free text falls back to a friendly notice — never a frozen cursor.
  * Motion #3: open/close 250ms ease-in-out. Full-screen on mobile.
  */
 export function Terminal() {
@@ -24,6 +25,7 @@ export function Terminal() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
+  const busy = useRef(false);
 
   const wasOpen = useRef(false);
   useEffect(() => {
@@ -61,9 +63,57 @@ export function Terminal() {
     setLines((prev) => [...prev, ...next]);
   }
 
+  function replaceLast(line: Line) {
+    setLines((prev) => [...prev.slice(0, -1), line]);
+  }
+
+  async function ask(message: string) {
+    busy.current = true;
+    print({ kind: "out", text: "…" });
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { reason?: string };
+        replaceLast({
+          kind: "accent",
+          text:
+            data.reason === "budget"
+              ? "AI is resting (budget cap) — commands still work. try 'help'."
+              : data.reason === "rate"
+                ? "rate limit: 10 questions/hour — commands still work meanwhile."
+                : res.status === 422
+                  ? "keep it under 300 characters — try a shorter question."
+                  : "AI mode is being wired up — soon I'll answer that. For now, try 'help'.",
+        });
+        return;
+      }
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        replaceLast({ kind: "out", text: acc });
+      }
+      if (!acc.trim()) {
+        replaceLast({ kind: "accent", text: "no answer came back — ask again, or try 'help'." });
+      }
+    } catch {
+      replaceLast({ kind: "accent", text: "connection dropped — ask again, or try 'help'." });
+    } finally {
+      busy.current = false;
+    }
+  }
+
   function run(raw: string) {
     const cmd = raw.trim();
     if (!cmd) return;
+    if (busy.current) return; // one answer at a time — keeps the streaming line stable
     print({ kind: "cmd", text: cmd });
 
     switch (cmd.toLowerCase()) {
@@ -78,7 +128,7 @@ export function Terminal() {
           { kind: "out", text: "  contact    ways to reach me" },
           { kind: "out", text: "  source     how this terminal works" },
           { kind: "out", text: "  clear      clear the screen" },
-          { kind: "accent", text: "or type a question — AI mode ships soon." },
+          { kind: "accent", text: "or just type a question — the AI answers from this site." },
         );
         break;
       case "whoami":
@@ -131,7 +181,7 @@ export function Terminal() {
       case "source":
         print(
           { kind: "out", text: "offline commands: plain TypeScript, zero API calls." },
-          { kind: "out", text: "AI mode (soon): Claude + a prompt-cached corpus of this site's content —" },
+          { kind: "out", text: "AI mode: Claude Haiku + a prompt-cached corpus of this site's content —" },
           { kind: "out", text: "the architecture from my Laravel+AI article series:" },
           { kind: "accent", text: profile.devto },
         );
@@ -143,10 +193,7 @@ export function Terminal() {
         setOpen(false);
         break;
       default:
-        print({
-          kind: "accent",
-          text: "AI mode is being wired up — soon I'll answer that. For now, try 'help'.",
-        });
+        void ask(cmd);
     }
   }
 
@@ -198,6 +245,7 @@ export function Terminal() {
           {lines.map((line, i) => (
             <p
               key={i}
+              className="whitespace-pre-wrap"
               style={{
                 color: line.kind === "accent" ? "var(--dark-accent)" : line.kind === "cmd" ? "var(--dark-text)" : "var(--dark-muted)",
               }}
@@ -227,6 +275,7 @@ export function Terminal() {
             aria-label="Terminal command input"
             autoComplete="off"
             spellCheck={false}
+            maxLength={300}
             className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
             style={{ color: "var(--dark-text)" }}
             placeholder="help"
