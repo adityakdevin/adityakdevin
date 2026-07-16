@@ -75,12 +75,44 @@ export function Hero() {
               <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-accent)" }} />
               <span className="ml-2">adityakdevin@github</span>
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
-            <img
-              src="/ascii-card.svg"
-              alt="ASCII-art GitHub stats card for adityakdevin"
-              className="h-auto w-full"
-            />
+            {/* ASCII portrait (cropped from the README card) + stats as real, legible HTML text */}
+            <div className="flex items-stretch">
+              {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
+              <img
+                src="/ascii-portrait.svg"
+                alt="ASCII-art portrait of adityakdevin"
+                className="w-[44%] object-contain object-left"
+              />
+              {/* ponytail: stats snapshot, refresh when the README card regenerates */}
+              <div className="mono flex-1 space-y-1 self-center py-4 pr-4 text-[13px] leading-relaxed">
+                <p className="border-b pb-1 font-semibold" style={{ color: "var(--dark-accent)", borderColor: "var(--dark-border)" }}>
+                  — {profile.handle}@github
+                </p>
+                <p style={{ color: "var(--dark-muted)" }}>
+                  uptime <span style={{ color: "var(--dark-text)" }}>9+ years on GitHub</span>
+                </p>
+                <p style={{ color: "var(--dark-muted)" }}>
+                  location <span style={{ color: "var(--dark-text)" }}>Lucknow, India</span>
+                </p>
+                <p style={{ color: "var(--dark-muted)" }}>
+                  languages <span style={{ color: "var(--dark-text)" }}>PHP · JS · Python</span>
+                </p>
+                <p className="border-b pb-1 pt-2 font-semibold" style={{ color: "var(--dark-accent)", borderColor: "var(--dark-border)" }}>
+                  — stats
+                </p>
+                <p style={{ color: "var(--dark-muted)" }}>
+                  repos <span style={{ color: "var(--dark-text)" }}>64</span> · commits{" "}
+                  <span style={{ color: "var(--dark-text)" }}>8.3k+</span>
+                </p>
+                <p style={{ color: "var(--dark-muted)" }}>
+                  series <span style={{ color: "var(--dark-text)" }}>Laravel + AI on dev.to</span>
+                </p>
+                <p className="pt-2">
+                  <span style={{ color: "var(--dark-accent)" }}>$</span>{" "}
+                  <span style={{ color: "var(--dark-text)" }}>open github/adityakdevin</span>
+                </p>
+              </div>
+            </div>
             <a
               href={profile.github}
               className="mono block whitespace-nowrap border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
