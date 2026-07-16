@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 import { getLatestPosts } from "@/lib/devto";
@@ -96,7 +97,7 @@ export default async function Home() {
           <div className="mt-10 grid gap-10 md:grid-cols-[3fr_2fr]">
             <article>
               <h3 className="text-xl font-medium">
-                <a href="/work/budgetgen">{profile.featuredWork.lead.title}</a>
+                <Link href="/work/budgetgen">{profile.featuredWork.lead.title}</Link>
               </h3>
               <p className="mt-3" style={{ color: "var(--muted)" }}>
                 {profile.featuredWork.lead.story}

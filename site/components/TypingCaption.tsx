@@ -14,7 +14,8 @@ export function TypingCaption({ phrases }: { phrases: readonly string[] }) {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setAnimate(true);
+    // async so the effect body itself never sets state (react-hooks/set-state-in-effect)
+    const raf = requestAnimationFrame(() => setAnimate(true));
     let timer: ReturnType<typeof setTimeout>;
     // start by holding the SSR'd phrase, then delete → type next → hold → …
     const tick = (delay: number) => {
@@ -42,7 +43,10 @@ export function TypingCaption({ phrases }: { phrases: readonly string[] }) {
       }, delay);
     };
     tick(2200);
-    return () => clearTimeout(timer);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+    };
   }, [phrases]);
 
   return (

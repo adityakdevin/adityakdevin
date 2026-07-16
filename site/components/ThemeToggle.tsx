@@ -1,22 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 /** Theme toggle — persisted choice wins over prefers-color-scheme (SPEC §4). */
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<string | null>(null);
 
-  useEffect(() => {
-    setTheme(document.documentElement.dataset.theme ?? "dark");
-  }, []);
+// External store = <html data-theme> — keeps every mounted toggle (desktop
+// header + mobile tab bar) in sync without duplicated state.
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(
+    subscribe,
+    () => document.documentElement.dataset.theme ?? "dark",
+    () => null, // SSR: theme unknown until the boot script runs
+  );
 
   function toggle() {
     const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    document.documentElement.dataset.theme = next; // MutationObserver re-renders all toggles
     try {
       localStorage.setItem("theme", next);
     } catch {}
-    setTheme(next);
   }
 
   return (
