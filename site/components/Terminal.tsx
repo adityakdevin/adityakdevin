@@ -167,7 +167,7 @@ export function Terminal() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close terminal"
-            className="mono min-h-8 cursor-pointer px-2 text-base"
+            className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-base"
             style={{ color: "#8b949e" }}
           >
             ✕
@@ -207,7 +207,7 @@ export function Terminal() {
             aria-label="Terminal command input"
             autoComplete="off"
             spellCheck={false}
-            className="mono min-h-8 flex-1 bg-transparent text-sm outline-none"
+            className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
             style={{ color: "#e6edf3" }}
             placeholder="help"
           />

@@ -23,7 +23,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="mono min-h-8 cursor-pointer px-1 text-sm"
+      className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-sm"
       style={{ color: "var(--muted)" }}
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       title="Toggle theme"
