@@ -6,7 +6,7 @@
 
 Replace the 2020 Bootstrap template at adityadev.in with a modern, AI-oriented portfolio that:
 
-- Positions Aditya as **Full Stack Developer + AI Engineer + Solution Architect** (Tech Lead @ MM Novatech, 7+ yrs, Lucknow, India)
+- Positions Aditya as **Full Stack Developer + AI Engineer + Solution Architect** (Tech Lead @ MM Nova Tech, 7+ yrs, Lucknow, India)
 - Ranks for **long-tail hire-intent + brand queries at launch** ("Laravel AI integration developer India", "adityakdevin", "Aditya Kumar full stack Lucknow"); competitive head terms ("hire AI engineer") become targets only after a backlink base exists — the Dev.to series and case studies are the link engine
 - Gets cited by answer engines (ChatGPT, Perplexity, Google AI Overviews) — via entity-consistent content and JSON-LD, not checkbox files
 - Converts visitors into **booked calls** (primary CTA: cal.com)
@@ -127,7 +127,7 @@ Scope of the rule: structured FACTS live in profile.ts/faq.ts. Page prose, SEO c
 **Global chrome (design review 3A):** slim **sticky header** appears after scrolling past the hero — name · nav links (`~/work`, `~/cv`, `~/now`) · compact "Book a call" button. On mobile: sticky bottom **"Book a call →" bar** instead. This is both the site nav (previously unspecified) and the persistent CTA.
 
 **Homepage sections (in order — headings are claims, not labels; terminal `$` eyebrows decorate, never replace them):**
-1. **Hero (brand-first, full-bleed, ONE composition — both themes dark):** eyebrow line types `aditya@dev:~$ whoami` (14px Plex Mono) → the *output* renders as the page's largest text: **"Aditya Kumar"** (H1) + plain-language value line **"I build Laravel & AI products that ship."** + roles line "Full Stack Developer · AI Engineer · Solution Architect — Tech Lead @ MM Novatech · Lucknow, India". **Anchor:** professional photo, duotone/cyan edge-light treatment so it belongs to the dark composition (photo = P1a blocker, §13.9); ASCII portrait survives as secondary texture inside the composition (`aria-hidden`, hidden <768px). Primary button "Book a call →", secondary ghost "Ask my AI ↗" (P3). Visible hint of the metric strip at the fold.
+1. **Hero (brand-first, full-bleed, ONE composition — both themes dark):** eyebrow line types `aditya@dev:~$ whoami` (14px Plex Mono) → the *output* renders as the page's largest text: **"Aditya Kumar"** (H1) + plain-language value line **"I build Laravel & AI products that ship."** + roles line "Full Stack Developer · AI Engineer · Solution Architect — Tech Lead @ MM Nova Tech · Lucknow, India". **Anchor:** professional photo, duotone/cyan edge-light treatment so it belongs to the dark composition (photo = P1a blocker, §13.9); ASCII portrait survives as secondary texture inside the composition (`aria-hidden`, hidden <768px). Primary button "Book a call →", secondary ghost "Ask my AI ↗" (P3). Visible hint of the metric strip at the fold.
 2. **Metric strip** (was "proof bar" — now one inline strip, no tile boxes): 7+ years · 60+ projects · 8k+ contributions · Laravel+AI series. Static build-time numbers, no live fetch above the fold.
 3. **"I ship AI features into production apps"** (services — numbered editorial rows 01/02/03, full-width, NOT cards): AI Integration / Full Stack Delivery / Architecture & Leadership — each a claim + two lines. Non-interactive at P1a and styled as prose (no card affordance); rows gain links in P2.
 4. **"Proof: systems that run businesses"** (featured work): ONE lead project as a narrative row (BudgetGen — problem → build → outcome) + two compact links (payments/integrations set, the Dev.to series). Clickable case-study cards return in P2 once written permission exists — cards only when they're truly clickable.
@@ -225,7 +225,7 @@ GA4 only — loaded on first interaction or 3s idle (never in the critical path)
 ## 13. Inputs needed from Aditya (blockers, gather during P1)
 
 1. Correct phone number.
-2. **Written** client permission (email approval suffices, but on file) + publishable metrics: Remax Millennium, MM Novatech projects, AI client work.
+2. **Written** client permission (email approval suffices, but on file) + publishable metrics: Remax Millennium, MM Nova Tech projects, AI client work.
 3. cal.com account + event type.
 4. Resend account + **domain DNS verification** (week 1).
 5. **Current DNS inventory** — all records for adityadev.in (A/CNAME/MX/SPF/DKIM/DMARC) before anything changes; where is email hosted today?

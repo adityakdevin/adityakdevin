@@ -8,7 +8,7 @@ export const profile = {
   headline: "Full Stack Developer · AI Engineer · Solution Architect",
   valueLine: "I build Laravel & AI products that ship.",
   role: "Tech Lead",
-  company: "MM Novatech",
+  company: "MM Nova Tech",
   yearsExperience: "7+",
   location: "Lucknow, Uttar Pradesh, India",
   email: "contact@adityadev.in",
@@ -54,7 +54,7 @@ export const profile = {
       title: "Architecture & Leadership",
       claim: "Solution design and teams that deliver",
       lines: [
-        "Tech Lead at MM Novatech: system design, code review culture, and delivery cadence.",
+        "Tech Lead at MM Nova Tech: system design, code review culture, and delivery cadence.",
         "From requirements to running infrastructure without the enterprise theater.",
       ],
     },
@@ -94,7 +94,7 @@ export const profile = {
       note: "read the actual articles",
     },
     {
-      claim: "7+ years, currently Tech Lead @ MM Novatech",
+      claim: "7+ years, currently Tech Lead @ MM Nova Tech",
       href: "https://www.linkedin.com/in/adityakdevin",
       note: "career history on LinkedIn",
     },
@@ -112,7 +112,7 @@ export const profile = {
   experience: [
     {
       role: "Tech Lead",
-      company: "MM Novatech",
+      company: "MM Nova Tech",
       period: "Current",
       points: [
         "Leading solution architecture and delivery for client web products.",

@@ -98,6 +98,7 @@ details[open] summary { color: var(--accent); }
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
+  vertical-align: bottom; /* overflow:hidden moves an inline-block's baseline; realign with the prompt text */
   animation: type-reveal 600ms ease-out both;
 }
 .cursor::after {
