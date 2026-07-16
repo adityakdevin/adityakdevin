@@ -12,7 +12,7 @@
 
 # Aditya Kumar `adityakdevin`
 
-> **Full Stack Developer & AI Engineer** · Tech Lead @ MM Novatech · 7+ years · Lucknow, India 🇮🇳
+> **Full Stack Developer & AI Engineer** · Tech Lead @ MM Nova Tech · 7+ years · Lucknow, India 🇮🇳
 
 ```bash
 $ whoami
@@ -20,7 +20,7 @@ $ whoami
 
 ```yaml
 name:        Aditya Kumar (adityakdevin)
-role:        Tech Lead @ MM Novatech
+role:        Tech Lead @ MM Nova Tech
 experience:  7+ years building web platforms & AI-powered products
 location:    Lucknow, Uttar Pradesh, India
 website:     https://adityadev.in
