@@ -116,23 +116,36 @@ $ tail -f ~/blog/latest.log
 $ ping adityakdevin
 ```
 
-<p>
-<a href="https://adityadev.in"><img src="https://img.shields.io/badge/Portfolio-adityadev.in-0891b2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio — adityadev.in" /></a>
-<a href="mailto:contact@adityadev.in"><img src="https://img.shields.io/badge/Email-contact@adityadev.in-0891b2?style=for-the-badge&logo=gmail&logoColor=white" alt="Email Aditya Kumar" /></a>
-<a href="https://www.linkedin.com/in/adityakdevin"><img src="https://img.shields.io/badge/LinkedIn-adityakdevin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn — Aditya Kumar" /></a>
-<a href="https://twitter.com/adityakdevin"><img src="https://img.shields.io/badge/X-@adityakdevin-000000?style=for-the-badge&logo=x&logoColor=white" alt="X / Twitter — adityakdevin" /></a>
-<a href="https://dev.to/adityakdevin"><img src="https://img.shields.io/badge/Dev.to-adityakdevin-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white" alt="Dev.to blog — adityakdevin" /></a>
-<a href="https://www.twitch.tv/adityakdevin"><img src="https://img.shields.io/badge/Twitch-adityakdevin-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch — adityakdevin" /></a>
-</p>
+<div align="center">
 
-> 💼 **Open to:** Tech Lead / senior roles · AI + Laravel freelance projects · open-source collaboration
-> 📬 Fastest way to reach me: [contact@adityadev.in](mailto:contact@adityadev.in)
+<a href="https://adityadev.in"><img src="https://img.shields.io/badge/🌐_Portfolio-adityadev.in-0891b2?style=for-the-badge&labelColor=1c1917" alt="Portfolio — adityadev.in" /></a>&nbsp;
+<a href="mailto:contact@adityadev.in"><img src="https://img.shields.io/badge/📬_Email-contact@adityadev.in-0891b2?style=for-the-badge&labelColor=1c1917" alt="Email Aditya Kumar" /></a>
+
+<a href="https://www.linkedin.com/in/adityakdevin"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn — Aditya Kumar" /></a>&nbsp;
+<a href="https://twitter.com/adityakdevin"><img src="https://img.shields.io/badge/X-1c1917?style=for-the-badge&logo=x&logoColor=white" alt="X / Twitter — adityakdevin" /></a>&nbsp;
+<a href="https://dev.to/adityakdevin"><img src="https://img.shields.io/badge/Dev.to-1c1917?style=for-the-badge&logo=devdotto&logoColor=white" alt="Dev.to blog — adityakdevin" /></a>&nbsp;
+<a href="https://www.twitch.tv/adityakdevin"><img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch — adityakdevin" /></a>
+
+<br/>
+
+### 💼 Open to
+
+<img src="https://img.shields.io/badge/Tech_Lead_/_Senior_Roles-0891b2?style=flat-square&labelColor=1c1917" alt="Open to Tech Lead and senior roles" />
+<img src="https://img.shields.io/badge/AI_&_LLM_Projects-0891b2?style=flat-square&labelColor=1c1917" alt="Open to AI and LLM projects" />
+<img src="https://img.shields.io/badge/Laravel_Freelance-0891b2?style=flat-square&labelColor=1c1917" alt="Open to Laravel freelance work" />
+<img src="https://img.shields.io/badge/Open_Source_Collab-0891b2?style=flat-square&labelColor=1c1917" alt="Open to open source collaboration" />
+
+Fastest way to reach me → [**contact@adityadev.in**](mailto:contact@adityadev.in)
+
+<br/>
 
 <a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy+me+a+pizza&emoji=%F0%9F%8D%95&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" alt="Buy me a pizza — support adityakdevin" /></a>
 
-### ✍️ Random dev quote
+<br/><br/>
 
 ![Random developer quote](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
+
+</div>
 
 ---
 
