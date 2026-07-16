@@ -4,6 +4,7 @@ import Script from "next/script";
 import { profile } from "@/content/data/profile";
 import { StickyChrome } from "@/components/StickyChrome";
 import { Footer } from "@/components/Footer";
+import { Terminal } from "@/components/Terminal";
 import "./globals.css";
 
 const plexMono = IBM_Plex_Mono({
@@ -55,6 +56,7 @@ export default function RootLayout({
         <StickyChrome />
         {children}
         <Footer />
+        <Terminal />
         {/* GA4 — deferred: never in the critical path (SPEC §9) */}
         {process.env.NEXT_PUBLIC_GA_ID ? (
           <>

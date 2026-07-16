@@ -96,7 +96,7 @@ export default async function Home() {
           <div className="mt-10 grid gap-10 md:grid-cols-[3fr_2fr]">
             <article>
               <h3 className="mono text-xl font-medium">
-                <a href={profile.featuredWork.lead.href}>{profile.featuredWork.lead.title}</a>
+                <a href="/work/budgetgen">{profile.featuredWork.lead.title}</a>
               </h3>
               <p className="mt-3" style={{ color: "var(--muted)" }}>
                 {profile.featuredWork.lead.story}
