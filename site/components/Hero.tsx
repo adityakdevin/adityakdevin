@@ -94,16 +94,32 @@ export function Hero() {
             <Image
               src="/aditya.jpg"
               alt={`${profile.name} — ${profile.headline}`}
-              width={320}
-              height={380}
+              width={360}
+              height={300}
               priority
-              className="h-auto w-full object-cover"
+              className="h-64 w-full object-cover object-top"
               style={{ filter: "grayscale(0.85) contrast(1.05) brightness(0.95)" }}
             />
+            {/* gh-ascii GitHub card (same artwork as the profile README) */}
+            <div className="border-t" style={{ borderColor: "var(--dark-border)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
+              <img
+                src="/ascii-card.svg"
+                alt="ASCII-art GitHub stats card for adityakdevin"
+                className="h-auto w-full"
+              />
+            </div>
+            <a
+              href={profile.github}
+              className="mono block border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
+              style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
+            >
+              Full Stack Developer + AI Engineer →
+            </a>
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
-              style={{ background: "linear-gradient(transparent, rgba(34,184,212,0.14))" }}
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
+              style={{ background: "linear-gradient(transparent, rgba(34,184,212,0.08))" }}
             />
           </div>
         </div>
