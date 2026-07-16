@@ -88,12 +88,12 @@ $ git log --stat adityakdevin
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api?username=adityakdevin&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub stats — Aditya Kumar (adityakdevin)" height="165" />
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=adityakdevin&layout=compact&theme=tokyonight&hide_border=true" alt="Top programming languages — adityakdevin" height="165" />
+<img src="profile-summary-card-output/tokyonight/1-repos-per-language.svg" alt="Repos per language — adityakdevin" height="165" />
+<img src="profile-summary-card-output/tokyonight/3-stats.svg" alt="GitHub stats — Aditya Kumar (adityakdevin)" height="165" />
+
+<img src="profile-summary-card-output/tokyonight/0-profile-details.svg" alt="GitHub profile details — Aditya Kumar (adityakdevin)" width="100%" />
 
 <img src="https://streak-stats.demolab.com?user=adityakdevin&theme=tokyonight&hide_border=true" alt="GitHub contribution streak — adityakdevin" />
-
-<img src="https://github-profile-trophy.vercel.app/?username=adityakdevin&theme=tokyonight&no-frame=true&column=7&margin-w=5" alt="GitHub trophies — adityakdevin" />
 
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=adityakdevin&theme=tokyo-night&hide_border=true" alt="Contribution activity graph — adityakdevin" />
 
@@ -128,7 +128,7 @@ $ ping adityakdevin
 > 💼 **Open to:** Tech Lead / senior roles · AI + Laravel freelance projects · open-source collaboration
 > 📬 Fastest way to reach me: [contact@adityadev.in](mailto:contact@adityadev.in)
 
-<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a pizza&emoji=🍕&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" alt="Buy me a pizza — support adityakdevin" /></a>
+<a href="https://www.buymeacoffee.com/adityakdevin"><img src="https://img.buymeacoffee.com/button-api/?text=Buy+me+a+pizza&emoji=%F0%9F%8D%95&slug=adityakdevin&button_colour=5F7FFF&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00" alt="Buy me a pizza — support adityakdevin" /></a>
 
 ### ✍️ Random dev quote
 
