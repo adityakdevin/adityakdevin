@@ -19,9 +19,9 @@
   --surface: #ffffff;
   --text: #1f2328;
   --muted: #4d5761;
-  --accent: #0891b2;
+  --accent: #0e7490; /* cyan-700 — 4.5:1+ on white/bg, AA for small text (FINDING-002) */
   --border: #d0d7de;
-  --focus: #0891b2;
+  --focus: #0e7490;
 }
 
 @theme inline {
