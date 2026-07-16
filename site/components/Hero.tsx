@@ -23,6 +23,22 @@ export function Hero() {
       />
       <div className="relative mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_360px] md:gap-16">
         <div>
+          {/* Mobile anchor (§5B / FINDING-003): compact photo above the name — desktop uses the side panel */}
+          <div className="mb-6 md:hidden">
+            <Image
+              src="/aditya.jpg"
+              alt={`${profile.name} — ${profile.headline}`}
+              width={96}
+              height={96}
+              priority
+              className="h-24 w-24 rounded-lg border object-cover object-top"
+              style={{
+                borderColor: "#30363d",
+                filter: "grayscale(0.85) contrast(1.05) brightness(0.95)",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(34,184,212,0.1)",
+              }}
+            />
+          </div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "#8b949e" }}>
             <span style={{ color: "#22b8d4" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal cursor">whoami</span>
