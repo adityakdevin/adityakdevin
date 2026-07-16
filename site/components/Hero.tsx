@@ -61,6 +61,7 @@ export function Hero() {
             <a
               href={profile.bookingUrl}
               className="btn mono min-h-11 rounded px-6 py-3 text-center text-base font-semibold no-underline"
+              // theme-locked dark hero: literal pair, NOT tokens (light-theme --on-accent is white)
               style={{ background: "#22b8d4", color: "#06222a" }}
             >
               Book a call →

@@ -9,6 +9,8 @@
   --accent: #22b8d4;
   --border: #30363d;
   --focus: #22b8d4;
+  --error: #f85149;
+  --on-accent: #06222a; /* text on accent-filled buttons */
   /* hero stays dark in BOTH themes */
   --hero-bg: #0d1117;
   --hero-text: #e6edf3;
@@ -22,6 +24,8 @@
   --accent: #0e7490; /* cyan-700 — 4.5:1+ on white/bg, AA for small text (FINDING-002) */
   --border: #d0d7de;
   --focus: #0e7490;
+  --error: var(--error);
+  --on-accent: #ffffff; /* white on cyan-700 = 4.9:1 */
 }
 
 @theme inline {

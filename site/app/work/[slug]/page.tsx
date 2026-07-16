@@ -71,7 +71,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         <Link
           href="/#contact"
           className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
-          style={{ background: "var(--accent)", color: "#06222a" }}
+          style={{ background: "var(--accent)", color: "var(--on-accent)" }}
         >
           Build something like this →
         </Link>

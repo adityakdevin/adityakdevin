@@ -54,7 +54,7 @@ export function StickyChrome() {
             <a
               href={profile.bookingUrl}
               className="btn mono rounded px-4 py-1.5 text-sm font-semibold no-underline"
-              style={{ background: "var(--accent)", color: "#06222a" }}
+              style={{ background: "var(--accent)", color: "var(--on-accent)" }}
             >
               Book a call →
             </a>
@@ -93,7 +93,7 @@ export function StickyChrome() {
           <a
             href={profile.bookingUrl}
             className="btn mono block min-h-11 flex-1 rounded py-3 text-center text-base font-semibold no-underline"
-            style={{ background: "var(--accent)", color: "#06222a" }}
+            style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
             Book a call →
           </a>

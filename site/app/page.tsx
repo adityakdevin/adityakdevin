@@ -223,7 +223,7 @@ export default async function Home() {
               <a
                 href={profile.bookingUrl}
                 className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
-                style={{ background: "var(--accent)", color: "#06222a" }}
+                style={{ background: "var(--accent)", color: "var(--on-accent)" }}
               >
                 Book a free 30-min call →
               </a>

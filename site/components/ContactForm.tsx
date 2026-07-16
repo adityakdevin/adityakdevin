@@ -96,10 +96,10 @@ export function ContactForm() {
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? "cf-name-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ background: "var(--surface)", borderColor: errors.name ? "#d1242f" : "var(--border)", color: "var(--text)" }}
+            style={{ background: "var(--surface)", borderColor: errors.name ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.name ? (
-            <p id="cf-name-err" className="mt-1 text-sm" style={{ color: "#d1242f" }}>
+            <p id="cf-name-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
               {errors.name}
             </p>
           ) : null}
@@ -117,10 +117,10 @@ export function ContactForm() {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "cf-email-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ background: "var(--surface)", borderColor: errors.email ? "#d1242f" : "var(--border)", color: "var(--text)" }}
+            style={{ background: "var(--surface)", borderColor: errors.email ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.email ? (
-            <p id="cf-email-err" className="mt-1 text-sm" style={{ color: "#d1242f" }}>
+            <p id="cf-email-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
               {errors.email}
             </p>
           ) : null}
@@ -140,17 +140,17 @@ export function ContactForm() {
           aria-invalid={!!errors.message}
           aria-describedby={errors.message ? "cf-message-err" : undefined}
           className="w-full rounded border px-3 py-2"
-          style={{ background: "var(--surface)", borderColor: errors.message ? "#d1242f" : "var(--border)", color: "var(--text)" }}
+          style={{ background: "var(--surface)", borderColor: errors.message ? "var(--error)" : "var(--border)", color: "var(--text)" }}
         />
         {errors.message ? (
-          <p id="cf-message-err" className="mt-1 text-sm" style={{ color: "#d1242f" }}>
+          <p id="cf-message-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
             {errors.message}
           </p>
         ) : null}
       </div>
 
       {status === "error" ? (
-        <p role="alert" className="rounded border p-3 text-sm" style={{ borderColor: "#d1242f", color: "var(--text)" }}>
+        <p role="alert" className="rounded border p-3 text-sm" style={{ borderColor: "var(--error)", color: "var(--text)" }}>
           Couldn&apos;t send — try again, or email me directly at{" "}
           <a href={`mailto:${profile.email}`}>{profile.email}</a>.
         </p>
@@ -160,7 +160,7 @@ export function ContactForm() {
         type="submit"
         disabled={status === "submitting"}
         className="btn mono min-h-11 cursor-pointer rounded px-6 py-3 font-semibold disabled:cursor-wait disabled:opacity-70"
-        style={{ background: "var(--accent)", color: "#06222a" }}
+        style={{ background: "var(--accent)", color: "var(--on-accent)" }}
       >
         {status === "submitting" ? "Sending…" : "Send message"}
       </button>
