@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { profile } from "@/content/data/profile";
 
 /**
@@ -21,30 +20,14 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_360px] md:gap-16">
+      <div className="relative mx-auto grid w-full max-w-5xl items-center gap-10 px-6 py-16 md:grid-cols-[1fr_440px] md:gap-16">
         <div>
-          {/* Mobile anchor (§5B / FINDING-003): compact photo above the name — desktop uses the side panel */}
-          <div className="mb-6 md:hidden">
-            <Image
-              src="/aditya.jpg"
-              alt={`${profile.name} — ${profile.headline}`}
-              width={96}
-              height={96}
-              priority
-              className="h-24 w-24 rounded-lg border object-cover object-top"
-              style={{
-                borderColor: "var(--dark-border)",
-                filter: "grayscale(0.85) contrast(1.05) brightness(0.95)",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(34,184,212,0.1)",
-              }}
-            />
-          </div>
           <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal cursor">whoami</span>
           </p>
 
-          <h1 className="mono text-5xl font-semibold leading-[1.05] tracking-tight md:text-[72px]">
+          <h1 className="mono text-5xl font-semibold leading-[1.05] tracking-tight md:text-[64px]">
             {profile.name}
           </h1>
 
@@ -76,8 +59,8 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Anchor: real photo, duotone/cyan treatment so it belongs to the terminal world */}
-        <div className="relative mx-auto hidden w-full max-w-sm md:block">
+        {/* Anchor: gh-ascii GitHub card in a terminal window — same artwork as the profile README */}
+        <div className="relative mx-auto w-full max-w-lg md:max-w-none">
           <div
             className="overflow-hidden rounded-lg border shadow-2xl"
             style={{ borderColor: "var(--dark-border)", background: "var(--dark-surface)", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
@@ -89,26 +72,14 @@ export function Hero() {
               <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
               <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
               <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-accent)" }} />
-              <span className="ml-2">aditya.jpg</span>
+              <span className="ml-2">adityakdevin@github</span>
             </div>
-            <Image
-              src="/aditya.jpg"
-              alt={`${profile.name} — ${profile.headline}`}
-              width={360}
-              height={300}
-              priority
-              className="h-64 w-full object-cover object-top"
-              style={{ filter: "grayscale(0.85) contrast(1.05) brightness(0.95)" }}
+            {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
+            <img
+              src="/ascii-card.svg"
+              alt="ASCII-art GitHub stats card for adityakdevin"
+              className="h-auto w-full"
             />
-            {/* gh-ascii GitHub card (same artwork as the profile README) */}
-            <div className="border-t" style={{ borderColor: "var(--dark-border)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- static SVG asset, no optimization needed */}
-              <img
-                src="/ascii-card.svg"
-                alt="ASCII-art GitHub stats card for adityakdevin"
-                className="h-auto w-full"
-              />
-            </div>
             <a
               href={profile.github}
               className="mono block border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
@@ -116,11 +87,6 @@ export function Hero() {
             >
               Full Stack Developer + AI Engineer →
             </a>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
-              style={{ background: "linear-gradient(transparent, rgba(34,184,212,0.08))" }}
-            />
           </div>
         </div>
       </div>
