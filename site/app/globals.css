@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+/* ── Design tokens (PORTFOLIO_SPEC §4) — no raw hex in components ── */
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #22b8d4;
+  --border: #30363d;
+  --focus: #22b8d4;
+  /* hero stays dark in BOTH themes */
+  --hero-bg: #0d1117;
+  --hero-text: #e6edf3;
+}
+
+[data-theme="light"] {
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #57606a;
+  --accent: #0891b2;
+  --border: #d0d7de;
+  --focus: #0891b2;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-line: var(--border);
+  --font-mono: var(--font-plex-mono);
+  --font-sans: var(--font-plex-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, .mono {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Interactive states (§4): focus ring on ALL interactive elements */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+a { transition: color 150ms ease-out; }
+main a:not(.btn) { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
+main a:not(.btn):hover { text-decoration-color: var(--accent); color: var(--accent); }
+main a:not(.btn):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
+
+.btn:active { transform: translateY(1px); }
+
+/* Motion #1: hero command-type reveal (600ms ease-out, once) + cursor blink 1.06s step */
+@keyframes type-reveal { from { width: 0; } to { width: 100%; } }
+@keyframes blink { 50% { opacity: 0; } }
+.type-reveal {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: type-reveal 600ms ease-out both;
+}
+.cursor::after {
+  content: "▋";
+  color: var(--accent);
+  animation: blink 1.06s step-end infinite;
+  margin-left: 2px;
+}
+
+/* Motion #2: metric settle-in (400ms ease-out on scroll-enter) */
+@keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.settle-in { animation: settle 400ms ease-out both; }
+
+/* prefers-reduced-motion disables ALL motion (§4) */
+@media (prefers-reduced-motion: reduce) {
+  .type-reveal, .settle-in { animation: none; }
+  .cursor::after { animation: none; opacity: 1; }
+  html { scroll-behavior: auto; }
+}
+
+/* ── CV print stylesheet (§8) ── */
+@media print {
+  [data-no-print] { display: none !important; }
+  :root, [data-theme="light"], [data-theme="dark"] {
+    --bg: #ffffff; --surface: #ffffff; --text: #111111;
+    --muted: #444444; --accent: #0891b2; --border: #cccccc;
+    --hero-bg: #ffffff; --hero-text: #111111;
+  }
+  body { font-size: 11pt; background: #fff; color: #111; }
+  a { color: #111; text-decoration: none; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #444; }
+  h2, h3 { break-after: avoid; }
+  section, li { break-inside: avoid; }
+  @page { size: A4; margin: 14mm; }
+}
