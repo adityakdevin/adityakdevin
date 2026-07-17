@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPost, canonicalUrl } from "@/lib/posts";
 import { articleJsonLd, jsonLdScript } from "@/lib/jsonld";
 import { profile } from "@/content/data/profile";
+import { withRef } from "@/lib/site";
 import { NewsletterForm } from "@/components/NewsletterForm";
 
 export function generateStaticParams() {
@@ -65,7 +66,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       <div className="mt-12 flex flex-wrap gap-4">
         <a
-          href={`${profile.bookingUrl}?ref=blog-${post.slug}`}
+          href={withRef(profile.bookingUrl, `blog-${post.slug}`)}
           className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
           style={{ background: "var(--accent)", color: "var(--on-accent)" }}
         >

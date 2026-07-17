@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { profile } from "@/content/data/profile";
+import { withRef } from "@/lib/site";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 /* Brand mark — same >_ tile as the PWA icon, sized for chrome bars */
@@ -156,7 +157,7 @@ export function StickyChrome() {
             </Link>
             <ThemeToggle />
             <a
-              href={profile.bookingUrl}
+              href={withRef(profile.bookingUrl, "nav")}
               className="btn mono rounded px-4 py-1.5 text-sm font-semibold no-underline"
               style={{ background: "var(--accent)", color: "var(--on-accent)" }}
             >
@@ -205,7 +206,7 @@ export function StickyChrome() {
             <FileIcon />
           </Tab>
           <a
-            href={profile.bookingUrl}
+            href={withRef(profile.bookingUrl, "nav")}
             className="btn col-span-2 m-2 flex flex-row items-center justify-center gap-1.5 rounded-lg no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >

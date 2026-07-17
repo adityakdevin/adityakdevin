@@ -2,6 +2,7 @@ import Link from "next/link";
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 import { getLatestPosts } from "@/lib/devto";
+import { withRef } from "@/lib/site";
 import { getAllPosts, mergeFieldNotes } from "@/lib/posts";
 import { personJsonLd, profilePageJsonLd, faqJsonLd, jsonLdScript } from "@/lib/jsonld";
 import { Hero } from "@/components/Hero";
@@ -231,7 +232,7 @@ export default async function Home() {
           <div className="mt-10 grid gap-12 md:grid-cols-[2fr_3fr]">
             <div>
               <a
-                href={profile.bookingUrl}
+                href={withRef(profile.bookingUrl, "home")}
                 className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
                 style={{ background: "var(--accent)", color: "var(--on-accent)" }}
               >

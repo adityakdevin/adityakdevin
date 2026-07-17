@@ -4,7 +4,7 @@ import { profile } from "@/content/data/profile";
 import { jsonLdScript } from "@/lib/jsonld";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ServiceStackNav } from "@/components/ServiceStackNav";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, withRef } from "@/lib/site";
 
 /**
  * Python AI service-intent page (positioning broadened 2026-07-18 —
@@ -118,7 +118,7 @@ export default function PythonAiServicePage() {
         </p>
         <div className="mt-5 flex flex-wrap gap-4">
           <a
-            href={`${profile.bookingUrl}?ref=services-python-ai`}
+            href={withRef(profile.bookingUrl, "services-python-ai")}
             className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { profile } from "@/content/data/profile";
+import { withRef } from "@/lib/site";
 
 type Line = { kind: "cmd" | "out" | "accent"; text: string; cursor?: boolean };
 
@@ -182,7 +183,7 @@ export function Terminal() {
             ? "[sudo] permission granted. opening calendar…"
             : "opening calendar…",
         });
-        setTimeout(() => window.open(profile.bookingUrl, "_blank", "noopener"), 500);
+        setTimeout(() => window.open(withRef(profile.bookingUrl, "terminal"), "_blank", "noopener"), 500);
         break;
       case "contact":
         print(
