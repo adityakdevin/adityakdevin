@@ -1,0 +1,194 @@
+---
+title: "Streaming AI Responses in Laravel with Server-Sent Events"
+description: "Upgrade your Laravel chatbot from spinner-and-wait to token-by-token streaming with plain Server-Sent Events — no WebSockets, no Pusher."
+date: "2026-07-16"
+tags: ["Laravel", "AI", "PHP", "SSE"]
+devtoId: 4156141
+---
+
+In [the first post of this series](https://dev.to/adityakdevin/adding-an-ai-chatbot-to-your-laravel-app-with-the-openai-api-177f) we built a working AI chatbot in Laravel. It had one problem every user notices immediately: you send a message, then stare at a spinner for five seconds while the whole response generates.
+
+LLMs produce text token by token. If you wait for the full completion before showing anything, you're throwing away the single biggest UX win available: **streaming**. The same answer that takes 5 seconds to finish starts appearing in ~300ms when streamed. Nothing about the model got faster — but to the user, it feels 10x faster.
+
+In this post we'll upgrade the chatbot to stream responses with **Server-Sent Events (SSE)** — no WebSockets, no Pusher, no extra infrastructure. Just Laravel.
+
+## Why SSE and not WebSockets?
+
+WebSockets are bidirectional and need a long-running server (Reverb, Soketi) or a paid service. For chat completions you only need **one direction**: server → browser, for the lifetime of one request. That's exactly what SSE is for, and since Laravel 11 it's built into the framework as `response()->eventStream()`.
+
+Rule of thumb: presence, typing indicators, multiplayer → WebSockets. Streaming one AI answer → SSE.
+
+## 1. Stream from the OpenAI client
+
+We keep the `ChatService` from part 1 and add a streaming method. The `openai-php` client exposes `createStreamed()`, which returns an iterator of deltas:
+
+```php
+<?php
+
+namespace App\Services;
+
+use Generator;
+use OpenAI\Laravel\Facades\OpenAI;
+
+class ChatService
+{
+    // ... SYSTEM_PROMPT and reply() from part 1 ...
+
+    /**
+     * @param array<int, array{role: string, content: string}> $history
+     */
+    public function streamReply(array $history, string $userMessage): Generator
+    {
+        $stream = OpenAI::chat()->createStreamed([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                ['role' => 'system', 'content' => self::SYSTEM_PROMPT],
+                ...$history,
+                ['role' => 'user', 'content' => $userMessage],
+            ],
+            'max_tokens' => 500,
+        ]);
+
+        foreach ($stream as $response) {
+            $delta = $response->choices[0]->delta->content;
+
+            if ($delta !== null) {
+                yield $delta;
+            }
+        }
+    }
+}
+```
+
+A `Generator` is the right return type here: the controller can forward chunks as they arrive without ever holding the full response in memory.
+
+## 2. The streaming controller
+
+Laravel 11.19+ ships `response()->eventStream()`, which handles the SSE formatting (`event:` / `data:` lines) for you:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\ChatService;
+use Illuminate\Http\Request;
+
+class ChatStreamController extends Controller
+{
+    public function __invoke(Request $request, ChatService $chat)
+    {
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $history = $request->session()->get('chat_history', []);
+
+        // CRITICAL: release the session lock. A streaming response is a
+        // long-lived request — with the default file/database session
+        // driver it would block every other request from this user
+        // (including page loads!) until the stream finishes.
+        $request->session()->save();
+
+        return response()->eventStream(function () use ($request, $chat, $history, $validated) {
+            $full = '';
+
+            foreach ($chat->streamReply($history, $validated['message']) as $chunk) {
+                $full .= $chunk;
+                yield $chunk;
+            }
+
+            // persist history once the stream completes
+            $history[] = ['role' => 'user', 'content' => $validated['message']];
+            $history[] = ['role' => 'assistant', 'content' => $full];
+            $request->session()->put('chat_history', array_slice($history, -20));
+            $request->session()->save();
+        }, headers: [
+            'X-Accel-Buffering' => 'no', // tell nginx not to buffer the stream
+        ]);
+    }
+}
+```
+
+Route it with the same throttling as part 1:
+
+```php
+Route::post('/chat/stream', ChatStreamController::class)
+    ->middleware(['auth', 'throttle:20,1']);
+```
+
+## 3. Reading the stream in the browser
+
+The native `EventSource` API only supports GET requests, and we need to POST a message body — so we read the stream with `fetch` instead:
+
+```html
+<script>
+async function streamChat(message, botEl) {
+    const res = await fetch('/chat/stream', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({ message }),
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE messages are separated by a blank line
+        const events = buffer.split('\n\n');
+        buffer = events.pop(); // keep the incomplete tail
+
+        for (const evt of events) {
+            const data = evt.split('\n')
+                .filter(l => l.startsWith('data: '))
+                .map(l => l.slice(6))
+                .join('\n');
+
+            if (data && data !== '</stream>') {
+                botEl.textContent += data;
+            }
+        }
+    }
+}
+</script>
+```
+
+`</stream>` is Laravel's default end-of-stream marker — filter it out (or customize it with the `endStreamWith` argument).
+
+That's it. Send a message and watch the answer type itself out.
+
+## Where streaming breaks in production
+
+This is the part most tutorials skip. Streaming works instantly on `php artisan serve`, then mysteriously arrives all-at-once on your server. The culprit is always **buffering somewhere between PHP and the browser**:
+
+- **nginx** buffers proxied responses by default. The `X-Accel-Buffering: no` header above disables it per-response; alternatively set `proxy_buffering off;` for the route.
+- **PHP-FPM + output buffering**: check `output_buffering` in `php.ini`. Laravel's `eventStream` flushes after every yield, but an outer buffer can still swallow it.
+- **Cloudflare / load balancers**: most respect SSE content types, but verify with `curl -N` against production before blaming your code.
+
+Debug tip: `curl -N -X POST https://yourapp.test/chat/stream ...` shows you exactly what arrives and when, with no browser magic in between.
+
+## Production checklist
+
+- **Release the session lock** before streaming (done above) — this is the #1 "my app hangs" bug with SSE in Laravel.
+- **`X-Accel-Buffering: no`** header for nginx (done above).
+- **Timeouts**: a stream can outlive `max_execution_time` and your web server's send timeout. Set both above your worst-case generation time (60s is a sane ceiling with `max_tokens: 500`).
+- **Mid-stream errors**: wrap the generator loop in try/catch and yield a friendly "Something went wrong" chunk — a dead stream with no message looks frozen to users.
+- **Rate limit** the endpoint (done above) — streaming doesn't change the fact that every request costs money.
+- **Don't stream everything**: for background jobs or short answers, the buffered endpoint from part 1 is simpler. Keep both.
+
+## Next in this series
+
+Our bot streams beautifully, but it still only knows what's in its system prompt. Next up: **RAG in Laravel — embeddings and pgvector**, where we'll give it your actual documentation to answer from. Follow me to catch it.
+
+---
+
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
