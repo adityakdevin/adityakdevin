@@ -248,7 +248,7 @@ the same event; optimize for qualified conversations, not raw ref hits.
 - **Month 3:** only if IG/FB earned it, build the carousel PNG script. Test one
   new channel at most.
 
-Onboarding: a one-time `ops/social-setup.md` config with the *actual* handles,
+Onboarding: a one-time `ops/social/social-setup.md` checklist (✅ drafted) with the *actual* handles,
 profile URLs, per-platform bios, avatar/banner paths, target subreddits, and
 paste URLs — the "claim 9 handles" line is not executable without it. Don't claim
 handles you won't feed; an abandoned Mastodon reads as quit, worse than absent.
@@ -292,7 +292,7 @@ handles you won't feed; an abandoned Mastodon reads as quit, worse than absent.
 | `?ref` capture + accept + `withRef` helper | `site/lib/track.ts`, `site/app/api/contact/route.ts`, cal.com links | ~2 h |
 | Social command family (`/draft-social-text`, `/draft-social-media`, router) | `~/.claude/skills/draft-social-*/SKILL.md` — ✅ built | done |
 | Tests (track + contact route) | `site/tests/unit/` | ~1 h |
-| Carousel PNG **build script** (deferred to month 3) | `ops/` script reusing og.tsx font/color primitives | ~half day, later |
+| Carousel PNG **build script** (✅ built, brought forward — FB Page + IG Business ready) | `site/scripts/social-card.mjs` (`bun run social-card <slug>`), reuses og.tsx font/color primitives | done |
 | Outreach system + `social-setup.md` | manual + one config file | ~2 h setup |
 | Weekly ongoing | you | ~90 min/wk (outreach-first) |
 
