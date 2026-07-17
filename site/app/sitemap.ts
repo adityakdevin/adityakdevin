@@ -21,6 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/uses`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/work/budgetgen`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/services/laravel-ai-development`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${base}/services/nodejs-ai-development`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${base}/services/python-ai-development`, changeFrequency: "monthly", priority: 0.9 },
     // /blog is listed when ANY post renders the index — legacy imports keep
     // their own canonical but still populate the page (red-team: gate on
     // content, not on the canonical-filtered subset).

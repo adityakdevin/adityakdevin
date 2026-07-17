@@ -7,18 +7,16 @@ import { ServiceStackNav } from "@/components/ServiceStackNav";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * Service-intent page (design doc 20260717, eng review D16/T4).
- * SERP-validated 2026-07-17: the head terms are owned by agency template
- * pages — this page targets person-intent commercial variants instead
- * ("Laravel AI integration expert", "freelance Laravel AI developer").
- * The homepage KEEPS spec §1's "Laravel AI integration developer India" —
- * no cannibalization.
+ * Node/Next.js AI service-intent page (positioning broadened 2026-07-18 —
+ * SERVICE_PAGES_SPEC.md). Targets person-intent commercial variants
+ * ("Node.js AI developer", "hire AI engineer Next.js") — the Laravel page and
+ * homepage own their own clusters, so no cannibalization.
  */
 export const metadata: Metadata = {
-  title: "Laravel AI Integration Expert — hire a freelance Laravel AI developer",
+  title: "Node.js AI Integration Expert — hire a freelance AI engineer for Node/Next.js",
   description:
-    "I integrate AI into Laravel applications — chatbots, RAG, document automation — as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
-  alternates: { canonical: "/services/laravel-ai-development" },
+    "I build AI features into Node.js and Next.js apps — chatbots, RAG, streaming, tool-calling agents — as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
+  alternates: { canonical: "/services/nodejs-ai-development" },
 };
 
 const BASE = SITE_URL;
@@ -26,20 +24,20 @@ const BASE = SITE_URL;
 const serviceJsonLd = {
   "@context": "https://schema.org",
   "@type": "Service",
-  "@id": `${BASE}/services/laravel-ai-development#service`,
-  name: "Laravel AI integration development",
+  "@id": `${BASE}/services/nodejs-ai-development#service`,
+  name: "Node.js AI integration development",
   serviceType: "Software development",
   description:
-    "AI integration for Laravel applications: chatbots, retrieval-augmented generation, document processing, and workflow automation. Fixed-scope audit or full implementation.",
+    "AI integration for Node.js and Next.js applications: chatbots, retrieval-augmented generation, streaming responses, and tool-calling agents with the Vercel AI SDK. Fixed-scope audit or full implementation.",
   provider: { "@id": `${BASE}/#aditya` },
   areaServed: "Worldwide",
-  url: `${BASE}/services/laravel-ai-development`,
+  url: `${BASE}/services/nodejs-ai-development`,
 };
 
 const CAPABILITIES = [
   {
-    h: "AI features inside your existing Laravel app",
-    body: "Chat assistants, retrieval-augmented generation over your own data, document extraction, and smart automation — built into the codebase you already run, using the official Laravel AI SDK or direct provider APIs. No rewrite, no parallel system.",
+    h: "AI features inside your Node/Next.js app",
+    body: "Chat assistants, retrieval-augmented generation over your own data, streaming responses, and tool-calling agents — built into your existing Next.js or Node backend with the Vercel AI SDK or direct provider APIs. Works with your App Router, edge or Node runtime, and existing auth. No rewrite.",
   },
   {
     h: "Production concerns handled, not demoed",
@@ -47,17 +45,17 @@ const CAPABILITIES = [
   },
   {
     h: "Full-stack delivery",
-    body: `${profile.yearsExperience} years shipping Laravel, Livewire/Inertia, and Vue/React systems for real businesses. One person from data model to deployed feature — no handoffs.`,
+    body: `${profile.yearsExperience} years shipping TypeScript/Node, Next.js, and React systems for real businesses. One person from data model to deployed feature — no handoffs.`,
   },
 ];
 
 const PROCESS = [
   { step: "01", h: "30-minute call", body: "You describe the workflow that hurts. I tell you honestly whether AI helps — sometimes the answer is a queue and a cron job, and I'll say so." },
-  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Laravel codebase, identify the 2–3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
+  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Node/Next.js codebase, identify the 2–3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
   { step: "03", h: "Build", body: "I implement the spec — tested, rate-limited, spend-capped, deployed. You own the code; nothing is locked to me." },
 ];
 
-export default function LaravelAiServicePage() {
+export default function NodeAiServicePage() {
   return (
     <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
       <script
@@ -65,21 +63,21 @@ export default function LaravelAiServicePage() {
         dangerouslySetInnerHTML={{ __html: jsonLdScript(serviceJsonLd) }}
       />
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
-        <span style={{ color: "var(--accent)" }}>$</span> cat services/laravel-ai.md
+        <span style={{ color: "var(--accent)" }}>$</span> cat services/nodejs-ai.md
       </p>
       <h1 className="mono h2-rule text-4xl font-semibold leading-tight">
-        Laravel AI integration, by a named engineer
+        Node.js AI integration, by a named engineer
       </h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
         Agencies sell you a bench. I&apos;m {profile.name} — {profile.role} @ {profile.company},{" "}
-        {profile.yearsExperience} years of shipped Laravel systems — and I build AI features
-        into existing Laravel apps with my own hands. The terminal assistant on{" "}
+        {profile.yearsExperience} years of shipped systems — and I build AI features into
+        existing Node.js and Next.js apps with my own hands. The terminal assistant on{" "}
         <Link href="/">this site&apos;s homepage</Link> runs on the same patterns I ship to
         clients.
       </p>
 
       <div className="mt-8">
-        <ServiceStackNav current="laravel" />
+        <ServiceStackNav current="node" />
       </div>
 
       {CAPABILITIES.map((c) => (
@@ -114,13 +112,13 @@ export default function LaravelAiServicePage() {
         </h2>
         <p className="mt-2">
           One week, fixed price, quoted on the call. You get a build-ready spec naming the 2–3
-          AI integrations with the highest ROI for your Laravel app — with cost, latency, and
-          risk spelled out. If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo;
+          AI integrations with the highest ROI for your Node app — with cost, latency, and risk
+          spelled out. If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo;
           you&apos;ll get that in writing instead, and it costs you the call.
         </p>
         <div className="mt-5 flex flex-wrap gap-4">
           <a
-            href={`${profile.bookingUrl}?ref=services-laravel-ai`}
+            href={`${profile.bookingUrl}?ref=services-nodejs-ai`}
             className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
@@ -140,7 +138,7 @@ export default function LaravelAiServicePage() {
         <h2 className="mono h2-rule text-2xl font-semibold">Proof, not promises</h2>
         <p className="mt-6">
           Read the <Link href="/blog">field notes</Link> — end-to-end build walkthroughs of real
-          projects — or the <a href={profile.devto}>Laravel + AI series on Dev.to</a>. Case
+          projects — or the <a href={profile.devto}>AI engineering series on Dev.to</a>. Case
           studies with named clients and real numbers live on{" "}
           <Link href="/work/budgetgen">the work page</Link>.
         </p>
