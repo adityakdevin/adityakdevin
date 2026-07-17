@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { caseStudies } from "@/content/data/work";
 import { jsonLdScript } from "@/lib/jsonld";
+import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
@@ -31,12 +32,12 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    "@id": `https://adityadev.in/work/${study.slug}#work`,
+    "@id": `${SITE_URL}/work/${study.slug}#work`,
     name: study.title,
     description: study.summary,
-    author: { "@id": "https://adityadev.in/#aditya" },
+    author: { "@id": `${SITE_URL}/#aditya` },
     keywords: study.stack.join(", "),
-    url: `https://adityadev.in/work/${study.slug}`,
+    url: `${SITE_URL}/work/${study.slug}`,
   };
 
   return (

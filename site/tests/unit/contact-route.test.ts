@@ -16,6 +16,45 @@ function makeReq(body: unknown, ip = "1.2.3.4") {
 
 const valid = { name: "Test Person", email: "test@example.com", message: "Hello, I need a Laravel AI chatbot built." };
 
+describe("POST /api/contact — D15 attribution passthrough", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ success: true, message_ids: ["m1"] }), { status: 200 }),
+    );
+    process.env.MAILTRAP_API_TOKEN = "mt_test_token";
+  });
+
+  it("includes attribution fields in the notification email when present", async () => {
+    const res = await POST(
+      makeReq(
+        { ...valid, source_page: "/", first_landing: "/blog/building-x", referrer: "https://google.com/" },
+        "7.7.7.1",
+      ),
+    );
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(sent.text).toContain("first_landing: /blog/building-x");
+    expect(sent.text).toContain("referrer: https://google.com/");
+    expect(sent.html).toContain("/blog/building-x");
+  });
+
+  it("still works with no attribution fields (old clients, privacy mode)", async () => {
+    const res = await POST(makeReq(valid, "7.7.7.2"));
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(sent.text).not.toContain("first_landing");
+  });
+
+  it("caps oversized attribution values instead of rejecting", async () => {
+    const res = await POST(makeReq({ ...valid, source_page: "/x".repeat(500) }, "7.7.7.3"));
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    const line = (sent.text as string).split("\n").find((l: string) => l.startsWith("source_page"))!;
+    expect(line.length).toBeLessThanOrEqual(313); // "source_page: " + 300
+  });
+});
+
 describe("POST /api/contact", () => {
   beforeEach(() => {
     fetchMock.mockReset();

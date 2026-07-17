@@ -3,9 +3,11 @@ import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import Script from "next/script";
 import { profile } from "@/content/data/profile";
 import { StickyChrome } from "@/components/StickyChrome";
+import { Attribution } from "@/components/Attribution";
 import { Footer } from "@/components/Footer";
 import { Terminal } from "@/components/Terminal";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 const plexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600"],
@@ -22,7 +24,7 @@ const plexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://adityadev.in"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: `${profile.name} — Full Stack Developer, AI Engineer & Solution Architect`,
     template: `%s · ${profile.name} (${profile.handle})`,
@@ -60,6 +62,7 @@ export default function RootLayout({
         // mobile: reserve room for the fixed bottom tab bar (h-16 + safe-area)
         className={`${plexMono.variable} ${plexSans.variable} flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
+        <Attribution />
         <StickyChrome />
         {children}
         <Footer />

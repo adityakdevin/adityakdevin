@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { streamText } from "ai";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { costUsd } from "@/lib/cost";
+import { createRateLimiter, clientIp } from "@/lib/ratelimit";
 
 /**
  * /api/chat (SPEC §6) — Claude Haiku streaming via Vercel AI Gateway.
@@ -18,20 +19,8 @@ const MAX_OUTPUT_TOKENS = 500;
 
 // ponytail: in-memory per-instance rate limit + spend counter — swap for the
 // gateway's per-user limits + Upstash once traffic justifies it (TODOS/T3).
-const hits = new Map<string, { count: number; reset: number }>();
-const LIMIT = 10;
-const WINDOW_MS = 60 * 60 * 1000;
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = hits.get(ip);
-  if (!entry || now > entry.reset) {
-    hits.set(ip, { count: 1, reset: now + WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > LIMIT;
-}
+// Limiter shared with contact/subscribe (lib/ratelimit.ts) — Upstash swap is one file.
+const rateLimited = createRateLimiter(10, 60 * 60 * 1000);
 
 const SPEND_CAP_USD = 10;
 const spend = { month: "", usd: 0 };
@@ -57,6 +46,12 @@ function recordSpend(usd: number) {
 const SYSTEM_PROMPT = buildSystemPrompt();
 
 export async function POST(req: NextRequest) {
+  // Body-size gate BEFORE parsing (adversarial finding) — input cap is 300
+  // chars; anything past 32KB is abuse, reject before burning parse CPU.
+  const len = Number(req.headers.get("content-length") ?? 0);
+  if (len > 32_768) {
+    return NextResponse.json({ error: "Request too large." }, { status: 413 });
+  }
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -72,7 +67,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req);
   if (rateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit: 10 questions per hour.", reason: "rate" },

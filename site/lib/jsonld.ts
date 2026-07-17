@@ -1,7 +1,9 @@
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 
-const BASE = "https://adityadev.in";
+import { SITE_URL } from "@/lib/site";
+
+const BASE = SITE_URL;
 const PERSON_ID = `${BASE}/#aditya`;
 
 /** Shared @id graph (SPEC §7) so engines connect entities across pages. */
@@ -72,7 +74,33 @@ export function cvJsonLd() {
   };
 }
 
-/** Render helper — script tag payload. */
+/** Blog post → Article node in the shared graph (design doc 20260717). */
+export function articleJsonLd(post: {
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  tags: string[];
+  canonical?: string;
+}) {
+  const url = post.canonical ?? `${BASE}/blog/${post.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${BASE}/blog/${post.slug}#article`,
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    keywords: post.tags.join(", "),
+    url,
+    mainEntityOfPage: url,
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+  };
+}
+
+/** Render helper — script tag payload. `<` is escaped so a title containing
+ *  `</script>` can never break out of the tag (standard JSON-LD hardening). */
 export function jsonLdScript(data: object) {
-  return JSON.stringify(data);
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }

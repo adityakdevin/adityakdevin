@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { profile } from "@/content/data/profile";
+import { getAttribution, track } from "@/lib/track";
+import { EMAIL_RE } from "@/lib/site";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -16,7 +18,7 @@ export function ContactForm() {
 
   function validateField(name: string, value: string): string | null {
     if (name === "name" && value.trim().length < 2) return "Please enter your name.";
-    if (name === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    if (name === "email" && !EMAIL_RE.test(value))
       return "Please enter a valid email address.";
     if (name === "message" && value.trim().length < 10)
       return "Tell me a little more — at least a sentence.";
@@ -47,9 +49,11 @@ export function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        // D15: which page earned this lead — measured, not self-reported.
+        body: JSON.stringify({ ...data, ...getAttribution() }),
       });
       setStatus(res.ok ? "success" : "error");
+      if (res.ok) track("contact_submit", { first_landing: getAttribution().first_landing });
     } catch {
       setStatus("error");
     }

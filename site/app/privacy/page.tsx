@@ -36,9 +36,20 @@ export default function PrivacyPage() {
           <h2 className="mono text-xl font-semibold">Contact form</h2>
           <p className="mt-2">
             When you send a message, your name, email, and message are emailed to me via Mailtrap
-            and land in my inbox ({profile.email}). They are not stored in any database, not
-            shared with anyone, and not added to any mailing list. Server errors are logged for
-            30 days without message contents.
+            and land in my inbox ({profile.email}). The form also notes which page you were on
+            and how you first arrived (the referring site), so I know what content brought you
+            here. None of it is stored in any database, shared with anyone, or added to any
+            mailing list. Server errors are logged for 30 days without message contents.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="mono text-xl font-semibold">Newsletter</h2>
+          <p className="mt-2">
+            If you subscribe to the field notes, your email address is sent to Buttondown, the
+            service that delivers the emails and has its own privacy policy. You&apos;ll get a
+            confirmation email first (double opt-in), every email has an unsubscribe link, and
+            unsubscribing removes you completely. Your address is used for nothing else.
           </p>
         </div>
 

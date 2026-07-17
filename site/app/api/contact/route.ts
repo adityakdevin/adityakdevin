@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { profile } from "@/content/data/profile";
+import { createRateLimiter, clientIp } from "@/lib/ratelimit";
+import { EMAIL_RE, EMAIL_MAX } from "@/lib/site";
 
 /**
  * Contact handler (SPEC §10): validation + honeypot + rate limit + error contract.
@@ -7,11 +9,7 @@ import { profile } from "@/content/data/profile";
  * Errors are logged server-side only — the client never sees vendor details.
  */
 
-// ponytail: in-memory per-instance rate limit — Upstash lands with /api/chat's
-// counters when the account exists; a single Vercel instance covers P1a traffic.
-const hits = new Map<string, { count: number; reset: number }>();
-const LIMIT = 5;
-const WINDOW_MS = 60 * 60 * 1000;
+const rateLimited = createRateLimiter(5, 60 * 60 * 1000);
 
 function escapeHtml(s: string): string {
   return s
@@ -22,7 +20,12 @@ function escapeHtml(s: string): string {
 }
 
 /** Terminal-card notification email — inline styles only (Gmail-safe), dark in every client. */
-function emailHtml(name: string, email: string, message: string) {
+function emailHtml(
+  name: string,
+  email: string,
+  message: string,
+  attr: ReadonlyArray<readonly [string, string]> = [],
+) {
   const mono = "ui-monospace,'SF Mono',Menlo,Consolas,monospace";
   const row = (k: string, v: string) =>
     `<tr><td style="padding:4px 16px 4px 0;color:#8b949e;font-family:${mono};font-size:13px;vertical-align:top;white-space:nowrap">${k}</td>` +
@@ -38,6 +41,7 @@ function emailHtml(name: string, email: string, message: string) {
       <table cellpadding="0" cellspacing="0" style="margin:0 0 20px">
         ${row("name", escapeHtml(name))}
         ${row("email", `<a href="mailto:${escapeHtml(email)}" style="color:#22b8d4">${escapeHtml(email)}</a>`)}
+        ${attr.map(([k, v]) => row(k, escapeHtml(v))).join("")}
       </table>
       <div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:16px;color:#e6edf3;font-family:${mono};font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word">${escapeHtml(message)}</div>
       <p style="margin:20px 0 0;font-family:${mono};font-size:12px;color:#8b949e">reply to this email to answer ${escapeHtml(name)} directly &#8594;</p>
@@ -47,18 +51,13 @@ function emailHtml(name: string, email: string, message: string) {
 </div>`;
 }
 
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = hits.get(ip);
-  if (!entry || now > entry.reset) {
-    hits.set(ip, { count: 1, reset: now + WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > LIMIT;
-}
-
 export async function POST(req: NextRequest) {
+  // Body-size gate BEFORE parsing (adversarial finding): don't burn CPU/memory
+  // on oversized JSON that the limiter never sees. 32KB >> any legal payload.
+  const len = Number(req.headers.get("content-length") ?? 0);
+  if (len > 32_768) {
+    return NextResponse.json({ error: "Request too large." }, { status: 413 });
+  }
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -74,19 +73,38 @@ export async function POST(req: NextRequest) {
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const message = typeof body.message === "string" ? body.message.trim() : "";
+  // D15 attribution — optional, never validated hard (old clients and
+  // privacy-mode browsers send nothing). Shape-checked because these render
+  // in the owner email styled like SYSTEM rows (red-team): paths must look
+  // like site paths, referrer must be an http(s) URL, no CR/LF smuggling.
+  const attrValue = (k: string): string => {
+    const raw = typeof body[k] === "string" ? (body[k] as string).replace(/[\r\n]/g, " ").slice(0, 300) : "";
+    if (raw === "") return "";
+    if (k === "referrer") {
+      try {
+        return /^https?:$/.test(new URL(raw).protocol) ? raw : "";
+      } catch {
+        return "";
+      }
+    }
+    return /^\/[\w\-/.%#?=&]*$/.test(raw) ? raw : "";
+  };
+  const attr = (["source_page", "first_landing", "referrer"] as const)
+    .map((k) => [k, attrValue(k)] as const)
+    .filter(([, v]) => v !== "");
 
   if (
     name.length < 2 ||
     name.length > 200 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-    email.length > 320 ||
+    !EMAIL_RE.test(email) ||
+    email.length > EMAIL_MAX ||
     message.length < 10 ||
     message.length > 5000
   ) {
     return NextResponse.json({ error: "Please check the form fields." }, { status: 422 });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req);
   if (rateLimited(ip)) {
     return NextResponse.json({ error: "Too many messages — try again later." }, { status: 429 });
   }
@@ -100,14 +118,17 @@ export async function POST(req: NextRequest) {
   try {
     const res = await fetch("https://send.api.mailtrap.io/api/send", {
       method: "POST",
+      signal: AbortSignal.timeout(10_000), // hung vendor → catch → 502 + retry message
       headers: { "Api-Token": apiToken, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: { email: "contact@adityadev.in", name: "Portfolio" },
         to: [{ email: profile.email }],
         reply_to: { email },
         subject: `Portfolio contact from ${name}`,
-        text: `From: ${name} <${email}>\n\n${message}`,
-        html: emailHtml(name, email, message),
+        text:
+          `From: ${name} <${email}>\n\n${message}` +
+          (attr.length ? `\n\n--\n${attr.map(([k, v]) => `${k}: ${v}`).join("\n")}` : ""),
+        html: emailHtml(name, email, message, attr),
         category: "contact-form",
       }),
     });
