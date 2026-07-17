@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:e2e": "POSTS_DIR=tests/fixtures/posts next build && playwright test"
+    "test:e2e": "POSTS_DIR=tests/fixtures/posts next build && playwright test",
+    "social-card": "bun scripts/social-card.mjs"
   },
   "dependencies": {
     "ai": "^6.0.228",
