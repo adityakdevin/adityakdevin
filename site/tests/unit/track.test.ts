@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { track, getAttribution, stampSession, FIRST_LANDING_KEY, REFERRER_KEY } from "@/lib/track";
+import { track, getAttribution, stampSession, FIRST_LANDING_KEY, REFERRER_KEY, REF_KEY } from "@/lib/track";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function stubBrowser(opts: { pathname?: string; referrer?: string; store?: Map<string, string> }) {
+function stubBrowser(opts: { pathname?: string; search?: string; referrer?: string; store?: Map<string, string> }) {
   const store = opts.store ?? new Map<string, string>();
-  vi.stubGlobal("location", { pathname: opts.pathname ?? "/", hostname: "adityadev.in" });
+  vi.stubGlobal("location", { pathname: opts.pathname ?? "/", search: opts.search ?? "", hostname: "adityadev.in" });
   vi.stubGlobal("document", { referrer: opts.referrer ?? "" });
   vi.stubGlobal("sessionStorage", {
     getItem: (k: string) => store.get(k) ?? null,
@@ -48,6 +48,29 @@ describe("lib/track.ts (D15)", () => {
     expect(store.get(REFERRER_KEY)).toBeUndefined();
   });
 
+  it("stampSession captures the ?ref campaign token first-touch, and getAttribution returns it", () => {
+    const store = stubBrowser({ pathname: "/blog/post-a", search: "?ref=li" });
+    stampSession();
+    expect(store.get(REF_KEY)).toBe("li");
+    expect(getAttribution().ref).toBe("li");
+  });
+
+  it("?ref is first-touch: a later same-session nav without ?ref does not clear it", () => {
+    const store = stubBrowser({ pathname: "/blog/post-a", search: "?ref=x" });
+    stampSession();
+    // Second navigation, no ?ref — first landing is set, so nothing re-stamps.
+    vi.stubGlobal("location", { pathname: "/contact", search: "", hostname: "adityadev.in" });
+    stampSession();
+    expect(store.get(REF_KEY)).toBe("x");
+  });
+
+  it("ignores a malformed ?ref (spaces, punctuation, over-length) — junk never reaches storage", () => {
+    const store = stubBrowser({ pathname: "/", search: "?ref=li%20li!" });
+    stampSession();
+    expect(store.get(REF_KEY)).toBeUndefined();
+    expect(getAttribution().ref).toBe("");
+  });
+
   it("degrades silently when storage is unavailable (privacy mode)", () => {
     vi.stubGlobal("location", { pathname: "/", hostname: "adityadev.in" });
     vi.stubGlobal("document", { referrer: "" });
@@ -60,6 +83,6 @@ describe("lib/track.ts (D15)", () => {
       },
     });
     expect(() => stampSession()).not.toThrow();
-    expect(getAttribution()).toEqual({ source_page: "/", first_landing: "", referrer: "" });
+    expect(getAttribution()).toEqual({ source_page: "/", first_landing: "", referrer: "", ref: "" });
   });
 });

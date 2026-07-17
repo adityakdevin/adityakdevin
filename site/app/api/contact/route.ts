@@ -87,9 +87,15 @@ export async function POST(req: NextRequest) {
         return "";
       }
     }
+    // ?ref campaign token (li, x, ig…) — a short slug, NOT a site path, so it
+    // needs its own validator; the path regex below would reject it. Kept in
+    // sync with REF_RE in lib/track.ts.
+    if (k === "ref") {
+      return /^[a-z0-9][a-z0-9_-]{0,31}$/.test(raw) ? raw : "";
+    }
     return /^\/[\w\-/.%#?=&]*$/.test(raw) ? raw : "";
   };
-  const attr = (["source_page", "first_landing", "referrer"] as const)
+  const attr = (["source_page", "first_landing", "referrer", "ref"] as const)
     .map((k) => [k, attrValue(k)] as const)
     .filter(([, v]) => v !== "");
 
