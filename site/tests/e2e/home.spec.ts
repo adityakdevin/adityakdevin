@@ -38,7 +38,10 @@ test.describe("homepage", () => {
     expect(types).toContain("ProfilePage");
   });
 
-  test("theme toggle flips data-theme and persists", async ({ page }) => {
+  test("theme toggle flips data-theme and persists", async ({ page, isMobile }) => {
+    // Toggle removed from the mobile tab bar (2026-07-17) — mobile follows
+    // prefers-color-scheme; the toggle is desktop-header-only now.
+    test.skip(isMobile, "theme toggle is desktop-only");
     await page.goto("/");
     // toggle lives in sticky header — scroll past hero to reveal it
     await page.mouse.wheel(0, 2000);

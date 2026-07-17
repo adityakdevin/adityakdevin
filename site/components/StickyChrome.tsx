@@ -192,6 +192,8 @@ export function StickyChrome() {
         }}
         aria-label="Site"
       >
+        {/* Theme toggle removed from mobile nav (2026-07-17) — mobile follows
+            prefers-color-scheme; the freed slot widens the booking CTA. */}
         <div className="mono grid grid-cols-5 items-stretch">
           <Tab href="/" label="home" active={isHome}>
             <HomeIcon />
@@ -202,16 +204,13 @@ export function StickyChrome() {
           <Tab href="/cv" label="cv" active={pathname === "/cv"}>
             <FileIcon />
           </Tab>
-          <div className="flex items-stretch justify-center">
-            <ThemeToggle variant="tab" />
-          </div>
           <a
             href={profile.bookingUrl}
-            className="btn m-2 flex flex-col items-center justify-center gap-0.5 rounded-lg no-underline"
+            className="btn col-span-2 m-2 flex flex-row items-center justify-center gap-1.5 rounded-lg no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
             <CalendarIcon />
-            <span className="text-[10px] font-semibold">book</span>
+            <span className="text-xs font-semibold">book a call</span>
           </a>
         </div>
       </nav>
