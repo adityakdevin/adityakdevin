@@ -9,7 +9,7 @@
 //   bun run social-card <slug>          → carousel slides   (1080x1350, IG 4:5)   from `slides:`
 //   bun run social-card <slug> --reel   → reel frames        (1080x1920, IG 9:16)  from `reel:`
 //   bun run social-card <slug> --all    → both
-// Reads:  ../ops/social/<slug>.media.md   Writes: ../ops/social/<slug>/*.png
+// Reads:  ../ops/social/posts/<slug>/pack.md   Writes: ../ops/social/posts/<slug>/assets/*.png
 
 import { ImageResponse } from "next/og";
 import { createElement as h } from "react";
@@ -99,8 +99,9 @@ async function main() {
   const wantReel = mode === "--reel" || mode === "--all";
   const wantCarousel = mode === "" || mode === "--all";
 
-  const raw = await readFile(path.join(SOCIAL_DIR, `${slug}.media.md`), "utf-8").catch(() => null);
-  if (raw == null) { console.error(`no media pack at ops/social/${slug}.media.md`); process.exit(1); }
+  const packPath = path.join(SOCIAL_DIR, "posts", slug, "pack.md");
+  const raw = await readFile(packPath, "utf-8").catch(() => null);
+  if (raw == null) { console.error(`no pack at ops/social/posts/${slug}/pack.md`); process.exit(1); }
   const data = matter(raw).data;
 
   const [regular, semibold] = await Promise.all([
@@ -111,7 +112,7 @@ async function main() {
     { name: "Plex", data: regular, weight: 400, style: "normal" },
     { name: "Plex", data: semibold, weight: 600, style: "normal" },
   ];
-  const outDir = path.join(SOCIAL_DIR, slug);
+  const outDir = path.join(SOCIAL_DIR, "posts", slug, "assets");
   await mkdir(outDir, { recursive: true });
 
   let total = 0;
