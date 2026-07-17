@@ -1,4 +1,5 @@
 import { profile } from "@/content/data/profile";
+import { withRef } from "@/lib/site";
 import { TypingCaption } from "@/components/TypingCaption";
 
 /**
@@ -45,7 +46,7 @@ export function Hero() {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <a
-              href={profile.bookingUrl}
+              href={withRef(profile.bookingUrl, "hero")}
               className="btn mono min-h-11 rounded px-6 py-3 text-center text-base font-semibold no-underline"
               // theme-locked dark hero: literal pair, NOT tokens (light-theme --on-accent is white)
               style={{ background: "var(--dark-accent)", color: "var(--dark-on-accent)" }}

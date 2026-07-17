@@ -10,6 +10,12 @@
 
 export const FIRST_LANDING_KEY = "first_landing";
 export const REFERRER_KEY = "first_referrer";
+export const REF_KEY = "first_ref";
+
+// Social campaign token from ?ref=<platform> (e.g. li, x, ig). Kept short and
+// path-safe so it survives the contact route's attr validator. Same regex must
+// live on the server (route.ts) — keep them in sync.
+const REF_RE = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 
 export function stampSession() {
   try {
@@ -20,6 +26,14 @@ export function stampSession() {
       // must count as an external referrer.
       if (ref && new URL(ref).hostname !== location.hostname) {
         sessionStorage.setItem(REFERRER_KEY, ref);
+      }
+      // First-touch ?ref capture: the social link IS the landing page, so a
+      // later same-session nav without ?ref must NOT overwrite it (that's why
+      // this lives inside the first-landing gate). Validated here so junk never
+      // reaches storage; validated again server-side.
+      const campaign = new URLSearchParams(location.search ?? "").get("ref");
+      if (campaign && REF_RE.test(campaign)) {
+        sessionStorage.setItem(REF_KEY, campaign);
       }
     }
   } catch {
@@ -34,10 +48,11 @@ export function getAttribution() {
       source_page,
       first_landing: sessionStorage.getItem(FIRST_LANDING_KEY) ?? "",
       referrer: sessionStorage.getItem(REFERRER_KEY) ?? "",
+      ref: sessionStorage.getItem(REF_KEY) ?? "",
     };
   } catch {
     // Storage blocked (privacy mode) — keep the page, drop the session fields.
-    return { source_page, first_landing: "", referrer: "" };
+    return { source_page, first_landing: "", referrer: "", ref: "" };
   }
 }
 

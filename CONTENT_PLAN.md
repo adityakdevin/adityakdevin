@@ -13,9 +13,23 @@ sales are side effects, not targets.
 
 ## Positioning
 
-**"The developer who builds complete products on Laravel full-stack
-(Livewire/Inertia) — and shows the whole build, with real clients and real
+**"The engineer who ships production AI features that work — across Laravel,
+Node.js, and Python — and shows the whole build, with real clients and real
 numbers."**
+
+Broadened 2026-07-17 from Laravel-only to full-stack AI (equal billing across
+the three stacks). The differentiator is **not the stack — it's proven,
+production, real-client, real-number delivery**, which is stack-independent.
+Laravel, Node, and Python are equal proof of range; rotate them so none reads as
+a footnote.
+
+**SEO consequence (accepted tradeoff, needs action):** equal billing dilutes the
+existing "hire Laravel AI developer" search equity. Do NOT genericize the working
+Laravel service page — keep it as one specialized SEO pillar and add **sibling
+service pages** (`/services/nodejs-ai-development`, `/services/python-ai-development`)
+so each stack still ranks for its own commercial-intent queries. Generic
+"full-stack AI developer" is a crowded, low-intent search term; specialized
+per-stack pages beat it. See decisions log.
 
 Audience answered "anyone" in the interview; the plan resolves that to
 **founders and CTOs** as the primary reader (walkthroughs serve both). Local
@@ -64,6 +78,30 @@ language into blog posts.
 5. Walkthrough part 3: deploy, monitoring, what it costs to run
 6. "What it actually costs to build a [X] in 2026" — founder-targeted,
    highest commercial intent
+
+## AI content themes (Laravel-framed backlog)
+
+Topic backlog for the AI track (~25% of the mix). **Spine rule: every one is
+told through a real production build (Laravel, Node, or Python) with code and,
+where possible, client numbers.** Generic AI think-pieces (model news, prompting
+tips in the abstract) are commodity content and do NOT belong on the blog — they
+live on X only. Each theme is a walkthrough, not commentary. **Rotate the stack**
+across posts so all three read as first-class.
+
+| Theme | Blog framing (production-AI spine, stack rotated) | Lead value |
+|-------|--------------------------------------------------|------------|
+| **AI automation** | "Automating [real client workflow] — X hrs → Y min" (Laravel queue / Node worker / Python job) | **High** — founder-facing; what buyers pay for |
+| **E2E AI workflows** | "End-to-end: idea → build → deployed AI workflow, with run cost" (pick the stack the client used) | **High** — proves capability + cost |
+| **AI generation** | "Generating [invoices/reports/replies] in production — code + guardrails" (any stack) | Medium — dev-facing, some buyer pull |
+| **Prompting** | "Prompt engineering *inside* a shipped feature: versioning, testing, cost control" (any stack) | Medium — ties abstract skill to shipped code |
+| **New AI Era / model updates** | Not a blog post. X-only, ephemeral. | Low — reach, not leads |
+
+Sequencing: fold the two High-value themes (AI automation, E2E workflows) into
+the walkthrough + case-study cadence; treat AI generation / prompting as the
+continuing AI series posts; keep model-news on X. Rotate Laravel / Node / Python
+so the blog proves range without any one stack becoming a footnote. Do not let
+the backlog pull the blog off the "production AI for real clients, real numbers"
+positioning — that spine holds regardless of language.
 
 ## Success check (eng review D6/D15 — leads primary, instrumented)
 

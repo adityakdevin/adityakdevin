@@ -53,6 +53,30 @@ describe("POST /api/contact — D15 attribution passthrough", () => {
     const line = (sent.text as string).split("\n").find((l: string) => l.startsWith("source_page"))!;
     expect(line.length).toBeLessThanOrEqual(313); // "source_page: " + 300
   });
+
+  it("accepts a valid ?ref campaign token (the whole social-attribution point)", async () => {
+    const res = await POST(makeReq({ ...valid, ref: "li" }, "7.7.7.4"));
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(sent.text).toContain("ref: li");
+    expect(sent.html).toContain(">li</td>"); // the value cell, not a stray "li" (e.g. Portfolio)
+  });
+
+  it("rejects a bogus ref that isn't a clean slug — the ref validator, not the path one", async () => {
+    // "/blog/x" would PASS the path regex but must be rejected as a ref: this
+    // proves the ref key gets its own validator branch (Bug B regression guard).
+    const res = await POST(makeReq({ ...valid, ref: "/blog/x" }, "7.7.7.5"));
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(sent.text).not.toContain("ref: /blog/x");
+  });
+
+  it("still guards non-ref path keys with the path validator (no regression)", async () => {
+    const res = await POST(makeReq({ ...valid, source_page: "not-a-path" }, "7.7.7.6"));
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(sent.text).not.toContain("source_page: not-a-path");
+  });
 });
 
 describe("POST /api/contact", () => {

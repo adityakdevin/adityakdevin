@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { profile } from "@/content/data/profile";
 import { getAttribution, track } from "@/lib/track";
-import { EMAIL_RE } from "@/lib/site";
+import { EMAIL_RE, withRef } from "@/lib/site";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -70,7 +70,7 @@ export function ContactForm() {
           ✓ Got it — I reply within 24 hours.
         </p>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-          Prefer faster? <a href={profile.bookingUrl}>Book a call directly</a>.
+          Prefer faster? <a href={withRef(profile.bookingUrl, "contact")}>Book a call directly</a>.
         </p>
       </div>
     );
