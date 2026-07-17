@@ -38,10 +38,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(articleJsonLd(post)) }}
       />
-      <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
+      {/* break-all: the slug is one unbreakable mono token — without it, long
+          slugs force horizontal page scroll on phones. */}
+      <p className="mono mb-3 break-all text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat blog/{post.slug}.md
       </p>
-      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">{post.title}</h1>
+      <h1 className="mono h2-rule text-3xl font-semibold leading-tight md:text-4xl">
+        {post.title}
+      </h1>
       <p className="mono mt-4 text-sm" style={{ color: "var(--muted)" }}>
         {post.date} · {post.tags.join(" · ")}
       </p>

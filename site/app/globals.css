@@ -136,7 +136,9 @@ details[open] summary { color: var(--accent); }
 }
 
 /* ── Blog post body (design doc 20260717) — MDX output, tokens only ── */
-.prose-post { line-height: 1.75; }
+/* overflow-wrap: long URLs/tokens in prose wrap instead of widening the page
+   on phones; code blocks and tables scroll inside their own boxes. */
+.prose-post { line-height: 1.75; overflow-wrap: break-word; }
 /* No font-family here — the global h1,h2,h3 rule already applies IBM Plex Mono. */
 .prose-post h2 { font-size: 1.5rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
 .prose-post h3 { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.5rem; }
@@ -152,7 +154,7 @@ details[open] summary { color: var(--accent); }
 .prose-post pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; }
 .prose-post img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); }
 .prose-post hr { border: 0; border-top: 1px solid var(--border); margin: 2.5rem 0; }
-.prose-post table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+.prose-post table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; display: block; overflow-x: auto; }
 .prose-post th, .prose-post td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
 
 /* ── CV print stylesheet (§8) ── */

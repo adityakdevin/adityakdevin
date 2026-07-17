@@ -19,8 +19,12 @@ function tmpPostsDir(files: Record<string, string>): string {
 describe("lib/posts.ts loader", () => {
   it("parses posts newest-first with required and optional fields", () => {
     const posts = getAllPosts(FIXTURES);
-    expect(posts.map((p) => p.slug)).toEqual(["building-the-thing", "legacy-import"]);
-    const [walkthrough, legacy] = posts;
+    expect(posts.map((p) => p.slug)).toEqual([
+      "building-the-thing", // 2026-07-10
+      "a-very-long-slug-that-mirrors-real-production-post-slugs-for-overflow-testing", // 2026-07-01
+      "legacy-import", // 2026-01-05
+    ]);
+    const [walkthrough, , legacy] = posts;
     expect(walkthrough.title).toContain("Building the thing");
     expect(walkthrough.client).toBe("Acme Logistics");
     expect(walkthrough.devtoId).toBeUndefined(); // legal pre-syndication state
@@ -116,17 +120,17 @@ describe("homepage Field-notes merge (T5 regressions)", () => {
     const notes = mergeFieldNotes(local, devtoFeed);
     expect(notes.map((n) => n.key)).toEqual([
       "local-building-the-thing", // 2026-07-10
-      "devto-999", // 2026-06-01
-      "local-legacy-import", // 2026-01-05 — API copy with id 123456 deduped away
+      "local-a-very-long-slug-that-mirrors-real-production-post-slugs-for-overflow-testing", // 2026-07-01
+      "devto-999", // 2026-06-01 — the id-123456 API copy is deduped; legacy-import (01-05) truncated by limit
     ]);
     expect(notes[0].href).toBe("/blog/building-the-thing");
-    expect(notes[1].href).toBe("https://dev.to/x/only");
+    expect(notes[2].href).toBe("https://dev.to/x/only");
   });
 
   it("renders local posts even when Dev.to is down (§5.6 now legacy-only)", async () => {
     const { mergeFieldNotes } = await import("@/lib/posts");
     const notes = mergeFieldNotes(local, null);
-    expect(notes.length).toBe(2);
+    expect(notes.length).toBe(3);
     expect(notes.every((n) => n.key.startsWith("local-"))).toBe(true);
   });
 

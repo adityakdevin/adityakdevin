@@ -1,0 +1,15 @@
+---
+title: "A very long slug that mirrors real production post slugs for overflow testing"
+description: "Fixture with a 70+ character slug — guards the mobile horizontal-overflow regression in the post-page eyebrow."
+date: "2026-07-01"
+tags: ["Testing"]
+---
+
+## Why this fixture exists
+
+The `$ cat blog/<slug>.md` eyebrow renders the slug as one unbreakable mono
+token. Real slugs run 60+ characters; without `break-all` they force
+horizontal page scroll on phones. This post keeps that failure mode covered.
+
+Also a long unbroken URL to exercise prose overflow-wrap:
+https://example.com/a/very/long/path/that/would/widen/the/page/if/overflow-wrap/were/missing/from/the/prose-post/container/style

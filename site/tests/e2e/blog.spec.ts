@@ -43,6 +43,24 @@ test.describe("post page → CTA flow (runs when posts exist)", () => {
       "/#contact",
     );
   });
+
+  test("post page never scrolls horizontally on mobile (long-slug eyebrow regression)", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "horizontal-overflow bug is a small-viewport failure mode");
+    await page.goto("/blog");
+    const links = page.locator("main ul li a");
+    test.skip((await links.count()) === 0, "no posts published yet");
+    // Longest slug is the one that overflows first — target it specifically.
+    const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    await page.goto(hrefs.reduce((a, b) => (b.length > a.length ? b : a)));
+    await expect(page.locator("article.prose-post")).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
 });
 
 test.describe("newsletter form UX", () => {
