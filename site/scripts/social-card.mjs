@@ -13,7 +13,7 @@
 
 import { ImageResponse } from "next/og";
 import { createElement as h } from "react";
-import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, unlink } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 
@@ -35,8 +35,9 @@ const ROLE = {
   hook:    { label: "HOOK",    size: 68, weight: 600 },
   problem: { label: "PROBLEM", size: 46, weight: 400 },
   result:  { label: "RESULT",  size: 46, weight: 600 },
-  cta:     { label: "CTA",     size: 48, weight: 600 },
-  code:    { label: "CODE",    size: 30, weight: 400, mono: true },
+  cta:      { label: "CTA",       size: 48, weight: 600 },
+  code:     { label: "CODE",      size: 30, weight: 400, mono: true },
+  guardrail:{ label: "GUARDRAIL", size: 44, weight: 600 },
 };
 
 function eyebrow(left, right) {
@@ -74,6 +75,11 @@ function reelElement({ t, text, note }, i, total, slug) {
 }
 
 async function render(items, kind, { W, Hgt, el, fonts, outDir, slug }) {
+  // Clear stale files of this kind first — a shorter set (or renumbered slides)
+  // must not leave orphans (e.g. an old slide-6 after dropping to 5).
+  for (const f of await readdir(outDir).catch(() => [])) {
+    if (f.startsWith(`${kind}-`) && f.endsWith(".png")) await unlink(path.join(outDir, f)).catch(() => {});
+  }
   let n = 0;
   for (const [i, item] of items.entries()) {
     const img = new ImageResponse(el(item, i, items.length, slug), { width: W, height: Hgt, fonts });
