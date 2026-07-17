@@ -109,7 +109,9 @@ $ tail -f ~/blog/latest.log
 ```
 
 <!-- BLOG-POST-LIST:START -->
-🚧 Fresh posts land here automatically once published on [dev.to/adityakdevin](https://dev.to/adityakdevin)
+- [RAG in Laravel: Embeddings and pgvector for a Knowledge-Base Bot](https://dev.to/adityakdevin/rag-in-laravel-embeddings-and-pgvector-for-a-knowledge-base-bot-3l2g)
+- [Streaming AI Responses in Laravel with Server-Sent Events](https://dev.to/adityakdevin/streaming-ai-responses-in-laravel-with-server-sent-events-3bob)
+- [Adding an AI Chatbot to Your Laravel App with the OpenAI API](https://dev.to/adityakdevin/adding-an-ai-chatbot-to-your-laravel-app-with-the-openai-api-h0f)
 <!-- BLOG-POST-LIST:END -->
 
 ```bash
