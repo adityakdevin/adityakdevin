@@ -3,18 +3,6 @@
 Organized by component, then priority (P0 highest → P4). Completed items move
 to the bottom with their shipping version/date.
 
-## Blog / Content Engine
-
-### Retroactive canonical migration of top Dev.to posts
-
-- **Priority:** P2
-- **What:** Republish the top 2–3 performing Dev.to articles as posts in `site/content/posts/` (using the `canonical` frontmatter override until each is migrated), then edit the Dev.to originals' `canonical_url` to point at the site copies.
-- **Why:** Those posts already have traffic and backlinks accruing to dev.to's domain; migration redirects that equity to adityadev.in — the fastest available domain-authority boost.
-- **Pros:** Content already written and proven; pure SEO gain.
-- **Cons:** Editing an old Dev.to post's canonical can temporarily wobble its ranking; needs per-post judgment on which are worth migrating.
-- **Context:** Decided at /plan-eng-review 2026-07-17 (design doc `adityakdevin-master-design-20260717-031600.md`, Open Question 2 → resolved as deferred). Dev.to supports `canonical_url` on article update.
-- **Depends on / blocked by:** `/blog` live; `/draft-devto-post` pipeline updated to site-first + canonical_url and proven on new posts.
-
 ## Chatbot / Widget
 
 ### Upgrade chatbot from cached-corpus prompt to RAG
@@ -52,4 +40,13 @@ to the bottom with their shipping version/date.
 
 ## Completed
 
-_(nothing completed via /ship yet — items land here with their shipping date)_
+### Retroactive canonical migration of top Dev.to posts
+
+- **Priority:** P2
+- **Completed:** 2026-07-17 — posts #2 (SSE, devtoId 4156141) and #3 (RAG, devtoId 4159847) republished site-first with original dates; Dev.to canonicals flipped to the site copies; homepage dedupe verified live. Post #1 (chatbot intro, 4156045) deliberately left Dev.to-canonical for now — migrate the same way if/when wanted.
+- **What:** Republish the top 2–3 performing Dev.to articles as posts in `site/content/posts/` (using the `canonical` frontmatter override until each is migrated), then edit the Dev.to originals' `canonical_url` to point at the site copies.
+- **Why:** Those posts already have traffic and backlinks accruing to dev.to's domain; migration redirects that equity to adityadev.in — the fastest available domain-authority boost.
+- **Pros:** Content already written and proven; pure SEO gain.
+- **Cons:** Editing an old Dev.to post's canonical can temporarily wobble its ranking; needs per-post judgment on which are worth migrating.
+- **Context:** Decided at /plan-eng-review 2026-07-17 (design doc `adityakdevin-master-design-20260717-031600.md`, Open Question 2 → resolved as deferred). Dev.to supports `canonical_url` on article update.
+- **Depends on / blocked by:** `/blog` live; `/draft-devto-post` pipeline updated to site-first + canonical_url and proven on new posts.
