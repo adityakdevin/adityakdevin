@@ -18,7 +18,8 @@ Replace the 2020 Bootstrap template at adityadev.in with a modern, AI-oriented p
 |---|---|
 | Stack | **Next.js (App Router) on Vercel** — verify Hobby-tier commercial-use terms BEFORE build starts; budget for Pro ($20/mo) if required |
 | Repo | **This repo, `/site` subdirectory**; Vercel root dir = `/site` + **Ignored Build Step** `git diff --quiet HEAD^ HEAD -- ./site` so bot commits (cards/blog/snake) never trigger deploys |
-| Content architecture | Portfolio + **case-study pages**; blog stays Dev.to-first |
+| Content architecture | Portfolio + **case-study pages** + **on-site blog** (SUPERSEDED 2026-07-17, decision d6ca1e10: new posts publish canonical at `/blog`, Dev.to becomes syndication with `canonical_url` back — see content-engine design doc `adityakdevin-master-design-20260717-031600.md`) |
+| Newsletter | **Simple capture via Buttondown** (SUPERSEDED 2026-07-17, decision 94cbe686 — reverses the §16 "not built" row; scope: one form + `/api/subscribe` proxy, Buttondown owns opt-in/unsubscribe) |
 | AI feature | **Terminal UI with AI inside** — commands offline, free text → LLM |
 | Bot brain | **Claude + cached full-corpus system prompt** (entire site content ≈ 15–25k tokens, prompt-cached). RAG upgrade deferred → TODOS.md (trigger: Dev.to post #3 live + P3 stable) |
 | Aesthetic | **Hybrid**: scannable modern site + terminal accents; full terminal lives in the widget |
@@ -43,22 +44,28 @@ adityakdevin/adityakdevin (this repo)
 ├── index.html, assets/, CNAME       # OLD site — kept 7 days past cutover as rollback, then deleted
 └── site/                            # NEW Next.js app (Vercel root directory)
     ├── app/
-    │   ├── page.tsx                 # Home
+    │   ├── page.tsx                 # Home (Field notes = local posts + Dev.to legacy, merged)
     │   ├── cv/page.tsx
     │   ├── work/[slug]/page.tsx     # Case studies (P2)
+    │   ├── blog/…                   # Phase 4 (2026-07-17): index + [slug] (MDX) + rss.xml
+    │   ├── services/laravel-ai-development/page.tsx  # Phase 4: service-intent page
     │   ├── now/page.tsx             # P2 — carries visible "last updated"; CUT if stale >2 months
     │   ├── uses/page.tsx            # P2
-    │   ├── privacy/page.tsx         # P1b — plain-language: GA4, form data, chat logging, removal contact
+    │   ├── privacy/page.tsx         # P1b — plain-language: GA4, form data, chat logging, newsletter, removal
     │   ├── api/chat/route.ts        # Claude streaming endpoint (Edge) — P3
-    │   └── api/contact/route.ts     # Form → email (Resend)
+    │   ├── api/contact/route.ts     # Form → email (Mailtrap) + D15 attribution fields
+    │   └── api/subscribe/route.ts   # Phase 4: newsletter → Buttondown proxy
     ├── content/
     │   ├── data/profile.ts          # identity, roles, skills, experience, contact
     │   ├── data/faq.ts              # single source for: rendered FAQ + FAQPage JSON-LD + bot prompt
+    │   ├── posts/*.mdx              # Phase 4: blog posts — EXCLUDED from the bot prompt (§6 budget)
     │   └── *.mdx                    # case studies, now, uses
     └── lib/
-        ├── prompt.ts                # builds the bot's cached system prompt from content/** at build time
-        ├── jsonld.ts                # schema generators (all consume profile.ts/faq.ts)
-        └── devto.ts                 # posts fetch w/ fallback (§5.5)
+        ├── prompt.ts                # bot's cached system prompt from content/data/** ONLY (posts excluded — unit-tested)
+        ├── jsonld.ts                # schema generators incl. Article (consume profile.ts/faq.ts/posts)
+        ├── posts.ts                 # Phase 4: frontmatter loader → blog pages, sitemap, RSS, Field-notes merge
+        ├── ratelimit.ts             # shared in-memory limiter (contact + subscribe; Upstash swap = one file)
+        └── devto.ts                 # legacy posts fetch w/ fallback (§5.5) — merged, not sole source
 ```
 
 **Data flow (single source of truth):**
@@ -69,6 +76,11 @@ profile.ts ──┬─→ Home hero/services     faq.ts ──┬─→ FAQ sec
              ├─→ JSON-LD Person graph            └─→ bot system prompt
              ├─→ llms.txt (generated)
              └─→ bot system prompt (via lib/prompt.ts)
+
+content/posts/*.mdx ──┬─→ /blog/[slug] (canonical) + /blog index + Field-notes merge
+ (Phase 4)            ├─→ sitemap.ts, rss.xml, Article JSON-LD
+                      ├─→ /draft-devto-post → Dev.to (canonical_url ↩)
+                      └─X NOT the bot prompt — §6 cache budget (unit-tested exclusion)
 ```
 
 Scope of the rule: structured FACTS live in profile.ts/faq.ts. Page prose, SEO copy, and case-study narrative stay in their pages/MDX — over-centralizing editorial copy produces generic text (outside-voice note, accepted).
@@ -240,7 +252,7 @@ GA4 only — loaded on first interaction or 3s idle (never in the critical path)
 - **Monorepo `/site`:** accepted; boundary enforced by Ignored Build Step.
 - **Named clients + metrics:** requires written permission; fallback = named project, qualitative outcome.
 - **Public phone number:** WILL attract spam/scraper calls — accepted deliberately for local-client conversion; honeypot protects only the form, nothing protects the phone. Revisit if spam volume hurts.
-- **Blog off-site (Dev.to):** cedes topical SEO for distribution; case studies + /now + /uses carry on-site AEO.
+- ~~**Blog off-site (Dev.to)**~~ — risk retired 2026-07-17: blog moved on-site (decision d6ca1e10). The replacement risk: content is now a build+writing commitment; the month-6+ kill checkpoint in CONTENT_PLAN.md owns it.
 - **GA4:** familiarity wins; revisit if EU consent UX becomes annoying.
 - **Link-first booking:** context switch at CTA accepted in exchange for zero third-party weight at launch; embed revisited with P2 data.
 - **Terminal aesthetic:** deliberately hybrid so non-technical buyers get a scannable site; if bounce data says otherwise, accents dial down — brand serves conversion, not vice versa.
@@ -252,10 +264,10 @@ GA4 only — loaded on first interaction or 3s idle (never in the critical path)
 ## 16. NOT in scope (considered, explicitly deferred)
 
 - **RAG pipeline** — deferred to TODOS.md; cached full-corpus prompt is the launch architecture (corpus ≈15–25k tokens; caching beats retrieval at this size).
-- **On-site blog** — Dev.to stays canonical (interview decision); revisit only if AEO data demands it.
+- ~~**On-site blog**~~ — SUPERSEDED 2026-07-17 (decision d6ca1e10): `/blog` built as additive Phase 4; new posts site-first canonical, Dev.to syndicated with `canonical_url`. Rationale + full scope: content-engine design doc.
 - **Inline cal.com embed** — P2 experiment, not launch scope.
 - **Anchor-URL redirects** — cut; hash fragments never reach the server, nothing to 301.
-- **WhatsApp CTA, newsletters, dark-mode-only art directions** — not requested, not built.
+- **WhatsApp CTA, dark-mode-only art directions** — not requested, not built. (~~newsletters~~ — SUPERSEDED 2026-07-17, decision 94cbe686: simple Buttondown capture ships with the blog phase.)
 - **Competitive head-term SEO campaign** — out of scope until backlink base exists (see §1).
 
 ## 17. What already exists (reused, not rebuilt)
