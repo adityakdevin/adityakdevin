@@ -2,6 +2,7 @@ import Link from "next/link";
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 import { getLatestPosts } from "@/lib/devto";
+import { getAllPosts, mergeFieldNotes } from "@/lib/posts";
 import { personJsonLd, profilePageJsonLd, faqJsonLd, jsonLdScript } from "@/lib/jsonld";
 import { Hero } from "@/components/Hero";
 import { Reveal } from "@/components/Reveal";
@@ -24,7 +25,9 @@ function H2({ children, id }: { children: React.ReactNode; id?: string }) {
 }
 
 export default async function Home() {
-  const posts = await getLatestPosts(3);
+  // Local site-first posts merge with the Dev.to legacy feed, deduped by
+  // devtoId — Dev.to being down no longer empties this section (T5).
+  const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3));
 
   return (
     <main className="flex-1">
@@ -163,26 +166,32 @@ export default async function Home() {
         ) : null}
       </section>
 
-      {/* 6 — Writing: plain dated list, ls -la styling; hides entirely on fetch failure */}
-      {posts && posts.length > 0 ? (
+      {/* 6 — Writing: local posts + Dev.to legacy merged (T5); hides only when BOTH are empty */}
+      {notes.length > 0 ? (
         <section className="border-y" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
           <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
             <Eyebrow cmd="ls -la ~/writing" />
             <H2>Field notes from Laravel + AI work</H2>
             <ul className="mono mt-8 space-y-4">
-              {posts.map((p) => (
-                <li key={p.id} className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6">
+              {notes.map((n) => (
+                <li key={n.key} className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6">
                   <span className="shrink-0 text-sm" style={{ color: "var(--muted)" }}>
-                    {new Date(p.published_at).toISOString().slice(0, 10)}
+                    {n.date}
                   </span>
-                  <a href={p.url} className="text-base font-medium">
-                    {p.title}
-                  </a>
+                  {n.href.startsWith("/") ? (
+                    <Link href={n.href} className="text-base font-medium">
+                      {n.title}
+                    </Link>
+                  ) : (
+                    <a href={n.href} className="text-base font-medium">
+                      {n.title}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
             <p className="mono mt-6 text-sm">
-              <a href={profile.devto}>all posts on dev.to →</a>
+              <Link href="/blog">all field notes →</Link>
             </p>
           </div>
         </section>

@@ -32,7 +32,7 @@
   --accent: #0e7490; /* cyan-700 — 4.5:1+ on white/bg, AA for small text (FINDING-002) */
   --border: #d0d7de;
   --focus: #0e7490;
-  --error: var(--error);
+  --error: #d1242f; /* self-referencing var was guaranteed-invalid — error states vanished in light mode */
   --on-accent: #ffffff; /* white on cyan-700 = 4.9:1 */
 }
 
@@ -64,9 +64,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 a { transition: color 150ms ease-out; }
-main a:not(.btn) { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
-main a:not(.btn):hover { text-decoration-color: var(--accent); color: var(--accent); }
-main a:not(.btn):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
+main a:not(.btn):not(.no-underline) { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
+main a:not(.btn):not(.no-underline):hover { text-decoration-color: var(--accent); color: var(--accent); }
+main a:not(.btn):not(.no-underline):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
+main a:not(.btn).no-underline:hover { color: var(--accent); }
 
 .btn:active { transform: translateY(1px); }
 .btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
@@ -133,6 +134,26 @@ details[open] summary { color: var(--accent); }
   .cursor::after { animation: none; opacity: 1; }
   html { scroll-behavior: auto; }
 }
+
+/* ── Blog post body (design doc 20260717) — MDX output, tokens only ── */
+.prose-post { line-height: 1.75; }
+/* No font-family here — the global h1,h2,h3 rule already applies IBM Plex Mono. */
+.prose-post h2 { font-size: 1.5rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
+.prose-post h3 { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+.prose-post p { margin: 1rem 0; }
+.prose-post ul, .prose-post ol { margin: 1rem 0; padding-left: 1.5rem; }
+.prose-post ul { list-style: disc; }
+.prose-post ol { list-style: decimal; }
+.prose-post li { margin: 0.375rem 0; }
+.prose-post a { color: var(--accent); }
+.prose-post blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--muted); margin: 1.5rem 0; }
+.prose-post code { font-family: var(--font-plex-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.35em; }
+.prose-post pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1.5rem 0; }
+.prose-post pre code { background: none; border: none; padding: 0; font-size: 0.875rem; line-height: 1.6; }
+.prose-post img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+.prose-post hr { border: 0; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+.prose-post table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+.prose-post th, .prose-post td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
 
 /* ── CV print stylesheet (§8) ── */
 @media print {
