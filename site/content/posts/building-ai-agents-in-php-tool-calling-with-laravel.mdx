@@ -1,0 +1,201 @@
+---
+title: "Building AI Agents in PHP: Tool Calling with Laravel"
+description: "Turn a chat endpoint into a working agent: define tools as plain Laravel classes, run the tool-call loop safely, and ship it with guardrails."
+date: "2026-07-17"
+tags: ["Laravel", "AI", "PHP", "Agents"]
+---
+
+## The problem: chat that can only talk
+
+The chatbot from earlier in this series can answer questions, but ask it "how many orders did we ship yesterday?" and it will confidently make something up. It has no hands — it can't query your database, call your services, or do anything except generate text.
+
+Tool calling fixes that. You describe functions to the model; when a user's request needs one, the model responds with "call this function with these arguments" instead of prose. Your code runs the function, feeds the result back, and the model writes the final answer grounded in real data. That loop — model picks tool, you execute, model continues — is the whole trick behind "agents." No framework required.
+
+I've shipped this in production Laravel apps for order lookups, report generation, and support triage. Here's the pattern that survived contact with real users.
+
+## Architecture
+
+Three pieces, all plain Laravel:
+
+```
+User message ──→ AgentController
+                     │
+                     ▼
+              AgentRunner (the loop, max N rounds)
+                     │
+        ┌── model returns text? ──→ done, return answer
+        │
+        └── model returns tool_calls?
+                     │
+                     ▼
+              ToolRegistry ──→ OrderLookupTool
+                            ──→ ShippingStatusTool
+                     │              (each: name, schema, handle())
+                     ▼
+              results appended to messages ──→ back to the model
+```
+
+Each tool is one class. The registry maps names to classes. The runner owns the loop and the guardrails. That's it.
+
+## Step 1: a tool contract
+
+```php
+// app/Ai/Tools/Tool.php
+interface Tool
+{
+    public function name(): string;
+
+    public function description(): string;
+
+    /** JSON Schema for the arguments the model may pass. */
+    public function parameters(): array;
+
+    /** @param array $args validated arguments from the model */
+    public function handle(array $args): string;
+}
+```
+
+Tools return strings because that's what goes back into the conversation. JSON-encode structured data — models read it fine.
+
+## Step 2: a real tool
+
+```php
+// app/Ai/Tools/OrderLookupTool.php
+class OrderLookupTool implements Tool
+{
+    public function name(): string
+    {
+        return 'order_lookup';
+    }
+
+    public function description(): string
+    {
+        return 'Look up an order by its number. Returns status, items, and shipping info.';
+    }
+
+    public function parameters(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'order_number' => [
+                    'type' => 'string',
+                    'description' => 'The order number, e.g. ORD-2041',
+                ],
+            ],
+            'required' => ['order_number'],
+        ];
+    }
+
+    public function handle(array $args): string
+    {
+        $order = Order::where('number', $args['order_number'])
+            ->where('user_id', auth()->id())   // ← the line that matters
+            ->first();
+
+        if (! $order) {
+            return json_encode(['error' => 'Order not found for this account.']);
+        }
+
+        return json_encode([
+            'number' => $order->number,
+            'status' => $order->status,
+            'items' => $order->items->pluck('name'),
+            'shipped_at' => $order->shipped_at?->toDateString(),
+        ]);
+    }
+}
+```
+
+That `auth()->id()` scope is the single most important line in this post. The model chooses *which* tool to call and *what arguments* to pass — an attacker can steer both with a crafted prompt. Authorization must live in your code, never in the prompt. Treat every tool as a public API endpoint, because that's what it is now.
+
+## Step 3: the loop
+
+```php
+// app/Ai/AgentRunner.php
+class AgentRunner
+{
+    private const MAX_ROUNDS = 5;
+
+    public function __construct(private ToolRegistry $tools) {}
+
+    public function run(array $messages): string
+    {
+        foreach (range(1, self::MAX_ROUNDS) as $round) {
+            $response = Http::withToken(config('services.openai.key'))
+                ->timeout(30)
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4.1-mini',
+                    'messages' => $messages,
+                    'tools' => $this->tools->schemas(),
+                ])->throw()->json('choices.0.message');
+
+            // Plain text answer — we're done.
+            if (empty($response['tool_calls'])) {
+                return $response['content'] ?? '';
+            }
+
+            $messages[] = $response;
+
+            foreach ($response['tool_calls'] as $call) {
+                $result = $this->tools->execute(
+                    $call['function']['name'],
+                    json_decode($call['function']['arguments'], true) ?? [],
+                );
+
+                $messages[] = [
+                    'role' => 'tool',
+                    'tool_call_id' => $call['id'],
+                    'content' => $result,
+                ];
+            }
+        }
+
+        return 'I could not complete that in a reasonable number of steps.';
+    }
+}
+```
+
+`MAX_ROUNDS` is not optional. Without it, a confused model can ping-pong between tools forever — each round costing you tokens and your user thirty seconds of spinner. Five rounds covers every legitimate flow I've shipped; anything deeper is a design smell.
+
+The registry's `execute()` is where you validate:
+
+```php
+public function execute(string $name, array $args): string
+{
+    $tool = $this->map[$name] ?? null;
+
+    if (! $tool) {
+        return json_encode(['error' => "Unknown tool: {$name}"]);
+    }
+
+    try {
+        return $tool->handle($args);
+    } catch (Throwable $e) {
+        report($e);
+
+        return json_encode(['error' => 'Tool failed. Try rephrasing.']);
+    }
+}
+```
+
+Return errors to the model as tool results instead of throwing. Models handle "that didn't work" gracefully — they retry with fixed arguments or tell the user. An unhandled exception, by contrast, kills the whole conversation.
+
+## What it costs
+
+Every round is a full API call carrying the entire conversation plus your tool schemas. A three-round agent turn with five registered tools runs 3–5× the tokens of a plain chat reply. Two mitigations that pay for themselves immediately: register only the tools relevant to the current context (a support agent doesn't need admin reporting tools), and keep descriptions tight — the model reads every schema on every round. On gpt-4.1-mini, my production order-support agent averages under a cent per resolved conversation. The engineer time it replaced cost more per minute.
+
+## Production checklist
+
+- **Authorization inside every tool.** Scope queries to the authenticated user. The model is an untrusted caller with a keyboard.
+- **Cap the loop.** `MAX_ROUNDS`, request timeouts, and a per-user rate limit on the endpoint.
+- **Validate arguments.** `json_decode` the model's arguments defensively; missing keys and wrong types are routine, not exceptional.
+- **Log every tool call.** Name, arguments, duration, result size. When the agent does something weird — and it will — this log is how you find out what and why.
+- **Return errors as data.** Tool failures become tool results; the model recovers. Exceptions become 500s; the user leaves.
+- **Test tools like controllers.** Each `handle()` is plain PHP — unit test it directly, then one integration test with `Http::fake()` for the loop itself.
+
+## Where this goes next
+
+The agent above runs synchronously — fine for lookups, wrong for anything slow. When a tool takes thirty seconds or the user asks for a report across a million rows, you need the loop running in a queued job with progress updates, retries, and a budget. That's the next post in this series: **Queue-Based AI Workflows in Laravel — Jobs, Retries, and Cost Control**.
+
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
