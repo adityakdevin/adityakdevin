@@ -59,7 +59,7 @@ The engineering: this one's often *cheaper and better* without the heaviest mode
 
 **What it costs:** the cheapest of the four to run; the real investment is building and maintaining the eval set. **The gotcha:** without evals you're flying blind, and classification drift is invisible until a VIP's urgent ticket sits in the wrong queue for two days.
 
-## What it actually costs
+## What AI automation actually costs
 
 Founders' intuition is usually wrong in *both* directions here. They overestimate the API bill and underestimate the maintenance.
 
@@ -75,7 +75,7 @@ Founders' intuition is usually wrong in *both* directions here. They overestimat
 
 It's not hallucination — the tool-grounding above mostly handles that. It's **silent partial failure.**
 
-The demo works. The launch works. Six weeks later the model is quietly getting 15% of answers subtly wrong — not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
+The demo works. The launch works. Six weeks later the model is quietly getting some fraction of answers — call it 10 or 15% — subtly wrong, not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
 
 The fix is unglamorous and non-negotiable, and it's exactly what separates the automations that last from the ones that quietly rot: log every decision (input, action taken, output), sample them on a schedule, keep a labelled eval set you re-run on every change, and hold a human approval step in front of anything customer-facing until you've *earned* the confidence to remove it. The systems that survive are the ones you can audit. The ones that fail are the ones someone set and forgot.
 
@@ -96,6 +96,6 @@ Clear all six and it's a strong candidate. Fail two or more and the honest answe
 
 Pick one workflow: the most boring, highest-volume, lowest-stakes thing your team does. Automate that, keep a human approving the output, watch it for a month, and measure the hours it hands back. That single loop will teach you more about whether AI fits your business than any pilot deck.
 
-That's what my [AI Integration Audit](/services/laravel-ai-development) is: one week, fixed price, I look at your real workflows and tell you which two or three are worth automating, what each will cost to build and run, and which ones to leave alone. Sometimes the most valuable line in that report is "don't automate this one." Founders remember the engineer who told them that.
+That's what my [AI Integration Audit](/#contact) is: one week, fixed price, I look at your real workflows and tell you which two or three are worth automating, what each will cost to build and run, and which ones to leave alone. Sometimes the most valuable line in that report is "don't automate this one." Founders remember the engineer who told them that.
 
 *I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
