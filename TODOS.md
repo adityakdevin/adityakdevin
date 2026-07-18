@@ -42,6 +42,7 @@ to the bottom with their shipping version/date.
 
 ### Second-model fact-verify pass for the infographic generator (v2)
 
+- **Priority:** P3
 - **What:** Before a topic-first drafted infographic reaches the human, run its drafted facts through a second model that flags likely-wrong claims (wrong HTTP code meaning, bad SQL syntax, etc). A reputation backstop on top of the manual eyeball.
 - **Why:** v1 chose topic-first drafting (the AI generates facts from memory), so every graphic is the model's recall published under Aditya's name. The manual pre-post check is the only correctness gate; a second-model verify catches what a tired eyeball misses.
 - **Pros:** Cuts the reputation risk of a wrong "fact" shipping; cheap (one extra model call per post).
@@ -51,6 +52,7 @@ to the bottom with their shipping version/date.
 
 ### Golden-image regression tests for infographic layout overflow (v2)
 
+- **Priority:** P4
 - **What:** Screenshot-diff / golden-image tests that catch layout overflow and visual regressions when infographic templates change, per layout (table, grid, cheatsheet, diagram).
 - **Why:** Dense reference layouts overflow easily; Codex flagged that "legible at 1080x1350" needs automated assertions, not eyeballing, because template tweaks regress overflow constantly.
 - **Pros:** Catches a cramped/overflowing card before it ships; protects the four layouts as templates evolve.
@@ -60,6 +62,7 @@ to the bottom with their shipping version/date.
 
 ### Diagram logo assets for the infographic generator (v2)
 
+- **Priority:** P3
 - **What:** Add a curated tool-logo library so the `diagram` layout can show logos on its nodes (the "MY AI TEAM" look), instead of the current text-only nodes.
 - **Why:** v1 diagram renders center + text satellites + SVG arrows. The reference image gets its punch from tool logos (Claude, ChatGPT, n8n icons). Text-only works but is plainer.
 - **Pros:** Diagram cards match the viral reference style; more visual.
