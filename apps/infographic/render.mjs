@@ -48,47 +48,53 @@ function browse(bin, args) {
   return r;
 }
 
+// Render one HTML string to a size-asserted PNG.
+function renderOne(bin, html, htmlPath, outPath) {
+  writeFileSync(htmlPath, html);
+  browse(bin, ['viewport', `${CANVAS.w}x${CANVAS.h}`]);
+  browse(bin, ['goto', `file://${htmlPath}`]);
+  browse(bin, ['screenshot', '--clip', `0,0,${CANVAS.w},${CANVAS.h}`, outPath]);
+  const { w, h } = pngSize(readFileSync(outPath));   // fail loud on a wrong-size render
+  if (w !== CANVAS.w || h !== CANVAS.h) {
+    throw new Error(`render is ${w}x${h}, expected ${CANVAS.w}x${CANVAS.h} - refusing to accept a bad-size PNG`);
+  }
+}
+
+// A pack is either a single card ({layout,...}) or a carousel ({carousel:[card,...]}).
+// A carousel renders one numbered PNG per slide (with the N/total pager); a single
+// card renders one PNG with no pager.
 export function renderPack(slug, root = ROOT) {
   const dir = join(root, 'ops', 'social', 'posts', slug);
   const jsonPath = join(dir, 'infographic.json');
   if (!existsSync(jsonPath)) throw new Error(`no infographic.json at ${jsonPath}`);
-
   const data = JSON.parse(readFileSync(jsonPath, 'utf8'));
-  const layout = data.layout;
-  const { problems } = validate(layout, data);
-  if (problems.length) {
-    throw new Error(`invalid ${layout} data:\n  - ${problems.join('\n  - ')}`);
-  }
+  const slides = Array.isArray(data.carousel) ? data.carousel : [data];
+  if (slides.length === 0) throw new Error('carousel is empty');
 
-  const html = fillTemplate(layout, data, {
-    fontRegular: join(root, FONT_FILES.regular),
-    fontSemibold: join(root, FONT_FILES.semibold),
+  // Validate every slide up front, so a bad slide 3 fails before slide 1 renders.
+  slides.forEach((s, i) => {
+    const { problems } = validate(s.layout, s);
+    if (problems.length) throw new Error(`slide ${i + 1} invalid ${s.layout}:\n  - ${problems.join('\n  - ')}`);
   });
 
   const bin = resolveBrowse();
   if (!bin) throw new Error('browse binary not found (expected .claude/skills/gstack/browse/dist/browse)');
-
-  // HTML goes to /tmp (a browse-allowed root); the PNG goes into the repo's
-  // gitignored assets dir (also allowed).
+  const fonts = { fontRegular: join(root, FONT_FILES.regular), fontSemibold: join(root, FONT_FILES.semibold) };
   const tmpDir = '/private/tmp/infographic-render';
   mkdirSync(tmpDir, { recursive: true });
-  const htmlPath = join(tmpDir, `${slug}.html`);
-  writeFileSync(htmlPath, html);
-
   const assetsDir = join(dir, 'assets');
   mkdirSync(assetsDir, { recursive: true });
-  const outPath = join(assetsDir, `${slug}-${layout}.png`);
 
-  browse(bin, ['viewport', `${CANVAS.w}x${CANVAS.h}`]);
-  browse(bin, ['goto', `file://${htmlPath}`]);
-  browse(bin, ['screenshot', '--clip', `0,0,${CANVAS.w},${CANVAS.h}`, outPath]);
-
-  // Fail loud on a wrong-size render (the eng-review critical gap).
-  const { w, h } = pngSize(readFileSync(outPath));
-  if (w !== CANVAS.w || h !== CANVAS.h) {
-    throw new Error(`render is ${w}x${h}, expected ${CANVAS.w}x${CANVAS.h} - refusing to accept a bad-size PNG`);
-  }
-  return { outPath, layout, w, h };
+  const total = slides.length;
+  const rendered = slides.map((s, i) => {
+    const page = total > 1 ? { index: i, total } : null;
+    const html = fillTemplate(s.layout, s, { ...fonts, page });
+    const name = total > 1 ? `${slug}-${i + 1}-${s.layout}` : `${slug}-${s.layout}`;
+    const outPath = join(assetsDir, `${name}.png`);
+    renderOne(bin, html, join(tmpDir, `${name}.html`), outPath);
+    return { outPath, layout: s.layout };
+  });
+  return { slides: rendered, total };
 }
 
 function main() {
@@ -98,8 +104,9 @@ function main() {
     process.exit(1);
   }
   try {
-    const { outPath, layout, w, h } = renderPack(slug);
-    console.log(`rendered ${layout} -> ${outPath.replace(ROOT + '/', '')} (${w}x${h})`);
+    const { slides, total } = renderPack(slug);
+    if (total > 1) console.log(`rendered ${total}-slide carousel:`);
+    for (const s of slides) console.log(`  ${s.layout} -> ${s.outPath.replace(ROOT + '/', '')}`);
   } catch (err) {
     console.error(err.message);
     process.exit(1);

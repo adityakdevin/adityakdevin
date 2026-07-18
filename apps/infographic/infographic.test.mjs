@@ -108,6 +108,15 @@ test('fillTemplate throws for an unknown layout', () => {
   assert.throws(() => fillTemplate('pie', {}, FONTS), /not a known layout/);
 });
 
+test('carousel pager shows N/total + dots only when total > 1', () => {
+  const paged = fillTemplate('table', goodTable, { ...FONTS, page: { index: 0, total: 5 } });
+  assert.ok(paged.includes('1 / 5'), 'shows the counter');
+  assert.equal((paged.match(/<span class="dot/g) || []).length, 5, '5 dots for 5 slides');
+  const single = fillTemplate('table', goodTable, FONTS);
+  assert.ok(!single.includes('class="counter"'), 'single card: no counter');
+  assert.ok(!single.includes('class="dots"'), 'single card: no dots');
+});
+
 test('pngSize reads width/height from IHDR', () => {
   const buf = Buffer.alloc(24);
   buf.write('IHDR', 12, 'ascii');

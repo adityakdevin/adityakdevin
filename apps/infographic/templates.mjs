@@ -12,9 +12,14 @@ export function esc(s) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 
-function shell({ fontRegular, fontSemibold, chip, title, accent, body }) {
-  // Single standalone image: no slide counter, no carousel dots (those belong to
-  // the multi-slide social-card carousel, not a one-shot reference card).
+function shell({ fontRegular, fontSemibold, chip, title, accent, body, page }) {
+  // Pager (counter + dots) only appears in a real multi-slide carousel. A single
+  // standalone card shows none of it, so it never implies images that don't exist.
+  const paged = page && page.total > 1;
+  const counter = paged ? `<div class="counter">${page.index + 1} / ${page.total}</div>` : '';
+  const dots = paged
+    ? `<div class="dots">${Array.from({ length: page.total }, (_, i) => `<span class="dot${i === page.index ? ' on' : ''}"></span>`).join('')}</div>`
+    : '';
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:'Plex';src:url('file://${fontRegular}') format('truetype');font-weight:400}
 @font-face{font-family:'Plex';src:url('file://${fontSemibold}') format('truetype');font-weight:600}
@@ -23,6 +28,7 @@ html,body{background:${BRAND.bgFade}}
 .card{width:${CANVAS.w}px;height:${CANVAS.h}px;background:linear-gradient(148deg,#0d3b46 0%,${BRAND.bg} 44%,${BRAND.bgFade} 100%);font-family:'Plex',ui-monospace,Menlo,monospace;color:${BRAND.text};padding:72px;display:flex;flex-direction:column}
 .tophdr{display:flex;justify-content:space-between;align-items:center}
 .chip{background:${accent};color:#06121a;font-weight:600;font-size:26px;letter-spacing:2px;padding:12px 26px;border-radius:999px}
+.counter{color:${accent};font-weight:600;font-size:30px}
 .title{font-size:72px;font-weight:600;line-height:1.1;margin-top:40px}
 .rule{width:120px;height:10px;background:${accent};border-radius:999px;margin:28px 0 40px}
 .body{flex-grow:1}
@@ -47,12 +53,15 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center}
 .dom{display:flex;align-items:center;font-size:26px;font-weight:600}
 .tick{width:40px;height:6px;background:${accent};border-radius:999px;margin-right:16px}
+.dots{display:flex;gap:12px}
+.dot{width:14px;height:14px;border-radius:999px;background:#2a3038}
+.dot.on{background:${accent}}
 </style></head><body><div class="card">
-<div class="tophdr"><div class="chip">${esc(chip)}</div></div>
+<div class="tophdr"><div class="chip">${esc(chip)}</div>${counter}</div>
 <div class="title">${esc(title)}</div>
 <div class="rule"></div>
 <div class="body">${body}</div>
-<div class="footer"><div class="dom"><span class="tick"></span>adityadev.in</div></div>
+<div class="footer"><div class="dom"><span class="tick"></span>adityadev.in</div>${dots}</div>
 </div></body></html>`;
 }
 
@@ -109,8 +118,8 @@ function diagramBody(data) {
 }
 
 // (layout, data, {fontRegular, fontSemibold}) -> HTML string.
-export function fillTemplate(layout, data, { fontRegular, fontSemibold }) {
-  const common = { fontRegular, fontSemibold, title: data.title, accent: BRAND.accent.cyan };
+export function fillTemplate(layout, data, { fontRegular, fontSemibold, page } = {}) {
+  const common = { fontRegular, fontSemibold, title: data.title, accent: BRAND.accent.cyan, page };
   if (layout === 'table') {
     return shell({ ...common, chip: data.chip || 'COMPARE', body: tableBody(data) });
   }

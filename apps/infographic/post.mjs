@@ -18,11 +18,14 @@ import { spawnSync } from 'node:child_process';
 export const ROOT = resolve(import.meta.dirname, '..', '..');
 const DEFAULT_COMPOSER = 'https://www.linkedin.com/feed/';
 
-// Pick the rendered PNG for a slug (the newest <slug>-<layout>.png).
-export function findPng(assetsDir, slug) {
-  if (!existsSync(assetsDir)) return null;
-  const pngs = readdirSync(assetsDir).filter((f) => f.startsWith(`${slug}-`) && f.endsWith('.png'));
-  return pngs.length ? join(assetsDir, pngs.sort().at(-1)) : null;
+// All rendered PNGs for a slug, in slide order (natural numeric sort so slide 10
+// follows 9, not 1). A single card returns one; a carousel returns N.
+export function findPngs(assetsDir, slug) {
+  if (!existsSync(assetsDir)) return [];
+  return readdirSync(assetsDir)
+    .filter((f) => f.startsWith(`${slug}-`) && f.endsWith('.png'))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    .map((f) => join(assetsDir, f));
 }
 
 function run(cmd, args, opts = {}) {
@@ -32,24 +35,26 @@ function run(cmd, args, opts = {}) {
 
 export function post(slug, { composer = DEFAULT_COMPOSER, dry = false, root = ROOT } = {}) {
   const dir = join(root, 'ops', 'social', 'posts', slug);
-  const png = findPng(join(dir, 'assets'), slug);
-  if (!png) throw new Error(`no rendered PNG in ${dir}/assets/ - run: node apps/infographic/render.mjs ${slug}`);
+  const assetsDir = join(dir, 'assets');
+  const pngs = findPngs(assetsDir, slug);
+  if (!pngs.length) throw new Error(`no rendered PNG in ${assetsDir}/ - run: node apps/infographic/render.mjs ${slug}`);
   const captionPath = join(dir, 'caption.txt');
   const caption = existsSync(captionPath) ? readFileSync(captionPath, 'utf8').trim() : '';
 
-  const plan = { png, caption: caption ? `${caption.length} chars` : '(none)', composer };
+  const plan = { pngs, count: pngs.length, caption: caption ? `${caption.length} chars` : '(none)', composer };
   if (dry) return { ...plan, staged: false };
 
   if (process.platform !== 'darwin') {
     console.warn('  (not macOS - clipboard/Finder/open skipped)');
-    console.log(`  image:   ${png}`);
+    pngs.forEach((p) => console.log(`  image:   ${p}`));
     console.log(`  caption: ${captionPath}`);
     console.log(`  composer: ${composer}`);
     return { ...plan, staged: false };
   }
-  if (caption) run('pbcopy', [], { input: caption });   // paste target
-  run('open', ['-R', png]);                              // reveal PNG to drag
-  run('open', [composer]);                               // composer
+  if (caption) run('pbcopy', [], { input: caption });         // paste target
+  // Carousel: open the folder so all slides are selectable in order. Single: reveal it.
+  run('open', pngs.length > 1 ? [assetsDir] : ['-R', pngs[0]]);
+  run('open', [composer]);
   return { ...plan, staged: true };
 }
 
@@ -62,11 +67,12 @@ function main() {
   if (!slug) { console.error('usage: node apps/infographic/post.mjs <slug> [--composer <url>] [--dry]'); process.exit(1); }
   try {
     const r = post(slug, { composer, dry });
+    const what = r.count > 1 ? `${r.count}-slide carousel` : '1 image';
     if (dry) {
-      console.log(`DRY: would stage\n  image:   ${r.png}\n  caption: ${r.caption}\n  composer: ${r.composer}`);
+      console.log(`DRY: would stage ${what}\n${r.pngs.map((p) => `  image:   ${p}`).join('\n')}\n  caption: ${r.caption}\n  composer: ${r.composer}`);
     } else if (r.staged) {
-      console.log('Staged. Caption is on your clipboard, PNG revealed in Finder, composer open.');
-      console.log('Drag the PNG into the post, then paste the caption. Nothing posted automatically.');
+      console.log(`Staged ${what}. Caption is on your clipboard, ${r.count > 1 ? 'the slides folder is' : 'the PNG is'} open in Finder, composer open.`);
+      console.log('Add the image(s) to the post, then paste the caption. Nothing posted automatically.');
     }
   } catch (err) {
     console.error(err.message);

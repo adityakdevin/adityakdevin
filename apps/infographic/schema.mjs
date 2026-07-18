@@ -14,7 +14,7 @@ export const LAYOUTS = ['table', 'grid', 'cheatsheet', 'diagram'];
 // tuning knobs; bump them only if the footer still fits at the new count.
 export const BOUNDS = {
   table:      { cols: 3, maxRows: 7, maxCell: 26 },
-  grid:       { maxCells: 15, maxCode: 6, maxLabel: 22, maxDesc: 40 },
+  grid:       { maxCells: 15, maxCode: 8, maxLabel: 22, maxDesc: 40 },
   cheatsheet: { maxSections: 6, maxLines: 5, maxLine: 40 },
   diagram:    { maxSatellites: 8, maxLabel: 22 },
 };
