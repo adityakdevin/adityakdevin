@@ -12,9 +12,9 @@ export function esc(s) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 
-function shell({ fontRegular, fontSemibold, chip, title, accent, body, dotsTotal = 5, dotIndex = 0 }) {
-  const dots = Array.from({ length: dotsTotal }, (_, i) =>
-    `<span class="dot${i === dotIndex ? ' on' : ''}"></span>`).join('');
+function shell({ fontRegular, fontSemibold, chip, title, accent, body }) {
+  // Single standalone image: no slide counter, no carousel dots (those belong to
+  // the multi-slide social-card carousel, not a one-shot reference card).
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:'Plex';src:url('file://${fontRegular}') format('truetype');font-weight:400}
 @font-face{font-family:'Plex';src:url('file://${fontSemibold}') format('truetype');font-weight:600}
@@ -23,7 +23,6 @@ html,body{background:${BRAND.bgFade}}
 .card{width:${CANVAS.w}px;height:${CANVAS.h}px;background:linear-gradient(148deg,#0d3b46 0%,${BRAND.bg} 44%,${BRAND.bgFade} 100%);font-family:'Plex',ui-monospace,Menlo,monospace;color:${BRAND.text};padding:72px;display:flex;flex-direction:column}
 .tophdr{display:flex;justify-content:space-between;align-items:center}
 .chip{background:${accent};color:#06121a;font-weight:600;font-size:26px;letter-spacing:2px;padding:12px 26px;border-radius:999px}
-.counter{color:${accent};font-weight:600;font-size:30px}
 .title{font-size:72px;font-weight:600;line-height:1.1;margin-top:40px}
 .rule{width:120px;height:10px;background:${accent};border-radius:999px;margin:28px 0 40px}
 .body{flex-grow:1}
@@ -48,15 +47,12 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center}
 .dom{display:flex;align-items:center;font-size:26px;font-weight:600}
 .tick{width:40px;height:6px;background:${accent};border-radius:999px;margin-right:16px}
-.dots{display:flex;gap:12px}
-.dot{width:14px;height:14px;border-radius:999px;background:#2a3038}
-.dot.on{background:${accent}}
 </style></head><body><div class="card">
-<div class="tophdr"><div class="chip">${esc(chip)}</div><div class="counter">${dotIndex + 1} / ${dotsTotal}</div></div>
+<div class="tophdr"><div class="chip">${esc(chip)}</div></div>
 <div class="title">${esc(title)}</div>
 <div class="rule"></div>
 <div class="body">${body}</div>
-<div class="footer"><div class="dom"><span class="tick"></span>adityadev.in</div><div class="dots">${dots}</div></div>
+<div class="footer"><div class="dom"><span class="tick"></span>adityadev.in</div></div>
 </div></body></html>`;
 }
 
