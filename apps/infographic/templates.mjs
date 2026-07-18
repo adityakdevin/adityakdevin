@@ -48,8 +48,8 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 .sline{font-size:24px;color:${BRAND.text};line-height:1.35}
 .diagram{position:relative;width:936px;height:860px}
 .dsvg{position:absolute;inset:0}
-.dnode{position:absolute;transform:translate(-50%,-50%);background:${BRAND.panel};border:1px solid ${BRAND.border};border-radius:10px;padding:14px 22px;font-size:24px;font-weight:600;color:${BRAND.text};white-space:nowrap;text-align:center}
-.dnode.center{border:2px solid ${BRAND.accent.cyan};color:${BRAND.accent.cyan};font-size:30px;padding:22px 30px}
+.dnode{position:absolute;transform:translate(-50%,-50%);background:${BRAND.panel};border:1px solid ${BRAND.border};border-left:5px solid var(--dc,${BRAND.border});border-radius:10px;padding:14px 22px;font-size:24px;font-weight:600;color:${BRAND.text};white-space:nowrap;text-align:center}
+.dnode.center{border:3px solid ${BRAND.accent.cyan};color:${BRAND.accent.cyan};font-size:32px;padding:24px 34px}
 .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center}
 .dom{display:flex;align-items:center;font-size:26px;font-weight:600}
 .tick{width:40px;height:6px;background:${accent};border-radius:999px;margin-right:16px}
@@ -98,21 +98,24 @@ function cheatsheetBody(data) {
   return `<div class="sheet">${sections}</div>`;
 }
 
+const DIAGRAM_ACCENTS = [BRAND.accent.cyan, BRAND.accent.amber, BRAND.accent.green, BRAND.accent.purple];
+
 function diagramBody(data) {
-  // Center node with satellites on a ring; SVG lines connect center -> each.
-  // Satellites are labels (strings) or {label}. Logo assets are a later add.
+  // Center node with satellites on a ring; SVG lines connect center -> each. Each
+  // branch gets its own accent (border + matching line) so it reads as a map, not
+  // a grid of grey boxes. Satellites are labels (strings) or {label}.
   const W = 936, H = 860, cx = W / 2, cy = H / 2, rx = 330, ry = 320;
   const sats = data.satellites.map((s) => (typeof s === 'string' ? s : s.label));
   const n = sats.length;
   const pts = sats.map((label, i) => {
     const a = (-90 + (i * 360) / n) * Math.PI / 180;
-    return { x: Math.round(cx + rx * Math.cos(a)), y: Math.round(cy + ry * Math.sin(a)), label };
+    return { x: Math.round(cx + rx * Math.cos(a)), y: Math.round(cy + ry * Math.sin(a)), label, color: DIAGRAM_ACCENTS[i % DIAGRAM_ACCENTS.length] };
   });
   const lines = pts.map((p) =>
-    `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${BRAND.muted}" stroke-width="3"/>`).join('');
+    `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${p.color}" stroke-width="3" stroke-opacity="0.55"/>`).join('');
   const svg = `<svg class="dsvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${lines}</svg>`;
   const nodes = pts.map((p) =>
-    `<div class="dnode" style="left:${p.x}px;top:${p.y}px">${esc(p.label)}</div>`).join('');
+    `<div class="dnode" style="left:${p.x}px;top:${p.y}px;--dc:${p.color}">${esc(p.label)}</div>`).join('');
   const center = `<div class="dnode center" style="left:${cx}px;top:${cy}px">${esc(data.center)}</div>`;
   return `<div class="diagram">${svg}${nodes}${center}</div>`;
 }

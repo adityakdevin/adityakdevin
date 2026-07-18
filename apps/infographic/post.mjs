@@ -1,25 +1,29 @@
 #!/usr/bin/env node
-// infographic post handoff - stage a rendered infographic for a one-tap manual
-// publish. Nothing auto-posts (the human gate, same as social-poster).
+// infographic post kit - print everything you need to publish an infographic by
+// hand, on any platform. No drag-and-drop, no forced Finder: it prints the image
+// path(s) to upload and the full caption (also copied to the clipboard as a
+// convenience), plus composer links. Nothing posts automatically.
 //
-//   node apps/infographic/post.mjs <slug> [--composer <url>] [--dry]
+//   node apps/infographic/post.mjs <slug> [--open linkedin|facebook|instagram|all]
 //
-// macOS: copies the caption to the clipboard (paste target), reveals the PNG in
-// Finder (drag source), and opens the composer. Two gestures: drag the image,
-// paste the caption. The clipboard holds one thing, so the image is the drag and
-// the caption is the paste.
+// The same 1080x1350 (4:5) PNG fits LinkedIn, Instagram, and Facebook feeds, so
+// one render serves all three; you just upload it in each.
 //
-// ponytail: no deps. pbcopy/open are macOS; elsewhere it prints the paths.
+// ponytail: no deps. pbcopy/open are macOS (skipped elsewhere).
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 export const ROOT = resolve(import.meta.dirname, '..', '..');
-const DEFAULT_COMPOSER = 'https://www.linkedin.com/feed/';
 
-// All rendered PNGs for a slug, in slide order (natural numeric sort so slide 10
-// follows 9, not 1). A single card returns one; a carousel returns N.
+export const PLATFORMS = {
+  linkedin: 'https://www.linkedin.com/feed/',
+  facebook: 'https://www.facebook.com/',
+  instagram: 'https://www.instagram.com/',
+};
+
+// All rendered PNGs for a slug, in slide order (natural numeric sort).
 export function findPngs(assetsDir, slug) {
   if (!existsSync(assetsDir)) return [];
   return readdirSync(assetsDir)
@@ -28,55 +32,53 @@ export function findPngs(assetsDir, slug) {
     .map((f) => join(assetsDir, f));
 }
 
-function run(cmd, args, opts = {}) {
-  const r = spawnSync(cmd, args, { encoding: 'utf8', ...opts });
-  return r.status === 0;
-}
-
-export function post(slug, { composer = DEFAULT_COMPOSER, dry = false, root = ROOT } = {}) {
+// Build the post kit (pure: no IO). Throws if nothing is rendered yet.
+export function postKit(slug, root = ROOT) {
   const dir = join(root, 'ops', 'social', 'posts', slug);
-  const assetsDir = join(dir, 'assets');
-  const pngs = findPngs(assetsDir, slug);
-  if (!pngs.length) throw new Error(`no rendered PNG in ${assetsDir}/ - run: node apps/infographic/render.mjs ${slug}`);
+  const pngs = findPngs(join(dir, 'assets'), slug);
+  if (!pngs.length) throw new Error(`no rendered PNG in ${dir}/assets/ - run: node apps/infographic/render.mjs ${slug}`);
   const captionPath = join(dir, 'caption.txt');
   const caption = existsSync(captionPath) ? readFileSync(captionPath, 'utf8').trim() : '';
+  return { pngs, caption, captionPath };
+}
 
-  const plan = { pngs, count: pngs.length, caption: caption ? `${caption.length} chars` : '(none)', composer };
-  if (dry) return { ...plan, staged: false };
+function copyToClipboard(text) {
+  if (process.platform !== 'darwin' || !text) return false;
+  return spawnSync('pbcopy', [], { input: text }).status === 0;
+}
 
-  if (process.platform !== 'darwin') {
-    console.warn('  (not macOS - clipboard/Finder/open skipped)');
-    pngs.forEach((p) => console.log(`  image:   ${p}`));
-    console.log(`  caption: ${captionPath}`);
-    console.log(`  composer: ${composer}`);
-    return { ...plan, staged: false };
+function printKit({ pngs, caption, captionPath }, { copied }) {
+  const carousel = pngs.length > 1;
+  console.log(`\n=== POST KIT: ${carousel ? `${pngs.length}-slide carousel` : '1 image'} ===\n`);
+  console.log(carousel ? 'IMAGES (upload in this order):' : 'IMAGE (upload this):');
+  pngs.forEach((p, i) => console.log(`  ${carousel ? `${i + 1}. ` : ''}${p}`));
+  console.log('');
+  if (caption) {
+    console.log(`CAPTION${copied ? ' (also copied to clipboard)' : ''}:`);
+    console.log(caption.split('\n').map((l) => `  ${l}`).join('\n'));
+  } else {
+    console.log(`CAPTION: (none) - write one at ${captionPath}`);
   }
-  if (caption) run('pbcopy', [], { input: caption });         // paste target
-  // Carousel: open the folder so all slides are selectable in order. Single: reveal it.
-  run('open', pngs.length > 1 ? [assetsDir] : ['-R', pngs[0]]);
-  run('open', [composer]);
-  return { ...plan, staged: true };
+  console.log('\nPOST TO (open the composer, upload the image, paste the caption):');
+  console.log(`  LinkedIn:  ${PLATFORMS.linkedin}`);
+  console.log(`  Facebook:  ${PLATFORMS.facebook}`);
+  console.log(`  Instagram: ${PLATFORMS.instagram}  (web post or mobile; 4:5 fits the feed)`);
+  console.log('\nNothing posted automatically.\n');
 }
 
 function main() {
   const args = process.argv.slice(2);
   const slug = args.find((a) => !a.startsWith('-'));
-  const dry = args.includes('--dry');
-  const ci = args.indexOf('--composer');
-  const composer = ci !== -1 ? args[ci + 1] : DEFAULT_COMPOSER;
-  if (!slug) { console.error('usage: node apps/infographic/post.mjs <slug> [--composer <url>] [--dry]'); process.exit(1); }
-  try {
-    const r = post(slug, { composer, dry });
-    const what = r.count > 1 ? `${r.count}-slide carousel` : '1 image';
-    if (dry) {
-      console.log(`DRY: would stage ${what}\n${r.pngs.map((p) => `  image:   ${p}`).join('\n')}\n  caption: ${r.caption}\n  composer: ${r.composer}`);
-    } else if (r.staged) {
-      console.log(`Staged ${what}. Caption is on your clipboard, ${r.count > 1 ? 'the slides folder is' : 'the PNG is'} open in Finder, composer open.`);
-      console.log('Add the image(s) to the post, then paste the caption. Nothing posted automatically.');
-    }
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
+  const oi = args.indexOf('--open');
+  const openTo = oi !== -1 ? (args[oi + 1] || 'all') : null;
+  if (!slug) { console.error('usage: node apps/infographic/post.mjs <slug> [--open linkedin|facebook|instagram|all]'); process.exit(1); }
+  let kit;
+  try { kit = postKit(slug); } catch (err) { console.error(err.message); process.exit(1); }
+  const copied = copyToClipboard(kit.caption);
+  printKit(kit, { copied });
+  if (openTo && process.platform === 'darwin') {
+    const targets = openTo === 'all' ? Object.values(PLATFORMS) : [PLATFORMS[openTo]].filter(Boolean);
+    targets.forEach((url) => spawnSync('open', [url]));
   }
 }
 
