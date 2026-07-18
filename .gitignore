@@ -5,3 +5,4 @@ test-results/
 .vercel
 .env*
 ops/social/
+ops/voice.md

@@ -38,6 +38,38 @@ to the bottom with their shipping version/date.
 - **Context:** /plan-design-review 2026-07-16 ran text-only because the designer binary had no key. The full design brief lives in PORTFOLIO_SPEC.md S4-S5B.
 - **Depends on / blocked by:** OpenAI API key. Do before the P1a hero build starts.
 
+## Social Infographics
+
+### Second-model fact-verify pass for the infographic generator (v2)
+
+- **Priority:** P3
+- **What:** Before a topic-first drafted infographic reaches the human, run its drafted facts through a second model that flags likely-wrong claims (wrong HTTP code meaning, bad SQL syntax, etc). A reputation backstop on top of the manual eyeball.
+- **Why:** v1 chose topic-first drafting (the AI generates facts from memory), so every graphic is the model's recall published under Aditya's name. The manual pre-post check is the only correctness gate; a second-model verify catches what a tired eyeball misses.
+- **Pros:** Cuts the reputation risk of a wrong "fact" shipping; cheap (one extra model call per post).
+- **Cons:** Adds latency + a second API call; not free; false-alarms possible.
+- **Context:** Decided at /plan-eng-review 2026-07-18 (design doc `adityakdevin-feat-social-poster-v0-design-20260718-183734.md`, Tension 1 → topic-first chosen, verify deferred to v2). Codex outside voice flagged that schema validation checks shape, not truth.
+- **Depends on / blocked by:** v1b (the AI-draft step) shipped and producing schema-valid data.
+
+### Golden-image regression tests for infographic layout overflow (v2)
+
+- **Priority:** P4
+- **What:** Screenshot-diff / golden-image tests that catch layout overflow and visual regressions when infographic templates change, per layout (table, grid, cheatsheet, diagram).
+- **Why:** Dense reference layouts overflow easily; Codex flagged that "legible at 1080x1350" needs automated assertions, not eyeballing, because template tweaks regress overflow constantly.
+- **Pros:** Catches a cramped/overflowing card before it ships; protects the four layouts as templates evolve.
+- **Cons:** Golden-image infra is heavier than unit tests; goldens need updating on intentional design changes.
+- **Context:** Decided at /plan-eng-review 2026-07-18. v1 prevents overflow at the data layer (validator rejects over-bound data) + the human eyeballs every post, so pixel-diff infra was deferred. Build when template churn makes manual checking unreliable.
+- **Depends on / blocked by:** v1a renderer shipped (the templates to snapshot must exist).
+
+### Diagram logo assets for the infographic generator (v2)
+
+- **Priority:** P3
+- **What:** Add a curated tool-logo library so the `diagram` layout can show logos on its nodes (the "MY AI TEAM" look), instead of the current text-only nodes.
+- **Why:** v1 diagram renders center + text satellites + SVG arrows. The reference image gets its punch from tool logos (Claude, ChatGPT, n8n icons). Text-only works but is plainer.
+- **Pros:** Diagram cards match the viral reference style; more visual.
+- **Cons:** Logo licensing + curation is real work; each logo needs a consistent treatment (size, mono/color) to stay on-brand.
+- **Context:** Decided at /plan-eng-review 2026-07-18, deferred through the v1 build 2026-07-18. Renderer is `apps/infographic/templates.mjs` `diagramBody()` - nodes are `.dnode` divs; a logo would sit above the label. Needs an assets dir + a `logo` field on satellites.
+- **Depends on / blocked by:** none (diagram layout ships text-only now).
+
 ## Completed
 
 ### Retroactive canonical migration of top Dev.to posts
