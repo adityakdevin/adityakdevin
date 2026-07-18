@@ -8,7 +8,7 @@ import { withRef } from "@/lib/site";
 type Line = { kind: "cmd" | "out" | "accent"; text: string; cursor?: boolean };
 
 const BOOT: Line[] = [
-  { kind: "accent", text: "AskAditya v1.0 — type 'help' or just ask." },
+  { kind: "accent", text: "AskAditya v1.0 - type 'help' or just ask." },
 ];
 
 const SUGGESTIONS = [
@@ -18,9 +18,9 @@ const SUGGESTIONS = [
 ] as const;
 
 /**
- * The widget (SPEC §6) — offline commands always work; free text streams from
+ * The widget (SPEC S6) - offline commands always work; free text streams from
  * /api/chat. When the route is dormant (no API key) or degraded (rate/budget
- * caps), free text falls back to a friendly notice — never a frozen cursor.
+ * caps), free text falls back to a friendly notice - never a frozen cursor.
  * Motion #3: open/close 250ms ease-in-out. Full-screen on mobile.
  */
 export function Terminal() {
@@ -70,7 +70,7 @@ export function Terminal() {
     setLines((prev) => [...prev, ...next]);
   }
 
-  // The stream owns ONE line by index — other prints stay safe while it runs.
+  // The stream owns ONE line by index - other prints stay safe while it runs.
   const streamIdx = useRef(-1);
 
   function replaceStreamLine(line: Line) {
@@ -95,12 +95,12 @@ export function Terminal() {
           kind: "accent",
           text:
             data.reason === "budget"
-              ? "AI is resting (budget cap) — commands still work. try 'help'."
+              ? "AI is resting (budget cap) - commands still work. try 'help'."
               : data.reason === "rate"
-                ? "rate limit: 10 questions/hour — commands still work meanwhile."
+                ? "rate limit: 10 questions/hour - commands still work meanwhile."
                 : res.status === 422
-                  ? "keep it under 300 characters — try a shorter question."
-                  : "AI mode is being wired up — soon I'll answer that. For now, try 'help'.",
+                  ? "keep it under 300 characters - try a shorter question."
+                  : "AI mode is being wired up - soon I'll answer that. For now, try 'help'.",
         });
         return;
       }
@@ -114,12 +114,12 @@ export function Terminal() {
         replaceStreamLine({ kind: "out", text: acc, cursor: true });
       }
       if (!acc.trim()) {
-        replaceStreamLine({ kind: "accent", text: "no answer came back — ask again, or try 'help'." });
+        replaceStreamLine({ kind: "accent", text: "no answer came back - ask again, or try 'help'." });
       } else {
-        replaceStreamLine({ kind: "out", text: acc }); // done — cursor off
+        replaceStreamLine({ kind: "out", text: acc }); // done - cursor off
       }
     } catch {
-      replaceStreamLine({ kind: "accent", text: "connection dropped — ask again, or try 'help'." });
+      replaceStreamLine({ kind: "accent", text: "connection dropped - ask again, or try 'help'." });
     } finally {
       busy.current = false;
     }
@@ -142,7 +142,7 @@ export function Terminal() {
           { kind: "out", text: "  contact    ways to reach me" },
           { kind: "out", text: "  source     how this terminal works" },
           { kind: "out", text: "  clear      clear the screen" },
-          { kind: "accent", text: "or just type a question — the AI answers from this site." },
+          { kind: "accent", text: "or just type a question - the AI answers from this site." },
         );
         break;
       case "whoami":
@@ -161,7 +161,7 @@ export function Terminal() {
         print(
           { kind: "out", text: `→ ${profile.featuredWork.lead.title}` },
           ...profile.featuredWork.links.map((l) => ({ kind: "out" as const, text: `→ ${l.title}` })),
-          { kind: "accent", text: "opening /work/budgetgen…" },
+          { kind: "accent", text: "opening /work/budgetgen..." },
         );
         setTimeout(() => {
           setOpen(false);
@@ -169,7 +169,7 @@ export function Terminal() {
         }, 600);
         break;
       case "cv":
-        print({ kind: "accent", text: "opening /cv…" });
+        print({ kind: "accent", text: "opening /cv..." });
         setTimeout(() => {
           setOpen(false);
           router.push("/cv");
@@ -180,8 +180,8 @@ export function Terminal() {
         print({
           kind: "accent",
           text: cmd.startsWith("sudo")
-            ? "[sudo] permission granted. opening calendar…"
-            : "opening calendar…",
+            ? "[sudo] permission granted. opening calendar..."
+            : "opening calendar...",
         });
         setTimeout(() => window.open(withRef(profile.bookingUrl, "terminal"), "_blank", "noopener"), 500);
         break;
@@ -195,7 +195,7 @@ export function Terminal() {
       case "source":
         print(
           { kind: "out", text: "offline commands: plain TypeScript, zero API calls." },
-          { kind: "out", text: "AI mode: Claude Haiku + a prompt-cached corpus of this site's content —" },
+          { kind: "out", text: "AI mode: Claude Haiku + a prompt-cached corpus of this site's content -" },
           { kind: "out", text: "the architecture from my Laravel+AI article series:" },
           { kind: "accent", text: profile.devto },
         );
@@ -208,7 +208,7 @@ export function Terminal() {
         break;
       default:
         if (busy.current) {
-          print({ kind: "accent", text: "still answering — one question at a time." });
+          print({ kind: "accent", text: "still answering - one question at a time." });
         } else {
           void ask(cmd);
         }
@@ -229,7 +229,7 @@ export function Terminal() {
         {">_"}
       </button>
 
-      {/* Panel — full-screen on mobile */}
+      {/* Panel - full-screen on mobile */}
       <div
         ref={panelRef}
         role="dialog"
@@ -255,7 +255,7 @@ export function Terminal() {
             className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-base"
             style={{ color: "var(--dark-muted)" }}
           >
-            ✕
+            
           </button>
         </div>
 
@@ -314,7 +314,7 @@ export function Terminal() {
             maxLength={300}
             className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
             style={{ color: "var(--dark-text)" }}
-            placeholder="ask anything — or 'help'"
+            placeholder="ask anything - or 'help'"
           />
           <button
             type="submit"

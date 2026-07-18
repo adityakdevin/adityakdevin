@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 };
 
-/** Privacy (SPEC §5, outside voice T5): plain language, no legalese theater. */
+/** Privacy (SPEC S5, outside voice T5): plain language, no legalese theater. */
 export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       <h1 className="mono h2-rule text-4xl font-semibold">Privacy, in plain language</h1>
       <p className="mt-4" style={{ color: "var(--muted)" }}>
         Last updated: July 2026. This is a personal portfolio site. Here is everything it does
-        with data — written by a human, for humans.
+        with data - written by a human, for humans.
       </p>
 
       <section className="mt-10 space-y-8">
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <p className="mt-2">
             The site uses Google Analytics 4 to count visits and see which pages people read. It
             collects approximate location (city level), device type, and pages visited. I use this
-            to understand what content is useful — nothing else. Vercel Speed Insights also runs;
+            to understand what content is useful - nothing else. Vercel Speed Insights also runs;
             it measures page speed and is cookieless.
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
           <p className="mt-2">
             A chat widget is planned. When live: messages you type will be sent to Anthropic&apos;s
             Claude API to generate answers, and may be logged by me to debug quality. Don&apos;t
-            paste anything sensitive into it — it&apos;s for asking about my work.
+            paste anything sensitive into it - it&apos;s for asking about my work.
           </p>
         </div>
 

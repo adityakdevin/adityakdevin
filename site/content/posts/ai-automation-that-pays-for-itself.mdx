@@ -1,6 +1,6 @@
 ---
 title: "AI Automation That Pays for Itself: What to Automate First"
-description: "An AI engineer's guide to automation that earns its keep — which work is worth automating, four systems I've actually shipped, what they cost to run, and the failure mode that quietly burns your budget."
+description: "An AI engineer's guide to automation that earns its keep - which work is worth automating, four systems I've actually shipped, what they cost to run, and the failure mode that quietly burns your budget."
 date: "2026-07-18"
 tags: ["AI", "Automation", "Founders"]
 devtoId: 4169119
@@ -8,9 +8,9 @@ devtoId: 4169119
 
 ## The question worth answering
 
-Not "should we use AI?" — everyone's past that. The question I get hired to answer is narrower and harder: *what, specifically, is worth automating, and will it save more than it costs to build and run?*
+Not "should we use AI?" - everyone's past that. The question I get hired to answer is narrower and harder: *what, specifically, is worth automating, and will it save more than it costs to build and run?*
 
-I build these systems for a living. I've shipped AI automation into production for small companies across a few stacks — customer support, document extraction, internal reporting, ticket routing — some in Laravel, some in Node, some in Python. Some of it paid for itself in the first month. Some of it I talked the client out of before we wrote a line. The difference was never the model or the framework. It was picking the right work and engineering it so it survives contact with real users.
+I build these systems for a living. I've shipped AI automation into production for small companies across a few stacks - customer support, document extraction, internal reporting, ticket routing - some in Laravel, some in Node, some in Python. Some of it paid for itself in the first month. Some of it I talked the client out of before we wrote a line. The difference was never the model or the framework. It was picking the right work and engineering it so it survives contact with real users.
 
 Here's how I decide what to automate, four systems I've actually built (with the engineering that matters and the numbers that matter), what it really costs, and the failure mode almost nobody budgets for.
 
@@ -19,9 +19,9 @@ Here's how I decide what to automate, four systems I've actually built (with the
 The work worth automating sits in a narrow band: **high-volume, repetitive, and judgment-light.** Your team does it dozens of times a day, the steps rarely change, and a wrong answer is annoying but recoverable.
 
 - **Good fit:** "Where's my order?" replies. Extracting three fields from every invoice. First-pass ticket triage. Turning a call transcript into CRM fields. The standard follow-up email.
-- **Bad fit:** Anything rare — you'll spend more building than you'll ever save. Anything where a wrong answer costs money or trust: pricing, contracts, legal or medical calls, irreversible actions. Anything a person does *because they're good at it*, not because it's tedious.
+- **Bad fit:** Anything rare - you'll spend more building than you'll ever save. Anything where a wrong answer costs money or trust: pricing, contracts, legal or medical calls, irreversible actions. Anything a person does *because they're good at it*, not because it's tedious.
 
-Founders get this backwards constantly. They want to automate the impressive, judgment-heavy work — "an AI that handles our hardest customers." That's the expensive, risky end, and it's where AI is weakest. The return is in the boring middle: the hundred small, identical tasks that quietly eat a person's afternoon. As an engineer, I *want* the boring problems — they're the ones I can make reliable.
+Founders get this backwards constantly. They want to automate the impressive, judgment-heavy work - "an AI that handles our hardest customers." That's the expensive, risky end, and it's where AI is weakest. The return is in the boring middle: the hundred small, identical tasks that quietly eat a person's afternoon. As an engineer, I *want* the boring problems - they're the ones I can make reliable.
 
 ## Four systems I've actually shipped
 
@@ -31,15 +31,15 @@ Most inbound support to a small e-commerce or SaaS team is the same handful of q
 
 The automation is not "a chatbot that talks to customers." It's narrower and far more useful: an assistant that reads the message, *looks up the real answer in your own systems*, and drafts a reply for a human to approve or send. It handles the repetitive 60-70%; the person spends their time on the 30% that needs a human.
 
-The engineering that makes it safe: the model never invents an order number, because the number comes from a **tool call** into your database, scoped in code to the authenticated customer — not from the model's imagination. The model decides *which* tool it needs; your code decides *what it's allowed to see*. That authorization boundary is the whole game, and it lives in your code, never in the prompt. (I wrote up [the tool-calling loop in detail](/blog/building-ai-agents-in-php-tool-calling-with-laravel) — it's a few hundred lines of plain application code, whichever stack you're on. No platform to buy.)
+The engineering that makes it safe: the model never invents an order number, because the number comes from a **tool call** into your database, scoped in code to the authenticated customer - not from the model's imagination. The model decides *which* tool it needs; your code decides *what it's allowed to see*. That authorization boundary is the whole game, and it lives in your code, never in the prompt. (I wrote up [the tool-calling loop in detail](/blog/building-ai-agents-in-php-tool-calling-with-laravel) - it's a few hundred lines of plain application code, whichever stack you're on. No platform to buy.)
 
-**What it costs:** well under a cent per resolved conversation on a mid-tier model, in my production experience. At a thousand messages a month the model bill is single-digit dollars; the person-hours handed back are the actual return and they dwarf it. **The gotcha:** keep a human approving the drafts until you've watched a few hundred and trust the quality. Ship it as a draft-assistant first, an auto-responder second — if ever.
+**What it costs:** well under a cent per resolved conversation on a mid-tier model, in my production experience. At a thousand messages a month the model bill is single-digit dollars; the person-hours handed back are the actual return and they dwarf it. **The gotcha:** keep a human approving the drafts until you've watched a few hundred and trust the quality. Ship it as a draft-assistant first, an auto-responder second - if ever.
 
 ### 2. Document extraction with a confidence threshold
 
-Invoices, receipts, purchase orders, resumes — structured data trapped in unstructured PDFs. Someone opens each file and retypes three to ten fields into a system. It's soul-destroying and error-prone, and it's a near-perfect automation target.
+Invoices, receipts, purchase orders, resumes - structured data trapped in unstructured PDFs. Someone opens each file and retypes three to ten fields into a system. It's soul-destroying and error-prone, and it's a near-perfect automation target.
 
-The engineering: instead of asking the model for prose, you demand **structured output against a JSON schema** — `invoice_number`, `total`, `due_date`, `line_items` — and the model returns data your code can validate, not a paragraph you have to parse. Then the critical piece founders skip: a **confidence threshold**. The model returns its own uncertainty (or you derive it from validation — does the total match the line items?). High-confidence extractions flow straight through; low-confidence ones get flagged for a human. You're not replacing the person; you're shrinking their queue from *every* document to *the hard 10%*.
+The engineering: instead of asking the model for prose, you demand **structured output against a JSON schema** - `invoice_number`, `total`, `due_date`, `line_items` - and the model returns data your code can validate, not a paragraph you have to parse. Then the critical piece founders skip: a **confidence threshold**. The model returns its own uncertainty (or you derive it from validation - does the total match the line items?). High-confidence extractions flow straight through; low-confidence ones get flagged for a human. You're not replacing the person; you're shrinking their queue from *every* document to *the hard 10%*.
 
 **What it costs:** a fraction of a cent per document; the build is a few days once the schema is nailed down. **The gotcha:** the hard part isn't the AI, it's your data. If your "invoices" arrive as scanned photos at three resolutions, half the work is image handling before the model ever sees them. I quote that honestly up front, because it's where these projects actually slow down.
 
@@ -47,15 +47,15 @@ The engineering: instead of asking the model for prose, you demand **structured 
 
 Every founder wants to type "how many orders shipped from the Delhi warehouse last week?" and get an answer, instead of pinging the one engineer who can write the query. Done naively this is dangerous. Done right it's one of the highest-ROI internal tools you can ship.
 
-The engineering: the model translates the question into a **tool call against a read-only, permission-scoped set of queries you defined** — not free-form SQL it wrote itself (never let a model write arbitrary SQL against production; that's a breach with extra steps). You expose a handful of safe, parameterized queries as tools; the model picks and fills them; your code runs them under the asker's permissions. Cache the common ones. Return numbers, not prose the model might round wrong.
+The engineering: the model translates the question into a **tool call against a read-only, permission-scoped set of queries you defined** - not free-form SQL it wrote itself (never let a model write arbitrary SQL against production; that's a breach with extra steps). You expose a handful of safe, parameterized queries as tools; the model picks and fills them; your code runs them under the asker's permissions. Cache the common ones. Return numbers, not prose the model might round wrong.
 
 **What it costs:** pennies per query, and it deletes a whole category of "quick question for engineering" interruptions. **The gotcha:** scope every query to the asker's role. An "ask your data" tool that ignores permissions is a data-leak generator with a friendly chat UI.
 
 ### 4. Ticket classification and routing
 
-Before a human ever reads a ticket, something has to decide: is this billing, bug, sales, or spam — and how urgent? Teams do this by hand, badly, all day.
+Before a human ever reads a ticket, something has to decide: is this billing, bug, sales, or spam - and how urgent? Teams do this by hand, badly, all day.
 
-The engineering: this one's often *cheaper and better* without the heaviest model. A small, fast model (or even a fine-tuned classifier) tags category + priority in a few hundred milliseconds for a fraction of a cent. The win isn't magic — it's consistency and speed at volume. But it only stays good if you **measure it**: a labelled eval set of real tickets you re-run whenever you change the prompt or swap the model, so "I tweaked the wording" can't silently drop accuracy 12%.
+The engineering: this one's often *cheaper and better* without the heaviest model. A small, fast model (or even a fine-tuned classifier) tags category + priority in a few hundred milliseconds for a fraction of a cent. The win isn't magic - it's consistency and speed at volume. But it only stays good if you **measure it**: a labelled eval set of real tickets you re-run whenever you change the prompt or swap the model, so "I tweaked the wording" can't silently drop accuracy 12%.
 
 **What it costs:** the cheapest of the four to run; the real investment is building and maintaining the eval set. **The gotcha:** without evals you're flying blind, and classification drift is invisible until a VIP's urgent ticket sits in the wrong queue for two days.
 
@@ -65,23 +65,23 @@ Founders' intuition is usually wrong in *both* directions here. They overestimat
 
 **Running cost is genuinely small.** The systems above run from a fraction of a cent to a couple of cents per action on mid-tier models. Unless you're at serious scale, the model bill is a rounding error next to the salaries it frees up. The honest framing: it costs more per minute to have a person retype the invoice than to have the model do it and a person spot-check it.
 
-**Latency is the cost founders forget.** A tool-calling agent makes multiple round-trips to the model — each one carrying the whole conversation plus your tool definitions — so a three-step answer can take five to fifteen seconds. Fine for a drafted email; wrong for something a customer stares at live. Part of my job is knowing when to stream partial output, when to cap the loop (I hard-limit agents to five rounds — deeper is a design smell, not a feature), and when the answer is "run this in a background job, not in the request."
+**Latency is the cost founders forget.** A tool-calling agent makes multiple round-trips to the model - each one carrying the whole conversation plus your tool definitions - so a three-step answer can take five to fifteen seconds. Fine for a drafted email; wrong for something a customer stares at live. Part of my job is knowing when to stream partial output, when to cap the loop (I hard-limit agents to five rounds - deeper is a design smell, not a feature), and when the answer is "run this in a background job, not in the request."
 
-**Build cost is a few days to a few weeks,** driven almost entirely by how many systems it touches and how clean your data is. The clean-data part is where timelines actually go — if your order data lives in three places that disagree, that's the real project, and AI doesn't fix it.
+**Build cost is a few days to a few weeks,** driven almost entirely by how many systems it touches and how clean your data is. The clean-data part is where timelines actually go - if your order data lives in three places that disagree, that's the real project, and AI doesn't fix it.
 
 **Maintenance is the line item nobody budgets for.** Models change. Your product changes. The system that was right in January drifts by June. You need logging on every AI decision, a **spend cap** so a runaway loop can't bill you $500 overnight, and evals so you notice quality slipping *before* your customers do. Budget for *watching* it, not just building it. An unwatched automation is a liability with a monthly invoice.
 
 ## The failure mode nobody warns you about
 
-It's not hallucination — the tool-grounding above mostly handles that. It's **silent partial failure.**
+It's not hallucination - the tool-grounding above mostly handles that. It's **silent partial failure.**
 
-The demo works. The launch works. Six weeks later the model is quietly getting some fraction of answers — call it 10 or 15% — subtly wrong, not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
+The demo works. The launch works. Six weeks later the model is quietly getting some fraction of answers - call it 10 or 15% - subtly wrong, not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
 
 The fix is unglamorous and non-negotiable, and it's exactly what separates the automations that last from the ones that quietly rot: log every decision (input, action taken, output), sample them on a schedule, keep a labelled eval set you re-run on every change, and hold a human approval step in front of anything customer-facing until you've *earned* the confidence to remove it. The systems that survive are the ones you can audit. The ones that fail are the ones someone set and forgot.
 
 ## The engineer's checklist (steal this before you greenlight anything)
 
-Before you approve an AI automation, get honest answers to these — I run every client engagement through them:
+Before you approve an AI automation, get honest answers to these - I run every client engagement through them:
 
 - **Volume:** Does someone do this 20+ times a day? If it's rare, skip it.
 - **Judgment:** Is the "right answer" mostly lookup-and-format, or does it need real human judgment? Automate the former.
@@ -90,7 +90,7 @@ Before you approve an AI automation, get honest answers to these — I run every
 - **Data:** Does that data live somewhere you can query cleanly? If it's a mess, that's project one, not the AI.
 - **Watchability:** Can you log, sample, and eval every decision? If not, you're flying blind.
 
-Clear all six and it's a strong candidate. Fail two or more and the honest answer is often "a queue and a cron job" — plain automation, no model — and I'll tell a client that rather than sell them AI they don't need.
+Clear all six and it's a strong candidate. Fail two or more and the honest answer is often "a queue and a cron job" - plain automation, no model - and I'll tell a client that rather than sell them AI they don't need.
 
 ## Where to start
 
@@ -98,4 +98,4 @@ Pick one workflow: the most boring, highest-volume, lowest-stakes thing your tea
 
 That's what my [AI Integration Audit](/#contact) is: one week, fixed price, I look at your real workflows and tell you which two or three are worth automating, what each will cost to build and run, and which ones to leave alone. Sometimes the most valuable line in that report is "don't automate this one." Founders remember the engineer who told them that.
 
-*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) - Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*

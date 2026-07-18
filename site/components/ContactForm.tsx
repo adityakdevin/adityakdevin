@@ -8,7 +8,7 @@ import { EMAIL_RE, withRef } from "@/lib/site";
 type Status = "idle" | "submitting" | "success" | "error";
 
 /**
- * Contact form — full visual state coverage per SPEC §5A:
+ * Contact form - full visual state coverage per SPEC S5A:
  * inline validation on blur, submitting lock, success panel, error with direct-email fallback.
  * Labels always visible (never placeholder-as-label). Honeypot field invisible to humans.
  */
@@ -21,7 +21,7 @@ export function ContactForm() {
     if (name === "email" && !EMAIL_RE.test(value))
       return "Please enter a valid email address.";
     if (name === "message" && value.trim().length < 10)
-      return "Tell me a little more — at least a sentence.";
+      return "Tell me a little more - at least a sentence.";
     return null;
   }
 
@@ -49,7 +49,7 @@ export function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // D15: which page earned this lead — measured, not self-reported.
+        // D15: which page earned this lead - measured, not self-reported.
         body: JSON.stringify({ ...data, ...getAttribution() }),
       });
       setStatus(res.ok ? "success" : "error");
@@ -67,7 +67,7 @@ export function ContactForm() {
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <p className="mono font-semibold" style={{ color: "var(--accent)" }}>
-          ✓ Got it — I reply within 24 hours.
+           Got it - I reply within 24 hours.
         </p>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
           Prefer faster? <a href={withRef(profile.bookingUrl, "contact")}>Book a call directly</a>.
@@ -78,7 +78,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
-      {/* Honeypot — invisible to humans, tempting to bots */}
+      {/* Honeypot - invisible to humans, tempting to bots */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
           Company website
@@ -155,7 +155,7 @@ export function ContactForm() {
 
       {status === "error" ? (
         <p role="alert" className="rounded border p-3 text-sm" style={{ borderColor: "var(--error)", color: "var(--text)" }}>
-          Couldn&apos;t send — try again, or email me directly at{" "}
+          Couldn&apos;t send - try again, or email me directly at{" "}
           <a href={`mailto:${profile.email}`}>{profile.email}</a>.
         </p>
       ) : null}
@@ -166,7 +166,7 @@ export function ContactForm() {
         className="btn mono min-h-11 cursor-pointer rounded px-6 py-3 font-semibold disabled:cursor-wait disabled:opacity-70"
         style={{ background: "var(--accent)", color: "var(--on-accent)" }}
       >
-        {status === "submitting" ? "Sending…" : "Send message"}
+        {status === "submitting" ? "Sending..." : "Send message"}
       </button>
     </form>
   );

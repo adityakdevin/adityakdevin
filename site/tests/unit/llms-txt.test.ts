@@ -3,7 +3,7 @@ import { GET } from "@/app/llms.txt/route";
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 
-describe("llms.txt (generated from profile.ts — single-source invariant)", () => {
+describe("llms.txt (generated from profile.ts - single-source invariant)", () => {
   it("serves plain text carrying identity, services, contact, and every FAQ", async () => {
     const res = GET();
     expect(res.headers.get("Content-Type")).toContain("text/plain");

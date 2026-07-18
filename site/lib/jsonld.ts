@@ -6,7 +6,7 @@ import { SITE_URL } from "@/lib/site";
 const BASE = SITE_URL;
 const PERSON_ID = `${BASE}/#aditya`;
 
-/** Shared @id graph (SPEC §7) so engines connect entities across pages. */
+/** Shared @id graph (SPEC S7) so engines connect entities across pages. */
 export function personJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -35,7 +35,7 @@ export function profilePageJsonLd() {
     "@type": "ProfilePage",
     "@id": `${BASE}/#profilepage`,
     url: BASE,
-    name: `${profile.name} — Full Stack Developer, AI Engineer & Solution Architect`,
+    name: `${profile.name} - Full Stack Developer, AI Engineer & Solution Architect`,
     mainEntity: { "@id": PERSON_ID },
   };
 }
@@ -59,7 +59,7 @@ export function cvJsonLd() {
     "@type": "ProfilePage",
     "@id": `${BASE}/cv#page`,
     url: `${BASE}/cv`,
-    name: `CV — ${profile.name}`,
+    name: `CV - ${profile.name}`,
     mainEntity: {
       "@id": PERSON_ID,
       "@type": "Person",
@@ -99,7 +99,7 @@ export function articleJsonLd(post: {
   };
 }
 
-/** Render helper — script tag payload. `<` is escaped so a title containing
+/** Render helper - script tag payload. `<` is escaped so a title containing
  *  `</script>` can never break out of the tag (standard JSON-LD hardening). */
 export function jsonLdScript(data: object) {
   return JSON.stringify(data).replace(/</g, "\\u003c");

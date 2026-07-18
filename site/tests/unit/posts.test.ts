@@ -121,13 +121,13 @@ describe("homepage Field-notes merge (T5 regressions)", () => {
     expect(notes.map((n) => n.key)).toEqual([
       "local-building-the-thing", // 2026-07-10
       "local-a-very-long-slug-that-mirrors-real-production-post-slugs-for-overflow-testing", // 2026-07-01
-      "devto-999", // 2026-06-01 — the id-123456 API copy is deduped; legacy-import (01-05) truncated by limit
+      "devto-999", // 2026-06-01 - the id-123456 API copy is deduped; legacy-import (01-05) truncated by limit
     ]);
     expect(notes[0].href).toBe("/blog/building-the-thing");
     expect(notes[2].href).toBe("https://dev.to/x/only");
   });
 
-  it("renders local posts even when Dev.to is down (§5.6 now legacy-only)", async () => {
+  it("renders local posts even when Dev.to is down (S5.6 now legacy-only)", async () => {
     const { mergeFieldNotes } = await import("@/lib/posts");
     const notes = mergeFieldNotes(local, null);
     expect(notes.length).toBe(3);
@@ -153,8 +153,8 @@ describe("homepage Field-notes merge (T5 regressions)", () => {
   });
 });
 
-describe("prompt-corpus exclusion (§3 amendment)", () => {
-  it("lib/prompt.ts never touches content/posts — the 15-25k token budget holds", () => {
+describe("prompt-corpus exclusion (S3 amendment)", () => {
+  it("lib/prompt.ts never touches content/posts - the 15-25k token budget holds", () => {
     const src = readFileSync(path.join(process.cwd(), "lib/prompt.ts"), "utf-8");
     expect(src).not.toMatch(/content\/posts|lib\/posts|readdir/);
     const imports = src.match(/from "@\/[^"]+"/g) ?? [];

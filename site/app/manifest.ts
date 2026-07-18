@@ -3,9 +3,9 @@ import { profile } from "@/content/data/profile";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${profile.name} — ${profile.handle}`,
+    name: `${profile.name} - ${profile.handle}`,
     short_name: profile.handle,
-    description: `${profile.role} @ ${profile.company} — Laravel, Vue, React & AI/LLM engineering.`,
+    description: `${profile.role} @ ${profile.company} - Laravel, Vue, React & AI/LLM engineering.`,
     start_url: "/",
     display: "standalone",
     background_color: "#0d1117",

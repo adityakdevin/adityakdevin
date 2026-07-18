@@ -7,7 +7,7 @@ import { profile } from "@/content/data/profile";
 import { withRef } from "@/lib/site";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-/* Brand mark — same >_ tile as the PWA icon, sized for chrome bars */
+/* Brand mark - same >_ tile as the PWA icon, sized for chrome bars */
 function Logo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -25,7 +25,7 @@ function Logo({ size = 20 }: { size?: number }) {
   );
 }
 
-/* Tab-bar building blocks — 20px stroke icons, 10px mono labels, top indicator on active */
+/* Tab-bar building blocks - 20px stroke icons, 10px mono labels, top indicator on active */
 function Tab({
   href,
   label,
@@ -107,10 +107,10 @@ function CalendarIcon() {
 }
 
 /**
- * Global chrome (SPEC §5, design review 3A + FINDING-001):
+ * Global chrome (SPEC S5, design review 3A + FINDING-001):
  * - Home: header appears after scrolling past the hero (the hero IS the identity).
- * - Every other page: header visible immediately — trunk test requires site ID + nav on landing.
- * - Mobile: fixed bottom tab bar (native-app nav) — always visible, safe-area aware.
+ * - Every other page: header visible immediately - trunk test requires site ID + nav on landing.
+ * - Mobile: fixed bottom tab bar (native-app nav) - always visible, safe-area aware.
  */
 export function StickyChrome() {
   const pathname = usePathname();
@@ -167,7 +167,7 @@ export function StickyChrome() {
         </div>
       </header>
 
-      {/* Mobile top identity bar — subpages only (trunk test: whose site is this?) */}
+      {/* Mobile top identity bar - subpages only (trunk test: whose site is this?) */}
       {!isHome ? (
         <div
           className="flex items-center justify-between border-b px-4 py-3 md:hidden"
@@ -184,7 +184,7 @@ export function StickyChrome() {
         </div>
       ) : null}
 
-      {/* Mobile bottom tab bar — native-app nav: icon+label tabs, active indicator, notch-safe */}
+      {/* Mobile bottom tab bar - native-app nav: icon+label tabs, active indicator, notch-safe */}
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
         style={{
@@ -193,7 +193,7 @@ export function StickyChrome() {
         }}
         aria-label="Site"
       >
-        {/* Theme toggle removed from mobile nav (2026-07-17) — mobile follows
+        {/* Theme toggle removed from mobile nav (2026-07-17) - mobile follows
             prefers-color-scheme; the freed slot widens the booking CTA. */}
         <div className="mono grid grid-cols-5 items-stretch">
           <Tab href="/" label="home" active={isHome}>

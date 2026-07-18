@@ -1,8 +1,8 @@
 /**
- * Shared in-memory rate limiter (eng review D12 — extracted from
+ * Shared in-memory rate limiter (eng review D12 - extracted from
  * api/contact/route.ts so contact + subscribe share ONE implementation).
  *
- * ponytail: per-instance Map — Upstash lands with /api/chat's counters when
+ * ponytail: per-instance Map - Upstash lands with /api/chat's counters when
  * the account exists; a single Vercel instance covers current traffic. When
  * that day comes, this file is the only place to swap.
  *
@@ -23,7 +23,7 @@ export function createRateLimiter(limit: number, windowMs: number) {
       if (now > entry.reset) hits.delete(key);
     }
     // Hard cap (adversarial finding): key rotation inside the window defeats
-    // expiry-only pruning. Evict oldest-inserted (Map order) past the cap —
+    // expiry-only pruning. Evict oldest-inserted (Map order) past the cap -
     // an attacker rotating keys evicts their own entries, not memory.
     if (hits.size >= PRUNE_AT) {
       const excess = hits.size - PRUNE_AT + 1;
@@ -46,7 +46,7 @@ export function createRateLimiter(limit: number, windowMs: number) {
     entry.count += 1;
     return entry.count > limit;
   }
-  // Observable for tests — the D14 sweep must be provably real, not vacuous.
+  // Observable for tests - the D14 sweep must be provably real, not vacuous.
   rateLimited.size = () => hits.size;
   return rateLimited;
 }
@@ -56,7 +56,7 @@ export function createRateLimiter(limit: number, windowMs: number) {
  * Prefers x-real-ip (platform-set on Vercel, not client-spoofable) over the
  * leftmost x-forwarded-for entry, which clients can prepend to behind proxies
  * that append rather than overwrite.
- * ponytail: the trust assumption is VERCEL-ONLY — behind any other proxy,
+ * ponytail: the trust assumption is VERCEL-ONLY - behind any other proxy,
  * verify which header the edge actually controls before relying on this.
  */
 export function clientIp(req: { headers: { get(name: string): string | null } }): string {

@@ -12,7 +12,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e"
+    "test:e2e": "turbo run test:e2e",
+    "hygiene": "node scripts/text-hygiene.mjs --all",
+    "hygiene:fix": "node scripts/text-hygiene.mjs --fix --all"
   },
   "devDependencies": {
     "turbo": "^2.5.0"

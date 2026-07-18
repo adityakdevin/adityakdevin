@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
-/** SPEC §7: explicitly welcome AI crawlers alongside everyone else. */
+/** SPEC S7: explicitly welcome AI crawlers alongside everyone else. */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [

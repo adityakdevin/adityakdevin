@@ -9,15 +9,15 @@ import { SITE_URL, withRef } from "@/lib/site";
 /**
  * Service-intent page (design doc 20260717, eng review D16/T4).
  * SERP-validated 2026-07-17: the head terms are owned by agency template
- * pages — this page targets person-intent commercial variants instead
+ * pages - this page targets person-intent commercial variants instead
  * ("Laravel AI integration expert", "freelance Laravel AI developer").
- * The homepage KEEPS spec §1's "Laravel AI integration developer India" —
+ * The homepage KEEPS spec S1's "Laravel AI integration developer India" -
  * no cannibalization.
  */
 export const metadata: Metadata = {
-  title: "Laravel AI Integration Expert — hire a freelance Laravel AI developer",
+  title: "Laravel AI Integration Expert - hire a freelance Laravel AI developer",
   description:
-    "I integrate AI into Laravel applications — chatbots, RAG, document automation — as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
+    "I integrate AI into Laravel applications - chatbots, RAG, document automation - as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
   alternates: { canonical: "/services/laravel-ai-development" },
 };
 
@@ -39,7 +39,7 @@ const serviceJsonLd = {
 const CAPABILITIES = [
   {
     h: "AI features inside your existing Laravel app",
-    body: "Chat assistants, retrieval-augmented generation over your own data, document extraction, and smart automation — built into the codebase you already run, using the official Laravel AI SDK or direct provider APIs. No rewrite, no parallel system.",
+    body: "Chat assistants, retrieval-augmented generation over your own data, document extraction, and smart automation - built into the codebase you already run, using the official Laravel AI SDK or direct provider APIs. No rewrite, no parallel system.",
   },
   {
     h: "Production concerns handled, not demoed",
@@ -47,14 +47,14 @@ const CAPABILITIES = [
   },
   {
     h: "Full-stack delivery",
-    body: `${profile.yearsExperience} years shipping Laravel, Livewire/Inertia, and Vue/React systems for real businesses. One person from data model to deployed feature — no handoffs.`,
+    body: `${profile.yearsExperience} years shipping Laravel, Livewire/Inertia, and Vue/React systems for real businesses. One person from data model to deployed feature - no handoffs.`,
   },
 ];
 
 const PROCESS = [
-  { step: "01", h: "30-minute call", body: "You describe the workflow that hurts. I tell you honestly whether AI helps — sometimes the answer is a queue and a cron job, and I'll say so." },
-  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Laravel codebase, identify the 2–3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
-  { step: "03", h: "Build", body: "I implement the spec — tested, rate-limited, spend-capped, deployed. You own the code; nothing is locked to me." },
+  { step: "01", h: "30-minute call", body: "You describe the workflow that hurts. I tell you honestly whether AI helps - sometimes the answer is a queue and a cron job, and I'll say so." },
+  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Laravel codebase, identify the 2-3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
+  { step: "03", h: "Build", body: "I implement the spec - tested, rate-limited, spend-capped, deployed. You own the code; nothing is locked to me." },
 ];
 
 export default function LaravelAiServicePage() {
@@ -71,8 +71,8 @@ export default function LaravelAiServicePage() {
         Laravel AI integration, by a named engineer
       </h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
-        Agencies sell you a bench. I&apos;m {profile.name} — {profile.role} @ {profile.company},{" "}
-        {profile.yearsExperience} years of shipped Laravel systems — and I build AI features
+        Agencies sell you a bench. I&apos;m {profile.name} - {profile.role} @ {profile.company},{" "}
+        {profile.yearsExperience} years of shipped Laravel systems - and I build AI features
         into existing Laravel apps with my own hands. The terminal assistant on{" "}
         <Link href="/">this site&apos;s homepage</Link> runs on the same patterns I ship to
         clients.
@@ -113,8 +113,8 @@ export default function LaravelAiServicePage() {
           <span style={{ color: "var(--accent)" }}>The offer:</span> AI Integration Audit
         </h2>
         <p className="mt-2">
-          One week, fixed price, quoted on the call. You get a build-ready spec naming the 2–3
-          AI integrations with the highest ROI for your Laravel app — with cost, latency, and
+          One week, fixed price, quoted on the call. You get a build-ready spec naming the 2-3
+          AI integrations with the highest ROI for your Laravel app - with cost, latency, and
           risk spelled out. If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo;
           you&apos;ll get that in writing instead, and it costs you the call.
         </p>
@@ -139,8 +139,8 @@ export default function LaravelAiServicePage() {
       <section className="mt-12">
         <h2 className="mono h2-rule text-2xl font-semibold">Proof, not promises</h2>
         <p className="mt-6">
-          Read the <Link href="/blog">field notes</Link> — end-to-end build walkthroughs of real
-          projects — or the <a href={profile.devto}>Laravel + AI series on Dev.to</a>. Case
+          Read the <Link href="/blog">field notes</Link> - end-to-end build walkthroughs of real
+          projects - or the <a href={profile.devto}>Laravel + AI series on Dev.to</a>. Case
           studies with named clients and real numbers live on{" "}
           <Link href="/work/budgetgen">the work page</Link>.
         </p>

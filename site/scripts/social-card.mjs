@@ -1,6 +1,6 @@
-// Social card build script (SOCIAL_MEDIA_PLAN.md — the deferred renderer, built).
+// Social card build script (SOCIAL_MEDIA_PLAN.md - the deferred renderer, built).
 //
-// NOT a public route. A local, run-on-demand script — the safe shape the eng
+// NOT a public route. A local, run-on-demand script - the safe shape the eng
 // review asked for (a public /api/social-card would be an unauthenticated
 // CPU-amplification endpoint). Reuses the site's IBM Plex Mono fonts + OG color
 // tokens so cards match adityadev.in.
@@ -29,7 +29,7 @@ const FONT_DIR = path.join(import.meta.dirname, "..", "assets", "fonts");
 const BG = "#0d1117", TEXT = "#e6edf3", MUTED = "#8b949e", PANEL = "#161b22", BORDER = "#30363d";
 
 // Satori only renders glyphs the embedded font has. Plex Mono lacks a few the
-// copy uses — swap them rather than ship tofu.
+// copy uses - swap them rather than ship tofu.
 const safe = (s) =>
   String(s ?? "")
     .replaceAll("¢", " cents").replaceAll("≠", "!=")
@@ -49,12 +49,12 @@ const ROLE = {
 const themeFor = (role) => ROLE[role] ?? { label: (role || "").toUpperCase(), size: 50, accent: "#22d3ee", tint: "#0d3b46" };
 
 function bgStyle(tint) {
-  // Diagonal color wash out of near-black — depth + a hint of the role color
+  // Diagonal color wash out of near-black - depth + a hint of the role color
   // so the card is not a flat rectangle in the feed.
   return `linear-gradient(148deg, ${tint} 0%, ${BG} 44%, #05070a 100%)`;
 }
 
-// Filled role pill (top-left) — the loud, instantly-readable label.
+// Filled role pill (top-left) - the loud, instantly-readable label.
 function chip(label, accent) {
   return h("div", { style: { display: "flex", alignItems: "center", background: accent, color: "#06121a", fontSize: 26, fontWeight: 600, letterSpacing: 2, padding: "12px 26px", borderRadius: 999 } }, label);
 }
@@ -66,14 +66,14 @@ function counter(txt, accent) {
 function rule(accent, w = 120) {
   return h("div", { style: { display: "flex", width: w, height: 10, background: accent, borderRadius: 999 } });
 }
-// Progress dots — current in accent, rest muted.
+// Progress dots - current in accent, rest muted.
 function dots(i, total, accent) {
   return h("div", { style: { display: "flex", gap: 12 } },
     Array.from({ length: total }, (_, k) =>
       h("div", { key: k, style: { display: "flex", width: 14, height: 14, borderRadius: 999, background: k === i ? accent : "#2a3038" } })));
 }
 function footer(slug, accent, i, total) {
-  // Domain only — the full blog slug isn't clickable in an image and, at this
+  // Domain only - the full blog slug isn't clickable in an image and, at this
   // length, collided with the progress dots. The CTA travels via "link in bio".
   return h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
     h("div", { style: { display: "flex", alignItems: "center", fontSize: 26, fontWeight: 600, color: TEXT } },
@@ -82,7 +82,7 @@ function footer(slug, accent, i, total) {
     dots(i, total, accent));
 }
 
-// Code panel with editor chrome (window dots + filename) — reads instantly as
+// Code panel with editor chrome (window dots + filename) - reads instantly as
 // "real code" and adds color the plain mono card lacked.
 function codePanel(text, accent) {
   const dot = (c) => h("div", { key: c, style: { display: "flex", width: 20, height: 20, borderRadius: 999, background: c } });
@@ -93,7 +93,7 @@ function codePanel(text, accent) {
   return h("div", { style: { display: "flex", flexDirection: "column", width: "100%", background: PANEL, border: `1px solid ${accent}55`, borderRadius: 16, overflow: "hidden" } }, bar, body);
 }
 
-// Carousel slide — 1080x1350
+// Carousel slide - 1080x1350
 function slideElement(item, i, total, slug) {
   const cfg = themeFor(item.role);
   const body = cfg.mono
@@ -107,7 +107,7 @@ function slideElement(item, i, total, slug) {
     footer(slug, cfg.accent, i, total));
 }
 
-// Reel frame — 1080x1920, big burned-in caption (a storyboard card)
+// Reel frame - 1080x1920, big burned-in caption (a storyboard card)
 function reelElement(item, i, total, slug) {
   const accent = "#22d3ee", tint = "#0d3b46";
   const mid = h("div", { style: { display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", flexGrow: 1, gap: 40 } },
@@ -117,13 +117,13 @@ function reelElement(item, i, total, slug) {
     ? h("div", { style: { display: "flex", fontSize: 26, color: MUTED } }, `shot: ${safe(item.note)}`)
     : h("div", { style: { display: "flex" } });
   return h("div", { style: { width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 90, backgroundImage: bgStyle(tint), fontFamily: "Plex" } },
-    h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, chip(`REEL · ${item.t || ""}`, accent), counter(`${i + 1} / ${total}`, accent)),
+    h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, chip(`REEL * ${item.t || ""}`, accent), counter(`${i + 1} / ${total}`, accent)),
     mid,
     h("div", { style: { display: "flex", flexDirection: "column", gap: 26 } }, shot, footer(slug, accent, i, total)));
 }
 
 async function render(items, kind, { W, Hgt, el, fonts, outDir, slug }) {
-  // Clear stale files of this kind first — a shorter set (or renumbered slides)
+  // Clear stale files of this kind first - a shorter set (or renumbered slides)
   // must not leave orphans (e.g. an old slide-6 after dropping to 5).
   for (const f of await readdir(outDir).catch(() => [])) {
     if (f.startsWith(`${kind}-`) && f.endsWith(".png")) await unlink(path.join(outDir, f)).catch(() => {});
@@ -172,7 +172,7 @@ async function main() {
   if (wantReel) {
     if (Array.isArray(data.reel) && data.reel.length) {
       total += await render(data.reel, "reel", { W: 1080, Hgt: 1920, el: reelElement, fonts, outDir, slug });
-    } else { console.error("no `reel:` array in the pack frontmatter — add one (see /draft-social-media)"); process.exit(1); }
+    } else { console.error("no `reel:` array in the pack frontmatter - add one (see /draft-social-media)"); process.exit(1); }
   }
 
   console.log(`Rendered ${total} image(s) → ${path.relative(ROOT, outDir)}/`);

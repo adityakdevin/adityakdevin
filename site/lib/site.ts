@@ -1,4 +1,4 @@
-/** Single source for site-wide constants (eng ship review D3 — DRY). */
+/** Single source for site-wide constants (eng ship review D3 - DRY). */
 
 export const SITE_URL = "https://adityadev.in";
 

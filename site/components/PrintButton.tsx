@@ -1,6 +1,6 @@
 "use client";
 
-/** "Download PDF" = window.print() — the print stylesheet IS the PDF (SPEC §8). */
+/** "Download PDF" = window.print() - the print stylesheet IS the PDF (SPEC S8). */
 export function PrintButton() {
   return (
     <button

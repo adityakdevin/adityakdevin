@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ── Design tokens (PORTFOLIO_SPEC §4) — no raw hex in components ── */
+/* ── Design tokens (PORTFOLIO_SPEC S4) - no raw hex in components ── */
 :root {
   --bg: #0d1117;
   --surface: #161b22;
@@ -11,7 +11,7 @@
   --focus: #22b8d4;
   --error: #f85149;
   --on-accent: #06222a; /* text on accent-filled buttons */
-  /* Theme-locked dark palette — hero + terminal stay dark in BOTH themes.
+  /* Theme-locked dark palette - hero + terminal stay dark in BOTH themes.
      Components that must ignore the theme use these, never the themed tokens above. */
   --dark-bg: #0d1117;
   --dark-surface: #161b22;
@@ -29,10 +29,10 @@
   --surface: #ffffff;
   --text: #1f2328;
   --muted: #4d5761;
-  --accent: #0e7490; /* cyan-700 — 4.5:1+ on white/bg, AA for small text (FINDING-002) */
+  --accent: #0e7490; /* cyan-700 - 4.5:1+ on white/bg, AA for small text (FINDING-002) */
   --border: #d0d7de;
   --focus: #0e7490;
-  --error: #d1242f; /* self-referencing var was guaranteed-invalid — error states vanished in light mode */
+  --error: #d1242f; /* self-referencing var was guaranteed-invalid - error states vanished in light mode */
   --on-accent: #ffffff; /* white on cyan-700 = 4.9:1 */
 }
 
@@ -41,7 +41,7 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Kill double-tap zoom delay on touch — buttons and links respond instantly */
+/* Kill double-tap zoom delay on touch - buttons and links respond instantly */
 a, button, summary { touch-action: manipulation; }
 
 body {
@@ -56,7 +56,7 @@ h1, h2, h3, .mono {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
 }
 
-/* Interactive states (§4): focus ring on ALL interactive elements */
+/* Interactive states (S4): focus ring on ALL interactive elements */
 a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
@@ -73,7 +73,7 @@ main a:not(.btn).no-underline:hover { color: var(--accent); }
 .btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
 .btn:hover { filter: brightness(1.08); }
 
-/* Signature rule: cyan bar under every section heading — carries brand below the hero */
+/* Signature rule: cyan bar under every section heading - carries brand below the hero */
 .h2-rule::after {
   content: "";
   display: block;
@@ -83,7 +83,7 @@ main a:not(.btn).no-underline:hover { color: var(--accent); }
   background: var(--accent);
 }
 
-/* Form fields must stand off their surface in both themes — CSS owns field backgrounds */
+/* Form fields must stand off their surface in both themes - CSS owns field backgrounds */
 input, textarea {
   background: var(--bg);
   transition: border-color 150ms ease-out;
@@ -101,7 +101,7 @@ details summary:hover { color: var(--accent); }
 details[open] summary { color: var(--accent); }
 
 /* Motion #1: hero command-type reveal (600ms, char-by-char, once) + cursor blink 1.06s step.
-   clip-path keeps the span a normal inline element — baseline stays aligned with the prompt.
+   clip-path keeps the span a normal inline element - baseline stays aligned with the prompt.
    clip-path lives only in the keyframes: reduced-motion (animation:none) shows the full text. */
 @keyframes type-reveal {
   from { clip-path: inset(-30% 100% -30% 0); }
@@ -123,7 +123,7 @@ details[open] summary { color: var(--accent); }
 @keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .settle-in { animation: settle 400ms ease-out both; }
 
-/* prefers-reduced-motion disables ALL motion — keyframes AND transitions (§4, FINDING-005) */
+/* prefers-reduced-motion disables ALL motion - keyframes AND transitions (S4, FINDING-005) */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -135,11 +135,11 @@ details[open] summary { color: var(--accent); }
   html { scroll-behavior: auto; }
 }
 
-/* ── Blog post body (design doc 20260717) — MDX output, tokens only ── */
+/* ── Blog post body (design doc 20260717) - MDX output, tokens only ── */
 /* overflow-wrap: long URLs/tokens in prose wrap instead of widening the page
    on phones; code blocks and tables scroll inside their own boxes. */
 .prose-post { line-height: 1.75; overflow-wrap: break-word; }
-/* No font-family here — the global h1,h2,h3 rule already applies IBM Plex Mono. */
+/* No font-family here - the global h1,h2,h3 rule already applies IBM Plex Mono. */
 .prose-post h2 { font-size: 1.5rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
 .prose-post h3 { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.5rem; }
 .prose-post p { margin: 1rem 0; }
@@ -157,7 +157,7 @@ details[open] summary { color: var(--accent); }
 .prose-post table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; display: block; overflow-x: auto; }
 .prose-post th, .prose-post td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
 
-/* ── CV print stylesheet (§8) ── */
+/* ── CV print stylesheet (S8) ── */
 @media print {
   [data-no-print] { display: none !important; }
   :root, [data-theme="light"], [data-theme="dark"] {

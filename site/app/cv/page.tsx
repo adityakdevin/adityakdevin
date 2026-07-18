@@ -5,12 +5,12 @@ import { PrintButton } from "@/components/PrintButton";
 
 export const metadata: Metadata = {
   title: "CV",
-  description: `CV of ${profile.name} (${profile.handle}) — ${profile.role} @ ${profile.company}, Full Stack Developer & AI Engineer with ${profile.yearsExperience} years of experience. Laravel, Vue, React, LLM integrations. ${profile.location}.`,
+  description: `CV of ${profile.name} (${profile.handle}) - ${profile.role} @ ${profile.company}, Full Stack Developer & AI Engineer with ${profile.yearsExperience} years of experience. Laravel, Vue, React, LLM integrations. ${profile.location}.`,
   alternates: { canonical: "/cv" },
 };
 
 /**
- * CV (SPEC §8): data-driven from profile.ts, print-perfect via @media print in globals.css.
+ * CV (SPEC S8): data-driven from profile.ts, print-perfect via @media print in globals.css.
  * ATS-safe: semantic HTML, standard section names, no text-in-images.
  */
 export default function CvPage() {
@@ -41,7 +41,7 @@ export default function CvPage() {
         </h2>
         <p className="mt-4">
           {profile.role} at {profile.company} with {profile.yearsExperience} years of experience
-          designing and shipping web products end to end — Laravel and PHP backends, Vue and React
+          designing and shipping web products end to end - Laravel and PHP backends, Vue and React
           frontends, and production AI/LLM integrations. Led client projects from architecture to
           launch, including payments, real-estate platforms, and AI-powered automation. Based in{" "}
           {profile.location}; working with clients worldwide.
@@ -55,7 +55,7 @@ export default function CvPage() {
         {profile.experience.map((e) => (
           <div key={e.company} className="mt-5">
             <h3 className="text-lg font-semibold">
-              {e.role} — {e.company}
+              {e.role} - {e.company}
             </h3>
             <p className="mono text-sm" style={{ color: "var(--muted)" }}>
               {e.period}
@@ -91,14 +91,14 @@ export default function CvPage() {
         </h2>
         <ul className="mt-4 space-y-3">
           <li>
-            <strong>{profile.featuredWork.lead.title}</strong> — {profile.featuredWork.lead.story}{" "}
+            <strong>{profile.featuredWork.lead.title}</strong> - {profile.featuredWork.lead.story}{" "}
             <span className="mono text-sm" style={{ color: "var(--muted)" }}>
               ({profile.featuredWork.lead.stack})
             </span>
           </li>
           {profile.featuredWork.links.map((l) => (
             <li key={l.title}>
-              <strong>{l.title}</strong> — {l.note}
+              <strong>{l.title}</strong> - {l.note}
             </li>
           ))}
         </ul>

@@ -5,14 +5,14 @@ import { profile } from "@/content/data/profile";
 import { NewsletterForm } from "@/components/NewsletterForm";
 
 export const metadata: Metadata = {
-  title: "Blog — field notes from Laravel + AI work",
+  title: "Blog - field notes from Laravel + AI work",
   description: `${BLOG_DESCRIPTION} By Aditya Kumar.`,
   alternates: { canonical: "/blog" },
 };
 
 /**
  * Plain dated list at launch (eng review: tag FILTERS deferred until the
- * corpus passes ~10 posts — tags live in frontmatter from day one).
+ * corpus passes ~10 posts - tags live in frontmatter from day one).
  */
 export default function BlogIndexPage() {
   const posts = getAllPosts();
@@ -29,7 +29,7 @@ export default function BlogIndexPage() {
 
       {posts.length === 0 ? (
         <p className="mono mt-12 text-sm" style={{ color: "var(--muted)" }}>
-          ls: blog/: first posts landing soon —{" "}
+          ls: blog/: first posts landing soon -{" "}
           <a href={profile.devto}>read the series on dev.to →</a>
         </p>
       ) : (

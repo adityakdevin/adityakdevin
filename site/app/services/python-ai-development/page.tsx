@@ -7,15 +7,15 @@ import { ServiceStackNav } from "@/components/ServiceStackNav";
 import { SITE_URL, withRef } from "@/lib/site";
 
 /**
- * Python AI service-intent page (positioning broadened 2026-07-18 —
+ * Python AI service-intent page (positioning broadened 2026-07-18 -
  * SERVICE_PAGES_SPEC.md). Targets person-intent commercial variants
- * ("Python AI developer", "FastAPI/Django AI integration") — the Laravel/Node
+ * ("Python AI developer", "FastAPI/Django AI integration") - the Laravel/Node
  * pages and homepage own their own clusters, so no cannibalization.
  */
 export const metadata: Metadata = {
-  title: "Python AI Integration Expert — hire a freelance AI engineer for FastAPI/Django",
+  title: "Python AI Integration Expert - hire a freelance AI engineer for FastAPI/Django",
   description:
-    "I build AI features into Python backends — FastAPI, Django — chatbots, RAG, document pipelines, and agents, as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
+    "I build AI features into Python backends - FastAPI, Django - chatbots, RAG, document pipelines, and agents, as a named engineer with 9+ years of shipped systems, not an agency bench. Fixed-scope AI Integration Audit available.",
   alternates: { canonical: "/services/python-ai-development" },
 };
 
@@ -37,7 +37,7 @@ const serviceJsonLd = {
 const CAPABILITIES = [
   {
     h: "AI features inside your Python backend",
-    body: "Chat assistants, retrieval-augmented generation over your own data, document-extraction pipelines, and agents — built into your existing FastAPI or Django app with LangChain or direct provider SDKs. Fits your existing models, tasks (Celery), and data layer. No parallel system.",
+    body: "Chat assistants, retrieval-augmented generation over your own data, document-extraction pipelines, and agents - built into your existing FastAPI or Django app with LangChain or direct provider SDKs. Fits your existing models, tasks (Celery), and data layer. No parallel system.",
   },
   {
     h: "Production concerns handled, not demoed",
@@ -45,14 +45,14 @@ const CAPABILITIES = [
   },
   {
     h: "Full-stack delivery",
-    body: `${profile.yearsExperience} years shipping backend systems for real businesses, from data model to deployed feature. Python where the data and ML-adjacent work lives — one person, no handoffs.`,
+    body: `${profile.yearsExperience} years shipping backend systems for real businesses, from data model to deployed feature. Python where the data and ML-adjacent work lives - one person, no handoffs.`,
   },
 ];
 
 const PROCESS = [
-  { step: "01", h: "30-minute call", body: "You describe the workflow that hurts. I tell you honestly whether AI helps — sometimes the answer is a queue and a cron job, and I'll say so." },
-  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Python codebase, identify the 2–3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
-  { step: "03", h: "Build", body: "I implement the spec — tested, rate-limited, spend-capped, deployed. You own the code; nothing is locked to me." },
+  { step: "01", h: "30-minute call", body: "You describe the workflow that hurts. I tell you honestly whether AI helps - sometimes the answer is a queue and a cron job, and I'll say so." },
+  { step: "02", h: "Fixed-scope audit", body: "One week. I review your Python codebase, identify the 2-3 highest-ROI AI integrations, and deliver a build-ready spec with cost and latency estimates. Fixed quote up front." },
+  { step: "03", h: "Build", body: "I implement the spec - tested, rate-limited, spend-capped, deployed. You own the code; nothing is locked to me." },
 ];
 
 export default function PythonAiServicePage() {
@@ -69,8 +69,8 @@ export default function PythonAiServicePage() {
         Python AI integration, by a named engineer
       </h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
-        Agencies sell you a bench. I&apos;m {profile.name} — {profile.role} @ {profile.company},{" "}
-        {profile.yearsExperience} years of shipped systems — and I build AI features into
+        Agencies sell you a bench. I&apos;m {profile.name} - {profile.role} @ {profile.company},{" "}
+        {profile.yearsExperience} years of shipped systems - and I build AI features into
         existing Python backends with my own hands. The terminal assistant on{" "}
         <Link href="/">this site&apos;s homepage</Link> runs on the same patterns I ship to
         clients.
@@ -111,8 +111,8 @@ export default function PythonAiServicePage() {
           <span style={{ color: "var(--accent)" }}>The offer:</span> AI Integration Audit
         </h2>
         <p className="mt-2">
-          One week, fixed price, quoted on the call. You get a build-ready spec naming the 2–3
-          AI integrations with the highest ROI for your Python app — with cost, latency, and
+          One week, fixed price, quoted on the call. You get a build-ready spec naming the 2-3
+          AI integrations with the highest ROI for your Python app - with cost, latency, and
           risk spelled out. If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo;
           you&apos;ll get that in writing instead, and it costs you the call.
         </p>
@@ -137,8 +137,8 @@ export default function PythonAiServicePage() {
       <section className="mt-12">
         <h2 className="mono h2-rule text-2xl font-semibold">Proof, not promises</h2>
         <p className="mt-6">
-          Read the <Link href="/blog">field notes</Link> — end-to-end build walkthroughs of real
-          projects — or the <a href={profile.devto}>AI engineering series on Dev.to</a>. Case
+          Read the <Link href="/blog">field notes</Link> - end-to-end build walkthroughs of real
+          projects - or the <a href={profile.devto}>AI engineering series on Dev.to</a>. Case
           studies with named clients and real numbers live on{" "}
           <Link href="/work/budgetgen">the work page</Link>.
         </p>

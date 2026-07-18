@@ -1,7 +1,7 @@
 /** Haiku 4.5 list prices, USD per million tokens (cache write 1.25x, read 0.1x). */
 export const PRICE = { input: 1, cacheWrite: 1.25, cacheRead: 0.1, output: 5 };
 
-/** Dollar cost of one /api/chat call, from the Anthropic usage block (SPEC §6 spend gate). */
+/** Dollar cost of one /api/chat call, from the Anthropic usage block (SPEC S6 spend gate). */
 export function costUsd(u: {
   input_tokens: number;
   output_tokens: number;

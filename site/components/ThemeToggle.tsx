@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 
-/** Theme toggle — persisted choice wins over prefers-color-scheme (SPEC §4). */
+/** Theme toggle - persisted choice wins over prefers-color-scheme (SPEC S4). */
 
-// External store = <html data-theme> — keeps every mounted toggle (desktop
+// External store = <html data-theme> - keeps every mounted toggle (desktop
 // header + mobile tab bar) in sync without duplicated state.
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
@@ -48,7 +48,7 @@ export function ThemeToggle() {
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       title="Toggle theme"
     >
-      {theme === null ? "◐" : theme === "dark" ? "☀" : "☾"}
+      {theme === null ? "◐" : theme === "dark" ? "" : ""}
     </button>
   );
 }

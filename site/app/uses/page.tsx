@@ -11,7 +11,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "Editor & terminal",
     items: [
-      { name: "PhpStorm", note: "primary IDE — the Laravel/PHP tooling is unmatched" },
+      { name: "PhpStorm", note: "primary IDE - the Laravel/PHP tooling is unmatched" },
       { name: "Claude Code", note: "AI pair programmer in the terminal; a genuine multiplier, not autocomplete" },
       { name: "zsh on macOS", note: "with the usual git-heavy workflow, gh CLI for everything GitHub" },
     ],
@@ -19,7 +19,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "Backend",
     items: [
-      { name: "Laravel + PHP", note: "the workhorse — 9+ years of production systems" },
+      { name: "Laravel + PHP", note: "the workhorse - 9+ years of production systems" },
       { name: "Python", note: "AI/data work: embeddings, pipelines, scripts" },
       { name: "Node.js", note: "tooling and the odd service where JS fits better" },
       { name: "MySQL / PostgreSQL / Redis", note: "data layer; Redis for queues, cache, and rate limiting" },
@@ -45,7 +45,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
     items: [
       { name: "Docker", note: "dev parity and deployment" },
       { name: "AWS", note: "S3, EC2, the usual suspects for client hosting" },
-      { name: "GitHub Actions", note: "CI/CD — this repo alone runs four workflows" },
+      { name: "GitHub Actions", note: "CI/CD - this repo alone runs four workflows" },
       { name: "Vercel", note: "this site's home" },
     ],
   },
@@ -59,7 +59,7 @@ export default function UsesPage() {
       </p>
       <h1 className="mono h2-rule text-4xl font-semibold">Uses</h1>
       <p className="mt-3" style={{ color: "var(--muted)" }}>
-        The tools behind the work. No affiliate links, no gear-acquisition syndrome — just what
+        The tools behind the work. No affiliate links, no gear-acquisition syndrome - just what
         actually ships software.
       </p>
 
@@ -72,7 +72,7 @@ export default function UsesPage() {
             {g.items.map((item) => (
               <li key={item.name}>
                 <span className="mono font-medium">{item.name}</span>{" "}
-                <span style={{ color: "var(--muted)" }}>— {item.note}</span>
+                <span style={{ color: "var(--muted)" }}>- {item.note}</span>
               </li>
             ))}
           </ul>

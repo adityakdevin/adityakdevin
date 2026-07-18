@@ -12,7 +12,7 @@ export type DevtoPost = {
 let lastGood: DevtoPost[] | null = null;
 
 /**
- * Failure contract (SPEC §5.6): a Dev.to outage must never fail a build
+ * Failure contract (SPEC S5.6): a Dev.to outage must never fail a build
  * or render an empty section. On error: last successful payload; if none, null (section hides).
  */
 export async function getLatestPosts(limit = 3): Promise<DevtoPost[] | null> {

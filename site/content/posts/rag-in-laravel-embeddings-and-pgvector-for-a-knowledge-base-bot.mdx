@@ -1,6 +1,6 @@
 ---
 title: "RAG in Laravel: Embeddings and pgvector for a Knowledge-Base Bot"
-description: "The full retrieval-augmented generation pipeline in Laravel 11 with PostgreSQL and pgvector — embeddings, chunking, cosine retrieval, and an honest look at when you don't need RAG at all."
+description: "The full retrieval-augmented generation pipeline in Laravel 11 with PostgreSQL and pgvector - embeddings, chunking, cosine retrieval, and an honest look at when you don't need RAG at all."
 date: "2026-07-16"
 tags: ["Laravel", "AI", "PHP", "pgvector"]
 devtoId: 4159847
@@ -8,11 +8,11 @@ devtoId: 4159847
 
 In the [last post](https://adityadev.in/blog/streaming-ai-responses-in-laravel-with-server-sent-events) we streamed AI responses over SSE. Now let's fix the problem every chatbot hits in week one: the model doesn't know *your* data. Ask it about your refund policy or your API docs and it either hallucinates or shrugs.
 
-RAG — retrieval-augmented generation — fixes that. Instead of hoping the model knows your content, you store your documents as embeddings, retrieve the few chunks relevant to each question, and hand only those to the model. Here's the whole pipeline in Laravel 11 with PostgreSQL and pgvector — no vector-database SaaS required.
+RAG - retrieval-augmented generation - fixes that. Instead of hoping the model knows your content, you store your documents as embeddings, retrieve the few chunks relevant to each question, and hand only those to the model. Here's the whole pipeline in Laravel 11 with PostgreSQL and pgvector - no vector-database SaaS required.
 
 ## First, an honest gate: do you even need RAG?
 
-I recently shipped a chatbot for my own portfolio site. Total knowledge base: about 2,000 tokens of facts and FAQ. I didn't build RAG for it — I put the *entire corpus in the system prompt* and let prompt caching make it cheap. Simpler code, zero retrieval bugs, and the model sees everything on every question.
+I recently shipped a chatbot for my own portfolio site. Total knowledge base: about 2,000 tokens of facts and FAQ. I didn't build RAG for it - I put the *entire corpus in the system prompt* and let prompt caching make it cheap. Simpler code, zero retrieval bugs, and the model sees everything on every question.
 
 The rule of thumb I use with clients:
 
@@ -40,7 +40,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 ## The schema
 
-One table stores chunks of your documents plus their embedding vectors. `text-embedding-3-small` produces 1536 dimensions — good quality, cheap ($0.02 per million tokens).
+One table stores chunks of your documents plus their embedding vectors. `text-embedding-3-small` produces 1536 dimensions - good quality, cheap ($0.02 per million tokens).
 
 ```php
 use Illuminate\Database\Migrations\Migration;
@@ -106,7 +106,7 @@ class IngestDocs extends Command
         foreach (File::files($this->argument('path')) as $file) {
             $chunks = $this->chunk($file->getContents());
 
-            // One API call per file, not per chunk — batch input is supported
+            // One API call per file, not per chunk - batch input is supported
             $response = OpenAI::embeddings()->create([
                 'model' => 'text-embedding-3-small',
                 'input' => $chunks,
@@ -149,7 +149,7 @@ class IngestDocs extends Command
 }
 ```
 
-Run it: `php artisan rag:ingest storage/docs`. Re-running replaces a file's chunks, so ingestion is idempotent — wire it to your deploy or a scheduled job and content stays fresh.
+Run it: `php artisan rag:ingest storage/docs`. Re-running replaces a file's chunks, so ingestion is idempotent - wire it to your deploy or a scheduled job and content stays fresh.
 
 ## Retrieval: the five-line heart of RAG
 
@@ -176,14 +176,14 @@ class Retriever
             ->orderBy('distance')
             ->limit($limit)
             ->get()
-            ->filter(fn ($c) => $c->distance < 0.55) // relevance floor — tune on real queries
+            ->filter(fn ($c) => $c->distance < 0.55) // relevance floor - tune on real queries
             ->map(fn ($c) => ['content' => $c->content, 'source' => $c->source])
             ->all();
     }
 }
 ```
 
-That distance floor is your hallucination guard. If nothing scores under the threshold, the honest answer is "I don't know" — and you should say exactly that instead of feeding the model junk context.
+That distance floor is your hallucination guard. If nothing scores under the threshold, the honest answer is "I don't know" - and you should say exactly that instead of feeding the model junk context.
 
 ## Answering with context
 
@@ -201,7 +201,7 @@ class KnowledgeBot
         $chunks = $this->retriever->search($question);
 
         if ($chunks === []) {
-            return "I couldn't find that in our documentation — try rephrasing, or contact support.";
+            return "I couldn't find that in our documentation - try rephrasing, or contact support.";
         }
 
         $context = collect($chunks)
@@ -214,7 +214,7 @@ class KnowledgeBot
             'messages' => [
                 ['role' => 'system', 'content' => <<<PROMPT
                     Answer using ONLY the context below. If the context doesn't
-                    contain the answer, say you don't know — never invent facts.
+                    contain the answer, say you don't know - never invent facts.
                     Cite the source file name when you answer.
 
                     Context:
@@ -236,15 +236,15 @@ Wire `KnowledgeBot::answer()` into the streaming controller from part 2 of this 
 - **Relevance floor**: filter retrieved chunks by distance threshold; return an honest "not found" below it. Tune the number against real user queries, not vibes.
 - **Idempotent ingestion**: delete-and-replace per source file, run on deploy. Stale embeddings answer yesterday's questions.
 - **HNSW index**: without it, every query is a full table scan. With it, sub-10ms at hundreds of thousands of rows.
-- **Batch embeddings**: one API call per document, not per chunk — 10x fewer requests and the same price.
-- **Cost caps and rate limits**: everything from part 1 still applies — each question costs one embedding call plus one chat call.
+- **Batch embeddings**: one API call per document, not per chunk - 10x fewer requests and the same price.
+- **Cost caps and rate limits**: everything from part 1 still applies - each question costs one embedding call plus one chat call.
 - **Log question + retrieved sources** (not full content): when an answer is wrong, you need to know whether retrieval or generation failed. That distinction decides your fix.
 - **Evaluate retrieval separately**: keep 20 known question→source pairs and assert the right chunk lands in the top 5. This catches chunking regressions before your users do.
 
 ## What's next
 
-Retrieval makes the model *knowledgeable*. The next step makes it *capable*: in part 4 we'll build AI agents in PHP — giving the model tools it can call (search orders, create tickets, query your database) and handling the tool-calling loop safely in Laravel. That's where chatbots turn into products.
+Retrieval makes the model *knowledgeable*. The next step makes it *capable*: in part 4 we'll build AI agents in PHP - giving the model tools it can call (search orders, create tickets, query your database) and handling the tool-calling loop safely in Laravel. That's where chatbots turn into products.
 
 ---
 
-*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) - Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*

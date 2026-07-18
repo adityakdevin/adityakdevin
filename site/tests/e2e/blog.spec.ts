@@ -31,10 +31,10 @@ test.describe("post page → CTA flow (runs when posts exist)", () => {
   test("index → post → book-a-call CTA carries ?ref= attribution", async ({ page }) => {
     await page.goto("/blog");
     const first = page.locator("main ul li a").first();
-    test.skip((await first.count()) === 0, "no posts published yet — covered by empty-state test");
+    test.skip((await first.count()) === 0, "no posts published yet - covered by empty-state test");
     await first.click();
     await expect(page.locator("article.prose-post")).toBeVisible();
-    // The sticky header carries its own "Book a call" — scope to the post body.
+    // The sticky header carries its own "Book a call" - scope to the post body.
     const cta = page.getByRole("main").getByRole("link", { name: /book a call/i });
     await expect(cta).toBeVisible();
     expect(await cta.getAttribute("href")).toMatch(/\?ref=blog-/);
@@ -52,7 +52,7 @@ test.describe("post page → CTA flow (runs when posts exist)", () => {
     await page.goto("/blog");
     const links = page.locator("main ul li a");
     test.skip((await links.count()) === 0, "no posts published yet");
-    // Longest slug is the one that overflows first — target it specifically.
+    // Longest slug is the one that overflows first - target it specifically.
     const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
     await page.goto(hrefs.reduce((a, b) => (b.length > a.length ? b : a)));
     await expect(page.locator("article.prose-post")).toBeVisible();
@@ -75,7 +75,7 @@ test.describe("newsletter form UX", () => {
     await page.getByRole("button", { name: "Subscribe" }).click();
     await expect(page.getByText(/check your inbox to confirm/i)).toBeVisible();
     // Client/server honeypot field-name coupling: renaming either side would
-    // silently kill the bot filter — pin the contract here.
+    // silently kill the bot filter - pin the contract here.
     expect(sent!.email).toBe("reader@example.com");
     expect(sent!.website).toBe("");
   });
@@ -101,7 +101,7 @@ test.describe("newsletter form UX", () => {
     let calls = 0;
     await page.route("**/api/subscribe", async (route) => {
       calls++;
-      await new Promise((r) => setTimeout(r, 300)); // slow API — window for a double submit
+      await new Promise((r) => setTimeout(r, 300)); // slow API - window for a double submit
       return route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
     });
     await page.goto("/blog");
@@ -122,7 +122,7 @@ test.describe("newsletter form UX", () => {
     await page.goto("/blog");
     await page.getByLabel("Email address").fill("reader@example.com");
     await page.getByRole("button", { name: "Subscribe" }).click();
-    // Next's route announcer is also role=alert — scope to the form.
+    // Next's route announcer is also role=alert - scope to the form.
     const alert = page.locator('form[aria-label="Newsletter signup"]').getByRole("alert");
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/try again/i);
@@ -137,14 +137,14 @@ test.describe("attribution (D15)", () => {
       sentBody = route.request().postDataJSON();
       return route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
     });
-    // Land on /blog first — that's the page that "earned" the visit.
+    // Land on /blog first - that's the page that "earned" the visit.
     await page.goto("/blog");
     await page.goto("/#contact");
     await page.getByLabel(/name \*/i).fill("E2E Visitor");
     await page.getByLabel(/email \*/i).fill("visitor@example.com");
     await page.getByLabel(/what are you building/i).fill("A Laravel AI thing, at least ten chars.");
     await page.getByRole("button", { name: /send message/i }).click();
-    await expect(page.getByText(/got it — i reply within 24 hours/i)).toBeVisible();
+    await expect(page.getByText(/got it - i reply within 24 hours/i)).toBeVisible();
     expect(sentBody).not.toBeNull();
     expect(sentBody!.first_landing).toBe("/blog");
     expect(sentBody!.source_page).toBe("/");
@@ -186,10 +186,10 @@ test.describe("regressions", () => {
     await page.goto("/");
     const section = page.getByRole("heading", { name: /field notes from laravel \+ ai work/i });
     // Section renders only when local posts or the build-time Dev.to fetch
-    // produced items — with neither, hiding IS the §5.6 contract.
+    // produced items - with neither, hiding IS the S5.6 contract.
     test.skip(
       (await section.count()) === 0,
-      "Field notes hidden — no local posts and Dev.to unavailable at build",
+      "Field notes hidden - no local posts and Dev.to unavailable at build",
     );
     await expect(page.getByRole("link", { name: /all field notes/i })).toHaveAttribute(
       "href",

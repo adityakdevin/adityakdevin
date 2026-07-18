@@ -3,14 +3,14 @@ import { withRef } from "@/lib/site";
 import { TypingCaption } from "@/components/TypingCaption";
 
 /**
- * Hero (SPEC §5.1) — brand-first, full-bleed, ONE composition, dark in BOTH themes.
+ * Hero (SPEC S5.1) - brand-first, full-bleed, ONE composition, dark in BOTH themes.
  * Prompt is an eyebrow device; the NAME is the output and the page's largest text.
- * Full text is server-rendered — the type-reveal animation is a pure CSS enhancement (§5A).
+ * Full text is server-rendered - the type-reveal animation is a pure CSS enhancement (S5A).
  */
 export function Hero() {
   return (
     <section
-      // content + fixed padding sizes the hero — svh-proportional heights left huge voids on tall monitors
+      // content + fixed padding sizes the hero - svh-proportional heights left huge voids on tall monitors
       className="relative flex flex-col justify-center overflow-hidden"
       style={{ background: "var(--hero-bg)", color: "var(--hero-text)" }}
     >
@@ -40,7 +40,7 @@ export function Hero() {
           </p>
 
           <p className="mono mt-4 text-sm md:text-base" style={{ color: "var(--dark-muted)" }}>
-            {profile.headline} — {profile.role} @ {profile.company} · {profile.yearsExperience} yrs
+            {profile.headline} - {profile.role} @ {profile.company} · {profile.yearsExperience} yrs
             · Lucknow, India
           </p>
 
@@ -63,7 +63,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Anchor: gh-ascii GitHub card in a terminal window — same artwork as the profile README */}
+        {/* Anchor: gh-ascii GitHub card in a terminal window - same artwork as the profile README */}
         <div className="relative mx-auto w-full max-w-lg md:max-w-none">
           <div
             className="overflow-hidden rounded-lg border shadow-2xl"
@@ -90,7 +90,7 @@ export function Hero() {
               {/* ponytail: stats snapshot, refresh when the README card regenerates */}
               <div className="mono flex-1 self-center px-5 py-5 text-[14px] leading-relaxed sm:pl-2 sm:pr-5">
                 <p className="mb-2 font-semibold" style={{ color: "var(--dark-accent)" }}>
-                  — {profile.handle}@github
+                  - {profile.handle}@github
                 </p>
                 {(
                   [
@@ -110,7 +110,7 @@ export function Hero() {
                   </p>
                 ))}
                 <p className="mb-2 mt-4 font-semibold" style={{ color: "var(--dark-accent)" }}>
-                  — stats
+                  - stats
                 </p>
                 {(
                   [

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-/** 404 (SPEC §5): terminal joke + ls of real pages. */
+/** 404 (SPEC S5): terminal joke + ls of real pages. */
 export default function NotFound() {
   return (
     <main className="mx-auto flex max-w-3xl flex-1 flex-col justify-center px-6 py-24">
@@ -12,7 +12,7 @@ export default function NotFound() {
           <span style={{ color: "var(--accent)" }}>aditya@dev</span>:~$ open {"<that-page>"}
         </p>
         <p className="mt-3 text-xl font-semibold">
-          zsh: command not found — <span style={{ color: "var(--accent)" }}>404</span>
+          zsh: command not found - <span style={{ color: "var(--accent)" }}>404</span>
         </p>
         <p className="mt-6" style={{ color: "var(--muted)" }}>
           <span style={{ color: "var(--accent)" }}>$</span> ls ~/pages

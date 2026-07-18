@@ -9,7 +9,7 @@ test.describe("/cv", () => {
     }
   });
 
-  test("print stylesheet hides chrome and flips to light (§8)", async ({ page }) => {
+  test("print stylesheet hides chrome and flips to light (S8)", async ({ page }) => {
     await page.goto("/cv");
     await page.emulateMedia({ media: "print" });
     // Download button and sticky chrome are data-no-print

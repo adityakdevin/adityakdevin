@@ -3,8 +3,8 @@ import { createRateLimiter, clientIp } from "@/lib/ratelimit";
 import { EMAIL_RE, EMAIL_MAX } from "@/lib/site";
 
 /**
- * Newsletter signup (design doc 20260717, eng review D11/D12): same §10
- * hardening as the contact form — honeypot, rate limit, server-side
+ * Newsletter signup (design doc 20260717, eng review D11/D12): same S10
+ * hardening as the contact form - honeypot, rate limit, server-side
  * validation, vendor errors logged but NEVER leaked to the client.
  * Proxies to Buttondown so the API key stays server-side; Buttondown owns
  * double-opt-in, unsubscribe, and archives.
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  // Honeypot: bots fill the hidden field — pretend success, send nothing.
+  // Honeypot: bots fill the hidden field - pretend success, send nothing.
   if (typeof body.website === "string" && body.website.trim() !== "") {
     return NextResponse.json({ ok: true });
   }
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const ip = clientIp(req);
   if (rateLimited(ip)) {
-    return NextResponse.json({ error: "Too many attempts — try again later." }, { status: 429 });
+    return NextResponse.json({ error: "Too many attempts - try again later." }, { status: 429 });
   }
 
   const apiKey = process.env.BUTTONDOWN_API_KEY;
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       headers: { Authorization: `Token ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ email_address: email }),
       // A hung vendor connection must not pin the function or the user's
-      // "Subscribing…" state — AbortError falls into the catch → 502 + retry.
+      // "Subscribing..." state - AbortError falls into the catch → 502 + retry.
       signal: AbortSignal.timeout(10_000),
     });
 
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       try {
         code = String(JSON.parse(detail)?.code ?? "");
       } catch {
-        // non-JSON body — wording fallback below
+        // non-JSON body - wording fallback below
       }
       if (code === "email_already_exists" || (!code && /already|exists|subscribed/i.test(detail))) {
         return NextResponse.json({ ok: true });
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     }
     throw new Error(`buttondown ${res.status}`);
   } catch (err) {
-    // Log without email addresses (SPEC §10: no bodies in logs, 30-day retention).
+    // Log without email addresses (SPEC S10: no bodies in logs, 30-day retention).
     console.error("subscribe: signup failed", err instanceof Error ? err.message : "unknown");
     return NextResponse.json({ error: "Couldn't sign you up right now." }, { status: 502 });
   }

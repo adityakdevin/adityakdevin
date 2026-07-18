@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = SITE_URL;
-  // Legacy imports keep their Dev.to canonical — they don't belong in the sitemap.
+  // Legacy imports keep their Dev.to canonical - they don't belong in the sitemap.
   const posts = getAllPosts()
     .filter((p) => !p.canonical)
     .map((p) => ({
@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/services/laravel-ai-development`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/services/nodejs-ai-development`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/services/python-ai-development`, changeFrequency: "monthly", priority: 0.9 },
-    // /blog is listed when ANY post renders the index — legacy imports keep
+    // /blog is listed when ANY post renders the index - legacy imports keep
     // their own canonical but still populate the page (red-team: gate on
     // content, not on the canonical-filtered subset).
     ...(getAllPosts().length > 0

@@ -4,9 +4,9 @@ import { createRateLimiter, clientIp } from "@/lib/ratelimit";
 import { EMAIL_RE, EMAIL_MAX } from "@/lib/site";
 
 /**
- * Contact handler (SPEC §10): validation + honeypot + rate limit + error contract.
- * Sends via Mailtrap's transactional API (plain POST — no SDK needed).
- * Errors are logged server-side only — the client never sees vendor details.
+ * Contact handler (SPEC S10): validation + honeypot + rate limit + error contract.
+ * Sends via Mailtrap's transactional API (plain POST - no SDK needed).
+ * Errors are logged server-side only - the client never sees vendor details.
  */
 
 const rateLimited = createRateLimiter(5, 60 * 60 * 1000);
@@ -19,7 +19,7 @@ function escapeHtml(s: string): string {
     .replaceAll('"', "&quot;");
 }
 
-/** Terminal-card notification email — inline styles only (Gmail-safe), dark in every client. */
+/** Terminal-card notification email - inline styles only (Gmail-safe), dark in every client. */
 function emailHtml(
   name: string,
   email: string,
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  // Honeypot: bots fill the hidden field — pretend success, send nothing.
+  // Honeypot: bots fill the hidden field - pretend success, send nothing.
   if (typeof body.website === "string" && body.website.trim() !== "") {
     return NextResponse.json({ ok: true });
   }
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const message = typeof body.message === "string" ? body.message.trim() : "";
-  // D15 attribution — optional, never validated hard (old clients and
+  // D15 attribution - optional, never validated hard (old clients and
   // privacy-mode browsers send nothing). Shape-checked because these render
   // in the owner email styled like SYSTEM rows (red-team): paths must look
   // like site paths, referrer must be an http(s) URL, no CR/LF smuggling.
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         return "";
       }
     }
-    // ?ref campaign token (li, x, ig…) — a short slug, NOT a site path, so it
+    // ?ref campaign token (li, x, ig...) - a short slug, NOT a site path, so it
     // needs its own validator; the path regex below would reject it. Kept in
     // sync with REF_RE in lib/track.ts.
     if (k === "ref") {
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 
   const ip = clientIp(req);
   if (rateLimited(ip)) {
-    return NextResponse.json({ error: "Too many messages — try again later." }, { status: 429 });
+    return NextResponse.json({ error: "Too many messages - try again later." }, { status: 429 });
   }
 
   const apiToken = process.env.MAILTRAP_API_TOKEN;
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     if (!res.ok) throw new Error(`mailtrap ${res.status}`);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    // Log without message bodies (SPEC §10: 30-day retention is Vercel's log default)
+    // Log without message bodies (SPEC S10: 30-day retention is Vercel's log default)
     console.error("contact: send failed", err instanceof Error ? err.message : "unknown");
     return NextResponse.json({ error: "Couldn't send right now." }, { status: 502 });
   }

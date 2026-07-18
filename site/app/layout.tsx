@@ -26,13 +26,13 @@ const plexSans = IBM_Plex_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${profile.name} — Full Stack Developer, AI Engineer & Solution Architect`,
+    default: `${profile.name} - Full Stack Developer, AI Engineer & Solution Architect`,
     template: `%s · ${profile.name} (${profile.handle})`,
   },
-  description: `${profile.name} (${profile.handle}) — ${profile.role} @ ${profile.company}. ${profile.yearsExperience} years building Laravel, Vue & React products, now shipping AI/LLM features into production. Based in Lucknow, India. Available for AI integration and full-stack projects.`,
+  description: `${profile.name} (${profile.handle}) - ${profile.role} @ ${profile.company}. ${profile.yearsExperience} years building Laravel, Vue & React products, now shipping AI/LLM features into production. Based in Lucknow, India. Available for AI integration and full-stack projects.`,
   alternates: { canonical: "./" },
   openGraph: {
-    siteName: `${profile.name} — ${profile.handle}`,
+    siteName: `${profile.name} - ${profile.handle}`,
     type: "website",
     locale: "en_US",
   },
@@ -45,7 +45,7 @@ export const viewport: Viewport = {
   viewportFit: "cover", // safe-area env() insets on notched phones
 };
 
-/** Theme boot: runs pre-paint so there is never a flash (SPEC §5A). */
+/** Theme boot: runs pre-paint so there is never a flash (SPEC S5A). */
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})()`;
 
 export default function RootLayout({
@@ -67,7 +67,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <Terminal />
-        {/* Tag management — deferred: never in the critical path (SPEC §9).
+        {/* Tag management - deferred: never in the critical path (SPEC S9).
             GTM wins when set (manage GA4 inside GTM); direct gtag is the fallback. */}
         {process.env.NEXT_PUBLIC_GTM_ID ? (
           <Script id="gtm" strategy="lazyOnload">

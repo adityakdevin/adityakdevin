@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import path from "node:path";
 
-// Exercise the RSS <item> mapping against fixture posts — the plain rss test
+// Exercise the RSS <item> mapping against fixture posts - the plain rss test
 // runs against the (empty) real content/posts and never renders an item.
 vi.mock("@/lib/posts", async () => {
   const actual = await vi.importActual<typeof import("@/lib/posts")>("@/lib/posts");
@@ -21,7 +21,7 @@ describe("RSS <item> mapping (fixtures)", () => {
     expect(body).toContain("&lt;angle brackets&gt; &amp; ampersands");
     // Self-canonical post links to the site
     expect(body).toContain("<link>https://adityadev.in/blog/building-the-thing</link>");
-    // Legacy import: link AND guid both assert the Dev.to canonical — a
+    // Legacy import: link AND guid both assert the Dev.to canonical - a
     // permalink guid must equal the link (adversarial finding: contradicting
     // them sends readers to a page whose canonical points elsewhere).
     expect(body).toContain("<link>https://dev.to/adityakdevin/legacy-post-abc</link>");

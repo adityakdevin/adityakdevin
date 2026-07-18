@@ -39,7 +39,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(articleJsonLd(post)) }}
       />
-      {/* break-all: the slug is one unbreakable mono token — without it, long
+      {/* break-all: the slug is one unbreakable mono token - without it, long
           slugs force horizontal page scroll on phones. */}
       <p className="mono mb-3 break-all text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat blog/{post.slug}.md
@@ -55,7 +55,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <MDXRemote
           source={post.content}
           components={{
-            // Walkthroughs are screenshot-heavy — below-fold images load lazily.
+            // Walkthroughs are screenshot-heavy - below-fold images load lazily.
             // Plain <img>: MDX images have unknown dimensions (next/image needs
             // width/height) and alt text arrives via {...props} from the markdown.
             // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text

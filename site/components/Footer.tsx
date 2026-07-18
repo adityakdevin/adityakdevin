@@ -22,7 +22,7 @@ export function Footer() {
           </nav>
         </div>
         <p className="mt-6 text-sm" style={{ color: "var(--muted)" }}>
-          © {new Date().getFullYear()} {profile.name} ({profile.handle}) — Full Stack Developer &
+          (C) {new Date().getFullYear()} {profile.name} ({profile.handle}) - Full Stack Developer &
           AI Engineer, {profile.location}. <a href="/privacy">Privacy</a>
         </p>
       </div>

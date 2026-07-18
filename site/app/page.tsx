@@ -27,7 +27,7 @@ function H2({ children, id }: { children: React.ReactNode; id?: string }) {
 
 export default async function Home() {
   // Local site-first posts merge with the Dev.to legacy feed, deduped by
-  // devtoId — Dev.to being down no longer empties this section (T5).
+  // devtoId - Dev.to being down no longer empties this section (T5).
   const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3));
 
   return (
@@ -47,7 +47,7 @@ export default async function Home() {
 
       <Hero />
 
-      {/* 2 — Metric strip: one inline strip, no tile boxes; static build-time numbers */}
+      {/* 2 - Metric strip: one inline strip, no tile boxes; static build-time numbers */}
       <section className="border-b" style={{ borderColor: "var(--border)" }}>
         <Reveal>
           <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
@@ -65,7 +65,7 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      {/* 3 — Services: numbered editorial rows, NOT cards; non-interactive at P1a */}
+      {/* 3 - Services: numbered editorial rows, NOT cards; non-interactive at P1a */}
       <section className="mx-auto max-w-5xl px-6 py-20 md:py-24">
         <Eyebrow cmd="ls services/" />
         <H2>I ship AI features into production apps</H2>
@@ -89,7 +89,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4 — Featured work: ONE lead narrative + compact links (cards return in P2 when clickable) */}
+      {/* 4 - Featured work: ONE lead narrative + compact links (cards return in P2 when clickable) */}
       <section
         id="work"
         className="scroll-mt-20 border-y"
@@ -126,25 +126,25 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5 — Trust beat: externally verifiable claims; testimonial slot ships hidden */}
+      {/* 5 - Trust beat: externally verifiable claims; testimonial slot ships hidden */}
       <section className="mx-auto max-w-5xl px-6 py-20 md:py-24">
         <Eyebrow cmd="checksum --verify claims" />
         <H2>Verify me yourself</H2>
         <p className="mt-3 max-w-2xl" style={{ color: "var(--muted)" }}>
-          Don&apos;t take my word for any of this — every claim below links to a source you can
+          Don&apos;t take my word for any of this - every claim below links to a source you can
           check in ten seconds.
         </p>
         <ul className="mt-8 space-y-4">
           {profile.verify.map((v) => (
             <li key={v.claim} className="flex flex-wrap items-baseline gap-2">
               <span className="mono" style={{ color: "var(--accent)" }}>
-                ✓
+                
               </span>
               <a href={v.href} className="font-medium">
                 {v.claim}
               </a>
               <span className="text-sm" style={{ color: "var(--muted)" }}>
-                — {v.note}
+                - {v.note}
               </span>
             </li>
           ))}
@@ -159,7 +159,7 @@ export default async function Home() {
               >
                 <p className="italic">&ldquo;{t.quote}&rdquo;</p>
                 <footer className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
-                  — {t.author}, {t.role}
+                  - {t.author}, {t.role}
                 </footer>
               </blockquote>
             ))}
@@ -167,7 +167,7 @@ export default async function Home() {
         ) : null}
       </section>
 
-      {/* 6 — Writing: local posts + Dev.to legacy merged (T5); hides only when BOTH are empty */}
+      {/* 6 - Writing: local posts + Dev.to legacy merged (T5); hides only when BOTH are empty */}
       {notes.length > 0 ? (
         <section className="border-y" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
           <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
@@ -198,7 +198,7 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {/* 7 — FAQ (single source: faq.ts → section + JSON-LD + bot) */}
+      {/* 7 - FAQ (single source: faq.ts → section + JSON-LD + bot) */}
       <section id="faq" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 md:py-24">
         <Eyebrow cmd="man hiring-aditya" />
         <H2>Before you book</H2>
@@ -220,7 +220,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 8 — Contact / booking */}
+      {/* 8 - Contact / booking */}
       <section
         id="contact"
         className="scroll-mt-20 border-t"
@@ -239,7 +239,7 @@ export default async function Home() {
                 Book a free 30-min call →
               </a>
               <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
-                The fastest path — come with the problem, leave with a plan.
+                The fastest path - come with the problem, leave with a plan.
               </p>
               <ul className="mono mt-8 space-y-2 text-sm">
                 <li>

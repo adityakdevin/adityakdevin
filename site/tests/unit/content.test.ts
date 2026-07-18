@@ -13,7 +13,7 @@ describe("profile.ts (single source of truth)", () => {
     expect(profile.verify.length).toBeGreaterThanOrEqual(3);
   });
 
-  it("never ships fake testimonials — slot is empty until real quotes exist", () => {
+  it("never ships fake testimonials - slot is empty until real quotes exist", () => {
     for (const t of profile.testimonials) {
       expect(t.quote.length).toBeGreaterThan(20);
       expect(t.author).toBeTruthy();
@@ -26,7 +26,7 @@ describe("faq.ts", () => {
     expect(faq.length).toBeGreaterThanOrEqual(5);
     for (const item of faq) {
       expect(item.q.length).toBeGreaterThan(10);
-      expect(item.a.length).toBeGreaterThan(80); // substantive, not thin (§5.7)
+      expect(item.a.length).toBeGreaterThan(80); // substantive, not thin (S5.7)
     }
   });
 });
@@ -53,7 +53,7 @@ describe("jsonld.ts generators", () => {
   });
 });
 
-describe("devto.ts failure contract (§5.6)", () => {
+describe("devto.ts failure contract (S5.6)", () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it("returns null (section hides) when the API fails and no last-good exists", async () => {

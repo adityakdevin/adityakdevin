@@ -14,7 +14,7 @@ export const REF_KEY = "first_ref";
 
 // Social campaign token from ?ref=<platform> (e.g. li, x, ig). Kept short and
 // path-safe so it survives the contact route's attr validator. Same regex must
-// live on the server (route.ts) — keep them in sync.
+// live on the server (route.ts) - keep them in sync.
 const REF_RE = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 
 export function stampSession() {
@@ -22,7 +22,7 @@ export function stampSession() {
     if (!sessionStorage.getItem(FIRST_LANDING_KEY)) {
       sessionStorage.setItem(FIRST_LANDING_KEY, location.pathname);
       const ref = document.referrer;
-      // Hostname comparison, not substring — "https://evil.com/?adityadev.in"
+      // Hostname comparison, not substring - "https://evil.com/?adityadev.in"
       // must count as an external referrer.
       if (ref && new URL(ref).hostname !== location.hostname) {
         sessionStorage.setItem(REFERRER_KEY, ref);
@@ -37,7 +37,7 @@ export function stampSession() {
       }
     }
   } catch {
-    // sessionStorage unavailable (privacy mode) — attribution degrades silently.
+    // sessionStorage unavailable (privacy mode) - attribution degrades silently.
   }
 }
 
@@ -51,15 +51,15 @@ export function getAttribution() {
       ref: sessionStorage.getItem(REF_KEY) ?? "",
     };
   } catch {
-    // Storage blocked (privacy mode) — keep the page, drop the session fields.
+    // Storage blocked (privacy mode) - keep the page, drop the session fields.
     return { source_page, first_landing: "", referrer: "", ref: "" };
   }
 }
 
 /**
  * GA4 event under either tag setup (red-team finding): direct gtag.js ignores
- * message-style dataLayer pushes — events must go through gtag('event', …).
- * GTM containers want the {event: …} push. Detect which one is loaded.
+ * message-style dataLayer pushes - events must go through gtag('event', ...).
+ * GTM containers want the {event: ...} push. Detect which one is loaded.
  */
 export function track(event: string, params: Record<string, string> = {}) {
   try {

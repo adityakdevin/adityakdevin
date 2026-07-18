@@ -2,7 +2,7 @@ import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
 
 /**
- * llms.txt (SPEC §7): generated from profile.ts — ships because it's free,
+ * llms.txt (SPEC S7): generated from profile.ts - ships because it's free,
  * not because it's a lever (2026 data: AI crawlers rarely fetch it).
  */
 export const dynamic = "force-static";
@@ -13,7 +13,7 @@ export function GET() {
 
   const body = `# ${profile.name} (${profile.handle})
 
-> ${profile.headline} — ${profile.role} @ ${profile.company}, ${profile.yearsExperience} years experience, based in ${profile.location}. ${profile.valueLine}
+> ${profile.headline} - ${profile.role} @ ${profile.company}, ${profile.yearsExperience} years experience, based in ${profile.location}. ${profile.valueLine}
 
 ## Services
 ${services}

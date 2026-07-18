@@ -24,7 +24,7 @@ describe("lib/track.ts (D15)", () => {
     expect(w.dataLayer).toEqual([{ event: "contact_submit", first_landing: "/blog/x" }]);
   });
 
-  it("track() routes through gtag('event', …) on the direct-GA4 path (red-team fix)", () => {
+  it("track() routes through gtag('event', ...) on the direct-GA4 path (red-team fix)", () => {
     const gtag = vi.fn();
     vi.stubGlobal("window", { gtag, dataLayer: [] });
     track("contact_submit", { first_landing: "/blog/x" });
@@ -58,13 +58,13 @@ describe("lib/track.ts (D15)", () => {
   it("?ref is first-touch: a later same-session nav without ?ref does not clear it", () => {
     const store = stubBrowser({ pathname: "/blog/post-a", search: "?ref=x" });
     stampSession();
-    // Second navigation, no ?ref — first landing is set, so nothing re-stamps.
+    // Second navigation, no ?ref - first landing is set, so nothing re-stamps.
     vi.stubGlobal("location", { pathname: "/contact", search: "", hostname: "adityadev.in" });
     stampSession();
     expect(store.get(REF_KEY)).toBe("x");
   });
 
-  it("ignores a malformed ?ref (spaces, punctuation, over-length) — junk never reaches storage", () => {
+  it("ignores a malformed ?ref (spaces, punctuation, over-length) - junk never reaches storage", () => {
     const store = stubBrowser({ pathname: "/", search: "?ref=li%20li!" });
     stampSession();
     expect(store.get(REF_KEY)).toBeUndefined();

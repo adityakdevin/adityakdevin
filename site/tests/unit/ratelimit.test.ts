@@ -30,14 +30,14 @@ describe("lib/ratelimit.ts", () => {
     expect(limited("ip-a")).toBe(false);
   });
 
-  it("prunes expired entries once the map grows large (D14 — no unbounded growth)", () => {
+  it("prunes expired entries once the map grows large (D14 - no unbounded growth)", () => {
     vi.useFakeTimers();
     const limited = createRateLimiter(5, 60_000);
-    // 5000 one-shot IPs fill the map to the prune threshold…
+    // 5000 one-shot IPs fill the map to the prune threshold...
     for (let i = 0; i < 5000; i++) limited(`bot-${i}`);
     expect(limited.size()).toBe(5000);
-    // …their windows expire, and the next call sweeps them. Asserting on the
-    // actual map size — an expired-in-place entry behaves identically at the
+    // ...their windows expire, and the next call sweeps them. Asserting on the
+    // actual map size - an expired-in-place entry behaves identically at the
     // API, so only size proves the sweep is real (review finding: the previous
     // version of this test passed with prune() deleted).
     vi.advanceTimersByTime(60_001);

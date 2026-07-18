@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 
-// The route sends via plain fetch to Mailtrap — stub the global.
+// The route sends via plain fetch to Mailtrap - stub the global.
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
 
@@ -16,7 +16,7 @@ function makeReq(body: unknown, ip = "1.2.3.4") {
 
 const valid = { name: "Test Person", email: "test@example.com", message: "Hello, I need a Laravel AI chatbot built." };
 
-describe("POST /api/contact — D15 attribution passthrough", () => {
+describe("POST /api/contact - D15 attribution passthrough", () => {
   beforeEach(() => {
     fetchMock.mockReset();
     fetchMock.mockResolvedValue(
@@ -62,7 +62,7 @@ describe("POST /api/contact — D15 attribution passthrough", () => {
     expect(sent.html).toContain(">li</td>"); // the value cell, not a stray "li" (e.g. Portfolio)
   });
 
-  it("rejects a bogus ref that isn't a clean slug — the ref validator, not the path one", async () => {
+  it("rejects a bogus ref that isn't a clean slug - the ref validator, not the path one", async () => {
     // "/blog/x" would PASS the path regex but must be rejected as a ref: this
     // proves the ref key gets its own validator branch (Bug B regression guard).
     const res = await POST(makeReq({ ...valid, ref: "/blog/x" }, "7.7.7.5"));

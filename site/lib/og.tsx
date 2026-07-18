@@ -5,7 +5,7 @@ import path from "node:path";
 export const OG_SIZE = { width: 1200, height: 630 };
 
 /**
- * OG template (SPEC §7 / design review 10A): 1200×630, dark bg, prompt eyebrow,
+ * OG template (SPEC S7 / design review 10A): 1200×630, dark bg, prompt eyebrow,
  * title in Plex Mono 600, muted role line, cyan accent bar, 64px safe area.
  */
 export async function ogImage(opts: { command: string; title: string; subtitle: string }) {

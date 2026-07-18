@@ -2,12 +2,12 @@ import { getAllPosts, canonicalUrl, BLOG_DESCRIPTION } from "@/lib/posts";
 import { profile } from "@/content/data/profile";
 import { SITE_URL } from "@/lib/site";
 
-// Renders build-time data only — Next 15+ GET handlers are dynamic by default.
+// Renders build-time data only - Next 15+ GET handlers are dynamic by default.
 export const dynamic = "force-static";
 
 const BASE = SITE_URL;
 
-/** Titles/descriptions may contain & < > — RSS must stay well-formed. */
+/** Titles/descriptions may contain & < > - RSS must stay well-formed. */
 export function escapeXml(s: string): string {
   return s
     .replaceAll("&", "&amp;")
@@ -34,7 +34,7 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${escapeXml(`${profile.name} — Field notes`)}</title>
+    <title>${escapeXml(`${profile.name} - Field notes`)}</title>
     <link>${BASE}/blog</link>
     <atom:link href="${BASE}/blog/rss.xml" rel="self" type="application/rss+xml"/>
     <description>${escapeXml(BLOG_DESCRIPTION)}</description>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** Motion #2 (SPEC §4): settle-in on first scroll-enter. Renders children immediately without JS. */
+/** Motion #2 (SPEC S4): settle-in on first scroll-enter. Renders children immediately without JS. */
 export function Reveal({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);

@@ -8,9 +8,9 @@ devtoId: 4166788
 
 ## The problem: chat that can only talk
 
-The chatbot from earlier in this series can answer questions, but ask it "how many orders did we ship yesterday?" and it will confidently make something up. It has no hands — it can't query your database, call your services, or do anything except generate text.
+The chatbot from earlier in this series can answer questions, but ask it "how many orders did we ship yesterday?" and it will confidently make something up. It has no hands - it can't query your database, call your services, or do anything except generate text.
 
-Tool calling fixes that. You describe functions to the model; when a user's request needs one, the model responds with "call this function with these arguments" instead of prose. Your code runs the function, feeds the result back, and the model writes the final answer grounded in real data. That loop — model picks tool, you execute, model continues — is the whole trick behind "agents." No framework required.
+Tool calling fixes that. You describe functions to the model; when a user's request needs one, the model responds with "call this function with these arguments" instead of prose. Your code runs the function, feeds the result back, and the model writes the final answer grounded in real data. That loop - model picks tool, you execute, model continues - is the whole trick behind "agents." No framework required.
 
 I've shipped this in production Laravel apps for order lookups, report generation, and support triage. Here's the pattern that survived contact with real users.
 
@@ -56,7 +56,7 @@ interface Tool
 }
 ```
 
-Tools return strings because that's what goes back into the conversation. JSON-encode structured data — models read it fine.
+Tools return strings because that's what goes back into the conversation. JSON-encode structured data - models read it fine.
 
 ## Step 2: a real tool
 
@@ -108,7 +108,7 @@ class OrderLookupTool implements Tool
 }
 ```
 
-That `auth()->id()` scope is the single most important line in this post. The model chooses *which* tool to call and *what arguments* to pass — an attacker can steer both with a crafted prompt. Authorization must live in your code, never in the prompt. Treat every tool as a public API endpoint, because that's what it is now.
+That `auth()->id()` scope is the single most important line in this post. The model chooses *which* tool to call and *what arguments* to pass - an attacker can steer both with a crafted prompt. Authorization must live in your code, never in the prompt. Treat every tool as a public API endpoint, because that's what it is now.
 
 ## Step 3: the loop
 
@@ -131,7 +131,7 @@ class AgentRunner
                     'tools' => $this->tools->schemas(),
                 ])->throw()->json('choices.0.message');
 
-            // Plain text answer — we're done.
+            // Plain text answer - we're done.
             if (empty($response['tool_calls'])) {
                 return $response['content'] ?? '';
             }
@@ -157,7 +157,7 @@ class AgentRunner
 }
 ```
 
-`MAX_ROUNDS` is not optional. Without it, a confused model can ping-pong between tools forever — each round costing you tokens and your user thirty seconds of spinner. Five rounds covers every legitimate flow I've shipped; anything deeper is a design smell.
+`MAX_ROUNDS` is not optional. Without it, a confused model can ping-pong between tools forever - each round costing you tokens and your user thirty seconds of spinner. Five rounds covers every legitimate flow I've shipped; anything deeper is a design smell.
 
 The registry's `execute()` is where you validate:
 
@@ -180,23 +180,23 @@ public function execute(string $name, array $args): string
 }
 ```
 
-Return errors to the model as tool results instead of throwing. Models handle "that didn't work" gracefully — they retry with fixed arguments or tell the user. An unhandled exception, by contrast, kills the whole conversation.
+Return errors to the model as tool results instead of throwing. Models handle "that didn't work" gracefully - they retry with fixed arguments or tell the user. An unhandled exception, by contrast, kills the whole conversation.
 
 ## What it costs
 
-Every round is a full API call carrying the entire conversation plus your tool schemas. A three-round agent turn with five registered tools runs 3–5× the tokens of a plain chat reply. Two mitigations that pay for themselves immediately: register only the tools relevant to the current context (a support agent doesn't need admin reporting tools), and keep descriptions tight — the model reads every schema on every round. On gpt-4.1-mini, my production order-support agent averages under a cent per resolved conversation. The engineer time it replaced cost more per minute.
+Every round is a full API call carrying the entire conversation plus your tool schemas. A three-round agent turn with five registered tools runs 3-5× the tokens of a plain chat reply. Two mitigations that pay for themselves immediately: register only the tools relevant to the current context (a support agent doesn't need admin reporting tools), and keep descriptions tight - the model reads every schema on every round. On gpt-4.1-mini, my production order-support agent averages under a cent per resolved conversation. The engineer time it replaced cost more per minute.
 
 ## Production checklist
 
 - **Authorization inside every tool.** Scope queries to the authenticated user. The model is an untrusted caller with a keyboard.
 - **Cap the loop.** `MAX_ROUNDS`, request timeouts, and a per-user rate limit on the endpoint.
 - **Validate arguments.** `json_decode` the model's arguments defensively; missing keys and wrong types are routine, not exceptional.
-- **Log every tool call.** Name, arguments, duration, result size. When the agent does something weird — and it will — this log is how you find out what and why.
+- **Log every tool call.** Name, arguments, duration, result size. When the agent does something weird - and it will - this log is how you find out what and why.
 - **Return errors as data.** Tool failures become tool results; the model recovers. Exceptions become 500s; the user leaves.
-- **Test tools like controllers.** Each `handle()` is plain PHP — unit test it directly, then one integration test with `Http::fake()` for the loop itself.
+- **Test tools like controllers.** Each `handle()` is plain PHP - unit test it directly, then one integration test with `Http::fake()` for the loop itself.
 
 ## Where this goes next
 
-The agent above runs synchronously — fine for lookups, wrong for anything slow. When a tool takes thirty seconds or the user asks for a report across a million rows, you need the loop running in a queued job with progress updates, retries, and a budget. That's the next post in this series: **Queue-Based AI Workflows in Laravel — Jobs, Retries, and Cost Control**.
+The agent above runs synchronously - fine for lookups, wrong for anything slow. When a tool takes thirty seconds or the user asks for a report across a million rows, you need the loop running in a queued job with progress updates, retries, and a budget. That's the next post in this series: **Queue-Based AI Workflows in Laravel - Jobs, Retries, and Cost Control**.
 
-*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) - Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*

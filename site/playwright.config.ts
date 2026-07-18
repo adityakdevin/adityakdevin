@@ -10,7 +10,7 @@ export default defineConfig({
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } }, // 412px chromium — asserts §5B rules
+    { name: "mobile", use: { ...devices["Pixel 7"] } }, // 412px chromium - asserts S5B rules
   ],
   webServer: {
     command: "npm run start -- -p 3311",
@@ -19,7 +19,7 @@ export default defineConfig({
     timeout: 60_000,
     // Fixture posts let the post-page flows (index → post → CTA, homepage
     // Field-notes) execute in E2E before real posts ship. NOTE: only effective
-    // when the preceding `npm run build` also ran with POSTS_DIR set — pages
+    // when the preceding `npm run build` also ran with POSTS_DIR set - pages
     // are static, so the build bakes the posts in. `npm run test:e2e` handles this.
     env: { POSTS_DIR: "tests/fixtures/posts" },
   },

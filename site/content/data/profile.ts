@@ -1,5 +1,5 @@
 /**
- * Single source of truth (SPEC §3): structured facts only.
+ * Single source of truth (SPEC S3): structured facts only.
  * Consumed by: home, /cv, lib/jsonld.ts, llms.txt generation, bot prompt (P3).
  */
 export const profile = {
@@ -12,7 +12,7 @@ export const profile = {
   yearsExperience: "9+",
   location: "Lucknow, Uttar Pradesh, India",
   email: "contact@adityadev.in",
-  // TODO(§13.1): confirm correct number before rendering — two variants exist on the old site.
+  // TODO(S13.1): confirm correct number before rendering - two variants exist on the old site.
   phone: null as string | null,
   website: "https://adityadev.in",
   bookingUrl: "https://cal.com/adityakdevin/30min",
@@ -35,7 +35,7 @@ export const profile = {
       title: "AI Integration",
       claim: "Chatbots, automations, and AI workflows that survive real users",
       lines: [
-        "LLM chatbots, streaming interfaces, and automation wired into real products — not demos.",
+        "LLM chatbots, streaming interfaces, and automation wired into real products - not demos.",
         "OpenAI & Claude APIs, prompt architecture, cost-hardened endpoints.",
       ],
     },
@@ -44,7 +44,7 @@ export const profile = {
       title: "Full Stack Delivery",
       claim: "End-to-end web products, backend to pixels",
       lines: [
-        "Laravel, Vue/Nuxt, React/Next.js — 9+ years of shipped systems for real businesses.",
+        "Laravel, Vue/Nuxt, React/Next.js - 9+ years of shipped systems for real businesses.",
         "Payments (Stripe, Razorpay), integrations, and the unglamorous plumbing done right.",
       ],
     },
@@ -61,10 +61,10 @@ export const profile = {
 
   featuredWork: {
     lead: {
-      title: "BudgetGen — Smart Finance Manager",
+      title: "BudgetGen - Smart Finance Manager",
       href: "https://github.com/adityakdevin/budgetgen",
       story:
-        "A personal-finance manager built end-to-end in Laravel: budgets, tracking, reports. Designed, built, and shipped solo — schema to UI.",
+        "A personal-finance manager built end-to-end in Laravel: budgets, tracking, reports. Designed, built, and shipped solo - schema to UI.",
       stack: "PHP · Laravel · MySQL",
     },
     links: [
@@ -99,7 +99,7 @@ export const profile = {
     },
   ],
 
-  // Testimonial slot ships hidden (SPEC §5.5) — first real quote turns it on. No fake quotes, ever.
+  // Testimonial slot ships hidden (SPEC S5.5) - first real quote turns it on. No fake quotes, ever.
   testimonials: [] as { quote: string; author: string; role: string }[],
 
   skills: {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 
-// The route proxies to Buttondown via plain fetch — stub the global.
+// The route proxies to Buttondown via plain fetch - stub the global.
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
 

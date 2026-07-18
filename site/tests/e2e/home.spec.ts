@@ -39,11 +39,11 @@ test.describe("homepage", () => {
   });
 
   test("theme toggle flips data-theme and persists", async ({ page, isMobile }) => {
-    // Toggle removed from the mobile tab bar (2026-07-17) — mobile follows
+    // Toggle removed from the mobile tab bar (2026-07-17) - mobile follows
     // prefers-color-scheme; the toggle is desktop-header-only now.
     test.skip(isMobile, "theme toggle is desktop-only");
     await page.goto("/");
-    // toggle lives in sticky header — scroll past hero to reveal it
+    // toggle lives in sticky header - scroll past hero to reveal it
     await page.mouse.wheel(0, 2000);
     await page.waitForTimeout(300);
     const initial = await page.evaluate(() => document.documentElement.dataset.theme);
@@ -64,7 +64,7 @@ test.describe("homepage", () => {
   });
 });
 
-test.describe("contact form states (§5A)", () => {
+test.describe("contact form states (S5A)", () => {
   test("inline validation on blur, then mocked success panel", async ({ page }) => {
     await page.goto("/");
     await page.getByLabel("email *").scrollIntoViewIfNeeded();
@@ -94,14 +94,14 @@ test.describe("contact form states (§5A)", () => {
   });
 });
 
-test.describe("responsive §5B", () => {
+test.describe("responsive S5B", () => {
   test("mobile shows bottom tab bar; desktop shows sticky header after scroll", async ({
     page,
     isMobile,
   }) => {
     await page.goto("/");
     if (isMobile) {
-      // tab bar is always visible — no scroll needed (native-app nav)
+      // tab bar is always visible - no scroll needed (native-app nav)
       const bar = page.locator("nav.md\\:hidden");
       await expect(bar).toBeVisible();
       await expect(bar.getByRole("link", { name: "work" })).toBeVisible();

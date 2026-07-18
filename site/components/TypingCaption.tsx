@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * GitHub-README-style typing banner (native, no external SVG service).
- * SSR renders phrases[0] in full — animation is a post-hydration enhancement;
+ * SSR renders phrases[0] in full - animation is a post-hydration enhancement;
  * prefers-reduced-motion keeps the static text.
  */
 export function TypingCaption({ phrases }: { phrases: readonly string[] }) {
@@ -17,7 +17,7 @@ export function TypingCaption({ phrases }: { phrases: readonly string[] }) {
     // async so the effect body itself never sets state (react-hooks/set-state-in-effect)
     const raf = requestAnimationFrame(() => setAnimate(true));
     let timer: ReturnType<typeof setTimeout>;
-    // start by holding the SSR'd phrase, then delete → type next → hold → …
+    // start by holding the SSR'd phrase, then delete → type next → hold → ...
     const tick = (delay: number) => {
       timer = setTimeout(() => {
         const s = state.current;
@@ -53,7 +53,7 @@ export function TypingCaption({ phrases }: { phrases: readonly string[] }) {
     <span className={animate ? "cursor" : undefined}>
       {text}
       {/* keep line height stable when empty mid-delete */}
-      {text === "" ? "​" : null}
+      {text === "" ? "" : null}
     </span>
   );
 }

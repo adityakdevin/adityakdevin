@@ -7,7 +7,7 @@ import { EMAIL_RE } from "@/lib/site";
 type Status = "idle" | "submitting" | "success" | "error";
 
 /**
- * Newsletter capture (design doc 20260717) — rendered on every post page and
+ * Newsletter capture (design doc 20260717) - rendered on every post page and
  * on the /blog index. Same state pattern as ContactForm: inline validation,
  * submitting lock (blocks double-click double-subscribes), success panel,
  * error with direct-email fallback. Honeypot invisible to humans.
@@ -51,7 +51,7 @@ export function NewsletterForm() {
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <p className="mono text-sm font-semibold" style={{ color: "var(--accent)" }}>
-          ✓ Check your inbox to confirm — then new field notes land there.
+           Check your inbox to confirm - then new field notes land there.
         </p>
       </div>
     );
@@ -73,7 +73,7 @@ export function NewsletterForm() {
         unsubscribe anytime.
       </p>
 
-      {/* Honeypot — invisible to humans, tempting to bots */}
+      {/* Honeypot - invisible to humans, tempting to bots */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
           Company website
@@ -102,7 +102,7 @@ export function NewsletterForm() {
           className="btn mono min-h-11 cursor-pointer rounded px-5 py-2 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
           style={{ background: "var(--accent)", color: "var(--on-accent)" }}
         >
-          {status === "submitting" ? "Subscribing…" : "Subscribe"}
+          {status === "submitting" ? "Subscribing..." : "Subscribe"}
         </button>
       </div>
 
@@ -113,7 +113,7 @@ export function NewsletterForm() {
       ) : null}
       {status === "error" ? (
         <p role="alert" className="mt-2 text-sm" style={{ color: "var(--error)" }}>
-          Couldn&apos;t sign you up right now — try again, or email{" "}
+          Couldn&apos;t sign you up right now - try again, or email{" "}
           <a href={`mailto:${profile.email}`}>{profile.email}</a>.
         </p>
       ) : null}

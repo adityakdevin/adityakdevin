@@ -5,21 +5,21 @@ import { costUsd } from "@/lib/cost";
 import { createRateLimiter, clientIp } from "@/lib/ratelimit";
 
 /**
- * /api/chat (SPEC §6) — Claude Haiku streaming via Vercel AI Gateway.
+ * /api/chat (SPEC S6) - Claude Haiku streaming via Vercel AI Gateway.
  * Auth is ambient: VERCEL_OIDC_TOKEN on Vercel deployments (auto-injected),
  * AI_GATEWAY_API_KEY elsewhere. Without either it answers 503 "unconfigured"
  * and the widget stays offline-commands-only. Guardrails are non-negotiable:
  * 300-char input cap, 500-token response cap, 10 msg/hr per IP, and a hard
- * monthly spend circuit breaker at $10 — an alarm alone is not enforcement.
+ * monthly spend circuit breaker at $10 - an alarm alone is not enforcement.
  */
 
-const MODEL = "anthropic/claude-haiku-4.5"; // gateway slug — dots, not hyphens
+const MODEL = "anthropic/claude-haiku-4.5"; // gateway slug - dots, not hyphens
 const MAX_INPUT_CHARS = 300;
 const MAX_OUTPUT_TOKENS = 500;
 
-// ponytail: in-memory per-instance rate limit + spend counter — swap for the
+// ponytail: in-memory per-instance rate limit + spend counter - swap for the
 // gateway's per-user limits + Upstash once traffic justifies it (TODOS/T3).
-// Limiter shared with contact/subscribe (lib/ratelimit.ts) — Upstash swap is one file.
+// Limiter shared with contact/subscribe (lib/ratelimit.ts) - Upstash swap is one file.
 const rateLimited = createRateLimiter(10, 60 * 60 * 1000);
 
 const SPEND_CAP_USD = 10;
@@ -42,11 +42,11 @@ function recordSpend(usd: number) {
   spend.usd += usd;
 }
 
-// Frozen at module load — byte-stable across requests so provider caching can engage.
+// Frozen at module load - byte-stable across requests so provider caching can engage.
 const SYSTEM_PROMPT = buildSystemPrompt();
 
 export async function POST(req: NextRequest) {
-  // Body-size gate BEFORE parsing (adversarial finding) — input cap is 300
+  // Body-size gate BEFORE parsing (adversarial finding) - input cap is 300
   // chars; anything past 32KB is abuse, reject before burning parse CPU.
   const len = Number(req.headers.get("content-length") ?? 0);
   if (len > 32_768) {
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   if (message.length === 0 || message.length > MAX_INPUT_CHARS) {
     return NextResponse.json(
-      { error: `Questions must be 1–${MAX_INPUT_CHARS} characters.` },
+      { error: `Questions must be 1-${MAX_INPUT_CHARS} characters.` },
       { status: 422 },
     );
   }
@@ -112,10 +112,10 @@ export async function POST(req: NextRequest) {
           }),
         );
       } catch (err) {
-        // Mid-stream failure → friendly line, never a frozen cursor (§6).
+        // Mid-stream failure → friendly line, never a frozen cursor (S6).
         console.error("chat: stream failed", err instanceof Error ? err.message : "unknown");
         controller.enqueue(
-          encoder.encode("\n[connection hiccup — that's all I got. Ask again, or try 'help'.]"),
+          encoder.encode("\n[connection hiccup - that's all I got. Ask again, or try 'help'.]"),
         );
       } finally {
         controller.close();

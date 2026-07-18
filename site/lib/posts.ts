@@ -23,14 +23,14 @@ export const BLOG_DESCRIPTION =
  *                         └─→ /draft-devto-post → Dev.to (canonical_url ↩)
  *
  * Required: title, description, date, tags.
- * Optional: devtoId  — written back AFTER Dev.to syndication (step 3 of the
+ * Optional: devtoId  - written back AFTER Dev.to syndication (step 3 of the
  *                      publishing sequence), so absence is legal.
- *           canonical — OVERRIDE for imported legacy posts where Dev.to stays
+ *           canonical - OVERRIDE for imported legacy posts where Dev.to stays
  *                      canonical; omitted = self-canonical from the slug.
- *           client    — named client for case-study posts (permission on file).
+ *           client    - named client for case-study posts (permission on file).
  *
- * NOTE: this content is deliberately EXCLUDED from lib/prompt.ts (§3
- * amendment — 15-25k token cache budget). See tests/unit/posts.test.ts.
+ * NOTE: this content is deliberately EXCLUDED from lib/prompt.ts (S3
+ * amendment - 15-25k token cache budget). See tests/unit/posts.test.ts.
  */
 export type Post = {
   slug: string;
@@ -54,7 +54,7 @@ function parsePost(file: string, dir: string): Post {
   for (const field of REQUIRED) {
     const v = data[field];
     if (v === undefined || v === null || (Array.isArray(v) ? v.length === 0 : String(v).trim() === "")) {
-      // Build fails loudly — a silently skipped post never ships broken.
+      // Build fails loudly - a silently skipped post never ships broken.
       throw new Error(`content/posts/${file}: missing required frontmatter field "${field}"`);
     }
   }
@@ -62,7 +62,7 @@ function parsePost(file: string, dir: string): Post {
     throw new Error(`content/posts/${file}: date must be yyyy-mm-dd, got "${data.date}"`);
   }
   // Calendar validation (adversarial finding): "2026-02-31" passes the regex
-  // but rolls over in Date — RSS pubDate and the page would disagree.
+  // but rolls over in Date - RSS pubDate and the page would disagree.
   const parsed = new Date(`${data.date}T00:00:00Z`);
   if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== String(data.date)) {
     throw new Error(`content/posts/${file}: "${data.date}" is not a real calendar date`);
@@ -71,7 +71,7 @@ function parsePost(file: string, dir: string): Post {
     throw new Error(`content/posts/${file}: tags must be a YAML list`);
   }
   if (data.devtoId !== undefined && !Number.isInteger(Number(data.devtoId))) {
-    // A NaN devtoId silently breaks the homepage dedupe — the syndicated copy
+    // A NaN devtoId silently breaks the homepage dedupe - the syndicated copy
     // would render twice.
     throw new Error(`content/posts/${file}: devtoId must be an integer`);
   }
@@ -92,7 +92,7 @@ function parsePost(file: string, dir: string): Post {
 let defaultDirCache: Post[] | undefined;
 
 /** All posts, newest first. Missing/empty dir → [] (index renders empty state).
- *  The default dir is memoized — posts are immutable within a build/server
+ *  The default dir is memoized - posts are immutable within a build/server
  *  process, and getPost is called per slug per render (metadata + page + OG). */
 export function getAllPosts(dir: string = POSTS_DIR): Post[] {
   if (dir === POSTS_DIR && defaultDirCache) return defaultDirCache;
@@ -100,7 +100,7 @@ export function getAllPosts(dir: string = POSTS_DIR): Post[] {
   const posts = readdirSync(dir)
     .filter((f) => f.endsWith(".mdx"))
     .map((f) => parsePost(f, dir))
-    // Total order: date desc, slug as tiebreak — same-day posts must sort
+    // Total order: date desc, slug as tiebreak - same-day posts must sort
     // deterministically across builds (a bare `<` comparator isn't symmetric).
     .sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
   if (dir === POSTS_DIR) defaultDirCache = posts;
@@ -120,9 +120,9 @@ export type FieldNote = { key: string; date: string; title: string; href: string
 
 /**
  * Homepage "Field notes" merge (design doc 20260717 / eng review T5):
- * local site-first posts + the Dev.to legacy feed, deduped by devtoId —
+ * local site-first posts + the Dev.to legacy feed, deduped by devtoId -
  * a syndicated copy never appears twice, and the LOCAL copy wins (its page
- * is the canonical home). The §5.6 failure contract now applies only to the
+ * is the canonical home). The S5.6 failure contract now applies only to the
  * legacy half: Dev.to down → local posts still render; both empty → the
  * section hides.
  */

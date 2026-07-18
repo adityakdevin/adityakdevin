@@ -1,6 +1,6 @@
 ---
 title: "Streaming AI Responses in Laravel with Server-Sent Events"
-description: "Upgrade your Laravel chatbot from spinner-and-wait to token-by-token streaming with plain Server-Sent Events — no WebSockets, no Pusher."
+description: "Upgrade your Laravel chatbot from spinner-and-wait to token-by-token streaming with plain Server-Sent Events - no WebSockets, no Pusher."
 date: "2026-07-16"
 tags: ["Laravel", "AI", "PHP", "SSE"]
 devtoId: 4156141
@@ -8,9 +8,9 @@ devtoId: 4156141
 
 In [the first post of this series](https://dev.to/adityakdevin/adding-an-ai-chatbot-to-your-laravel-app-with-the-openai-api-177f) we built a working AI chatbot in Laravel. It had one problem every user notices immediately: you send a message, then stare at a spinner for five seconds while the whole response generates.
 
-LLMs produce text token by token. If you wait for the full completion before showing anything, you're throwing away the single biggest UX win available: **streaming**. The same answer that takes 5 seconds to finish starts appearing in ~300ms when streamed. Nothing about the model got faster — but to the user, it feels 10x faster.
+LLMs produce text token by token. If you wait for the full completion before showing anything, you're throwing away the single biggest UX win available: **streaming**. The same answer that takes 5 seconds to finish starts appearing in ~300ms when streamed. Nothing about the model got faster - but to the user, it feels 10x faster.
 
-In this post we'll upgrade the chatbot to stream responses with **Server-Sent Events (SSE)** — no WebSockets, no Pusher, no extra infrastructure. Just Laravel.
+In this post we'll upgrade the chatbot to stream responses with **Server-Sent Events (SSE)** - no WebSockets, no Pusher, no extra infrastructure. Just Laravel.
 
 ## Why SSE and not WebSockets?
 
@@ -85,7 +85,7 @@ class ChatStreamController extends Controller
         $history = $request->session()->get('chat_history', []);
 
         // CRITICAL: release the session lock. A streaming response is a
-        // long-lived request — with the default file/database session
+        // long-lived request - with the default file/database session
         // driver it would block every other request from this user
         // (including page loads!) until the stream finishes.
         $request->session()->save();
@@ -119,7 +119,7 @@ Route::post('/chat/stream', ChatStreamController::class)
 
 ## 3. Reading the stream in the browser
 
-The native `EventSource` API only supports GET requests, and we need to POST a message body — so we read the stream with `fetch` instead:
+The native `EventSource` API only supports GET requests, and we need to POST a message body - so we read the stream with `fetch` instead:
 
 ```html
 <script>
@@ -162,7 +162,7 @@ async function streamChat(message, botEl) {
 </script>
 ```
 
-`</stream>` is Laravel's default end-of-stream marker — filter it out (or customize it with the `endStreamWith` argument).
+`</stream>` is Laravel's default end-of-stream marker - filter it out (or customize it with the `endStreamWith` argument).
 
 That's it. Send a message and watch the answer type itself out.
 
@@ -178,17 +178,17 @@ Debug tip: `curl -N -X POST https://yourapp.test/chat/stream ...` shows you exac
 
 ## Production checklist
 
-- **Release the session lock** before streaming (done above) — this is the #1 "my app hangs" bug with SSE in Laravel.
+- **Release the session lock** before streaming (done above) - this is the #1 "my app hangs" bug with SSE in Laravel.
 - **`X-Accel-Buffering: no`** header for nginx (done above).
 - **Timeouts**: a stream can outlive `max_execution_time` and your web server's send timeout. Set both above your worst-case generation time (60s is a sane ceiling with `max_tokens: 500`).
-- **Mid-stream errors**: wrap the generator loop in try/catch and yield a friendly "Something went wrong" chunk — a dead stream with no message looks frozen to users.
-- **Rate limit** the endpoint (done above) — streaming doesn't change the fact that every request costs money.
+- **Mid-stream errors**: wrap the generator loop in try/catch and yield a friendly "Something went wrong" chunk - a dead stream with no message looks frozen to users.
+- **Rate limit** the endpoint (done above) - streaming doesn't change the fact that every request costs money.
 - **Don't stream everything**: for background jobs or short answers, the buffered endpoint from part 1 is simpler. Keep both.
 
 ## Next in this series
 
-Our bot streams beautifully, but it still only knows what's in its system prompt. Next up: **RAG in Laravel — embeddings and pgvector**, where we'll give it your actual documentation to answer from. Follow me to catch it.
+Our bot streams beautifully, but it still only knows what's in its system prompt. Next up: **RAG in Laravel - embeddings and pgvector**, where we'll give it your actual documentation to answer from. Follow me to catch it.
 
 ---
 
-*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) — Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
+*I'm Aditya Kumar ([adityakdevin](https://github.com/adityakdevin)) - Tech Lead & full-stack developer building AI-powered web products with Laravel, Vue, and LLM APIs. Find me at [adityadev.in](https://adityadev.in).*
