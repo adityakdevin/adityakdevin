@@ -12,6 +12,7 @@
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { validate, BOUNDS, LAYOUTS } from './schema.mjs';
 
 export const ROOT = resolve(import.meta.dirname, '..', '..');
@@ -53,7 +54,7 @@ export function buildPrompt(topic, layout, errors) {
     + `Facts must be correct and concrete. Keep text terse enough to fit the char limits above. No prose, no markdown fences, JSON only.${retry}`;
 }
 
-async function callModel({ apiKey, model, prompt, fetchImpl = fetch }) {
+async function callApi({ apiKey, model, prompt, fetchImpl = fetch }) {
   const res = await fetchImpl(API_URL, {
     method: 'POST',
     headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
@@ -64,13 +65,38 @@ async function callModel({ apiKey, model, prompt, fetchImpl = fetch }) {
   return json.content?.map((c) => c.text).join('') ?? '';
 }
 
+const hasBin = (bin) => spawnSync('which', [bin], { encoding: 'utf8' }).status === 0;
+
+// Reuse the already-logged-in Claude Code / Codex CLI instead of an API key.
+// Prompt goes in on stdin; extractJson digs the JSON out of whatever they print.
+function callCli(bin, prompt) {
+  const args = bin === 'claude' ? ['-p'] : ['exec'];
+  const r = spawnSync(bin, args, { input: prompt, encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
+  if (r.status !== 0) throw new Error(`${bin} failed: ${(r.stderr || r.stdout || '').trim().slice(0, 200)}`);
+  return r.stdout;
+}
+
+// Pick where drafting runs. Explicit --via wins; else prefer a logged-in CLI
+// (no key needed), falling back to the API only if neither CLI is on PATH.
+export function resolveProvider(explicit) {
+  if (explicit) return explicit;
+  if (hasBin('claude')) return 'claude';
+  if (hasBin('codex')) return 'codex';
+  return 'api';
+}
+
+async function complete(prompt, { provider, apiKey, model, fetchImpl = fetch }) {
+  if (provider === 'claude' || provider === 'codex') return callCli(provider, prompt);
+  if (!apiKey) throw new Error('no CLI found and ANTHROPIC_API_KEY not set (install/login `claude` or `codex`, or set the key)');
+  return callApi({ apiKey, model, prompt, fetchImpl });
+}
+
 // Draft -> validate -> retry once -> return data. Throws if still invalid.
-export async function draftInfographic(topic, layout, { apiKey, model = DEFAULT_MODEL, fetchImpl = fetch } = {}) {
+export async function draftInfographic(topic, layout, { provider = 'api', apiKey, model = DEFAULT_MODEL, fetchImpl = fetch } = {}) {
   if (!LAYOUTS.includes(layout)) throw new Error(`unknown layout "${layout}"`);
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set (export it or add to your env)');
   let errors;
   for (let attempt = 0; attempt < 2; attempt++) {
-    const text = await callModel({ apiKey, model, prompt: buildPrompt(topic, layout, errors), fetchImpl });
+    const text = await complete(buildPrompt(topic, layout, errors), { provider, apiKey, model, fetchImpl });
     let data;
     try { data = extractJson(text); } catch (e) { errors = [e.message]; continue; }
     data.layout = layout;
@@ -87,12 +113,14 @@ async function main() {
   const opt = (name, def) => { const i = args.indexOf(name); return i !== -1 ? args[i + 1] : def; };
   const layout = opt('--layout');
   if (!topic || !layout) {
-    console.error('usage: node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram> [--slug <slug>] [--model <id>]');
+    console.error('usage: node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram> [--via claude|codex|api] [--slug <slug>] [--model <id>]');
     process.exit(1);
   }
   const slug = opt('--slug', slugify(topic));
+  const provider = resolveProvider(opt('--via'));
+  console.log(`drafting via ${provider}${provider === 'api' ? ' (API key)' : ' CLI (no key needed)'}...`);
   try {
-    const data = await draftInfographic(topic, layout, { apiKey: process.env.ANTHROPIC_API_KEY, model: opt('--model', DEFAULT_MODEL) });
+    const data = await draftInfographic(topic, layout, { provider, apiKey: process.env.ANTHROPIC_API_KEY, model: opt('--model', DEFAULT_MODEL) });
     const dir = join(ROOT, 'ops', 'social', 'posts', slug);
     mkdirSync(dir, { recursive: true });
     const out = join(dir, 'infographic.json');

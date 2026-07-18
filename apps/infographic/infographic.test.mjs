@@ -9,7 +9,7 @@ import { validate, BOUNDS, LAYOUTS } from './schema.mjs';
 import { esc, fillTemplate } from './templates.mjs';
 import { pngSize } from './render.mjs';
 import { statusColor, BRAND } from './tokens.mjs';
-import { slugify, extractJson, buildPrompt, shapeFor, draftInfographic } from './draft.mjs';
+import { slugify, extractJson, buildPrompt, shapeFor, draftInfographic, resolveProvider } from './draft.mjs';
 
 const FONTS = { fontRegular: '/x/reg.ttf', fontSemibold: '/x/semi.ttf' };
 const goodTable = {
@@ -172,6 +172,13 @@ test('draftInfographic throws if still invalid after the retry', async () => {
   );
 });
 
-test('draftInfographic refuses without an API key', async () => {
-  await assert.rejects(draftInfographic('t', 'table', { apiKey: '' }), /ANTHROPIC_API_KEY/);
+test('draftInfographic (api provider) refuses without an API key', async () => {
+  await assert.rejects(draftInfographic('t', 'table', { provider: 'api', apiKey: '' }), /ANTHROPIC_API_KEY/);
+});
+
+test('resolveProvider honors an explicit choice', () => {
+  assert.equal(resolveProvider('codex'), 'codex');
+  assert.equal(resolveProvider('api'), 'api');
+  // auto-detect returns one of the known providers
+  assert.ok(['claude', 'codex', 'api'].includes(resolveProvider()));
 });

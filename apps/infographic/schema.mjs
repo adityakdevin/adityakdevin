@@ -8,10 +8,13 @@
 
 export const LAYOUTS = ['table', 'grid', 'cheatsheet', 'diagram'];
 
-// Legibility ceilings per layout (from the design spec).
+// Legibility ceilings per layout. Calibrated against real renders: at maxRows=8
+// / maxCells=18 the footer (adityadev.in + dots) gets pushed off the 1350px
+// canvas, so the true ceilings are 7 rows and 15 cells (5x3). ponytail: these are
+// tuning knobs; bump them only if the footer still fits at the new count.
 export const BOUNDS = {
-  table:      { cols: 3, maxRows: 8, maxCell: 26 },
-  grid:       { maxCells: 18, maxCode: 6, maxLabel: 22, maxDesc: 40 },
+  table:      { cols: 3, maxRows: 7, maxCell: 26 },
+  grid:       { maxCells: 15, maxCode: 6, maxLabel: 22, maxDesc: 40 },
   cheatsheet: { maxSections: 6, maxLines: 5, maxLine: 40 },
   diagram:    { maxSatellites: 8, maxLabel: 22 },
 };
