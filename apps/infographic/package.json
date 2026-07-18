@@ -1,0 +1,12 @@
+{
+  "name": "infographic",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "infographic": "./render.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
