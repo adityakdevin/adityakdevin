@@ -12,7 +12,7 @@ Not "should we use AI?" - everyone's past that. The question I get hired to answ
 
 I build these systems for a living. I've shipped AI automation into production for small companies across a few stacks - customer support, document extraction, internal reporting, ticket routing - some in Laravel, some in Node, some in Python. Some of it paid for itself in the first month. Some of it I talked the client out of before we wrote a line. The difference was never the model or the framework. It was picking the right work and engineering it so it survives contact with real users.
 
-Here's how I decide what to automate, four systems I've actually built (with the engineering that matters and the numbers that matter), what it really costs, and the failure mode almost nobody budgets for.
+I'll walk through how I decide what to automate, four systems I've actually built (with the engineering that matters and the numbers that matter), what it really costs, and the failure mode almost nobody budgets for.
 
 ## The band worth automating
 
@@ -75,7 +75,7 @@ Founders' intuition is usually wrong in *both* directions here. They overestimat
 
 It's not hallucination - the tool-grounding above mostly handles that. It's **silent partial failure.**
 
-The demo works. The launch works. Six weeks later the model is quietly getting some fraction of answers - call it 10 or 15% - subtly wrong, not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
+It works at launch. That's the trap. Six weeks later the model is quietly getting some fraction of answers wrong - call it 10 or 15% - not wrong enough for anyone to complain loudly, just wrong enough to erode trust one interaction at a time. Nobody notices, because everyone's watching uptime, not outputs.
 
 The fix is unglamorous and non-negotiable, and it's exactly what separates the automations that last from the ones that quietly rot: log every decision (input, action taken, output), sample them on a schedule, keep a labelled eval set you re-run on every change, and hold a human approval step in front of anything customer-facing until you've *earned* the confidence to remove it. The systems that survive are the ones you can audit. The ones that fail are the ones someone set and forgot.
 

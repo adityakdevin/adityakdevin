@@ -6,11 +6,11 @@ tags: ["Laravel", "AI", "PHP", "SSE"]
 devtoId: 4156141
 ---
 
-In [the first post of this series](https://dev.to/adityakdevin/adding-an-ai-chatbot-to-your-laravel-app-with-the-openai-api-177f) we built a working AI chatbot in Laravel. It had one problem every user notices immediately: you send a message, then stare at a spinner for five seconds while the whole response generates.
+In [the first post of this series](https://dev.to/adityakdevin/adding-an-ai-chatbot-to-your-laravel-app-with-the-openai-api-177f) we built a working AI chatbot in Laravel. It worked, but it had the flaw every user feels on the very first message: you hit send, then watch a spinner for five seconds while the whole answer generates somewhere you can't see.
 
-LLMs produce text token by token. If you wait for the full completion before showing anything, you're throwing away the single biggest UX win available: **streaming**. The same answer that takes 5 seconds to finish starts appearing in ~300ms when streamed. Nothing about the model got faster - but to the user, it feels 10x faster.
+That wait is avoidable. An LLM writes one token at a time, so there's no real reason to hold the reply back until the last word lands. Stream it and the first words show up in about 300ms. The full answer still takes five seconds to finish, but the user stopped staring at a spinner at 300ms, and that gap is the difference between "is this thing broken?" and "oh, it's typing."
 
-In this post we'll upgrade the chatbot to stream responses with **Server-Sent Events (SSE)** - no WebSockets, no Pusher, no extra infrastructure. Just Laravel.
+We'll do it with **Server-Sent Events**. No WebSockets, nothing extra to run. Since Laravel 11 it's a single method on the response.
 
 ## Why SSE and not WebSockets?
 
