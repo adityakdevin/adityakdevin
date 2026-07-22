@@ -71,5 +71,5 @@ Other work: ${profile.featuredWork.links.map((l) => `${l.title} (${l.note}) - ${
 ## FAQ
 ${faqBlock}
 
-Education: ${profile.education}.`;
+Education: ${profile.education.map((e) => `${e.degree}, ${e.school} (${e.year})`).join("; ")}.`;
 }

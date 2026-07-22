@@ -12,8 +12,7 @@ export const profile = {
   yearsExperience: "9+",
   location: "Lucknow, Uttar Pradesh, India",
   email: "contact@adityadev.in",
-  // TODO(S13.1): confirm correct number before rendering - two variants exist on the old site.
-  phone: null as string | null,
+  phone: "+91 8299358996" as string | null,
   website: "https://adityadev.in",
   bookingUrl: "https://cal.com/adityakdevin/30min",
   github: "https://github.com/adityakdevin",
@@ -106,33 +105,140 @@ export const profile = {
   testimonials: [] as { quote: string; author: string; role: string }[],
 
   skills: {
-    "Backend & AI": ["PHP", "Laravel", "Python", "OpenAI API", "Claude API", "Node.js"],
-    Frontend: ["Vue.js", "Nuxt", "React", "Next.js", "TypeScript", "Tailwind CSS"],
-    "Data & DevOps": ["MySQL", "PostgreSQL", "Redis", "Docker", "AWS", "GitHub Actions"],
+    Languages: ["PHP", "JavaScript", "TypeScript", "Python", "SQL", "HTML5", "CSS"],
+    "Backend & AI": ["Laravel", "Livewire", "CakePHP", "CodeIgniter", "Node.js", "FastAPI", "OpenAI API", "Claude API"],
+    Frontend: ["Vue.js", "Nuxt", "React", "Next.js", "Angular", "jQuery", "Tailwind CSS"],
+    Databases: ["MySQL", "PostgreSQL", "SQLite", "Redis"],
+    "Cloud & DevOps": ["AWS (EC2, S3)", "Azure AD", "DigitalOcean", "Docker", "GitHub Actions", "cPanel"],
+    Integrations: ["Stripe", "Razorpay", "Dwolla", "DocuSign", "Mapbox"],
+    CMS: ["WordPress", "Magento"],
   },
 
+  // Experience shape stays backward-compatible with lib/prompt.ts (role/company/period/points);
+  // `location` is additive. Dates confirmed against LinkedIn (2026-07).
   experience: [
     {
-      role: "Tech Lead",
+      role: "Tech Lead (Full-Stack & AI)",
       company: "MM Nova Tech",
-      period: "Current",
+      period: "Feb 2021 - Present",
+      location: "Remote (India)",
       points: [
-        "Leading solution architecture and delivery for client web products.",
-        "Shipping AI features (LLM chatbots, automation) into production apps.",
+        "Promoted to Tech Lead (Apr 2022); lead architecture and delivery across a team of 10+ engineers building client web products.",
+        "Ship production AI/LLM features - chatbots, streaming assistants, and workflow automation - on OpenAI and Claude APIs, with cost-hardened, rate-limited endpoints.",
+        "Own solution design end to end: Laravel/PHP backends, Vue and React/Next.js frontends, payments, and cloud infrastructure (AWS, Azure AD, DigitalOcean).",
+        "Established code-review culture and delivery cadence; mentor engineers and set technical standards.",
       ],
     },
     {
-      role: "Full Stack Developer",
-      company: "Webtechgen",
-      period: "Earlier",
+      role: "Full-Stack Developer (Freelance)",
+      company: "Webtechgen - Self-employed",
+      period: "Jul 2019 - Feb 2022",
+      location: "India (concurrent)",
       points: [
-        "Full-stack delivery for client projects: Laravel backends, Vue/React frontends.",
-        "Led development of remaxmillennium.ca, a Canadian real-estate platform.",
+        "Delivered client web platforms end to end, including remaxmillennium.ca, a Canadian real-estate portal.",
+        "Built and integrated payment, e-signature, and mapping systems (Stripe, Razorpay, Dwolla, DocuSign, Mapbox) across client products.",
+      ],
+    },
+    {
+      role: "Senior Web Developer",
+      company: "Starlink Logistics Pvt. Ltd.",
+      period: "May 2016 - Jun 2017",
+      location: "India",
+      points: [
+        "Built and maintained logistics web applications with PHP/Laravel and MySQL.",
+      ],
+    },
+    {
+      role: "Web Developer",
+      company: "CSRDGROUP",
+      period: "Jun 2015 - Apr 2016",
+      location: "Lucknow, India",
+      points: [
+        "Developed client websites and web apps; built a foundation in PHP, MySQL, and front-end delivery.",
       ],
     },
   ],
 
-  education: "Master's degree",
+  // Curated for the CV (distinct from featuredWork on the home page). Real client work.
+  projects: [
+    {
+      title: "RO - Real-estate platform",
+      href: "https://r-o.com",
+      note: "Upgraded Laravel 5.1 -> 6.x and integrated Mapbox API plus Azure AD SSO.",
+      stack: "PHP · Laravel · Mapbox · Azure AD",
+    },
+    {
+      title: "JPI System",
+      href: "https://apps.jpi.com",
+      note: "Built from scratch in Laravel 8 + Livewire with Dwolla ACH payments.",
+      stack: "PHP · Laravel · Livewire · Dwolla",
+    },
+    {
+      title: "AWB System",
+      href: "https://awbsystem.com",
+      note: "Airway-bill management with DocuSign e-signature integration.",
+      stack: "PHP · CodeIgniter · DocuSign",
+    },
+    {
+      title: "Mitadass - E-commerce",
+      href: "https://mitadass.com",
+      note: "Storefront built from scratch with Razorpay checkout.",
+      stack: "PHP · Laravel · Razorpay",
+    },
+    {
+      title: "BudgetGen - Smart Finance Manager",
+      href: "https://github.com/adityakdevin/budgetgen",
+      note: "Personal-finance manager built solo end to end - schema to UI.",
+      stack: "PHP · Laravel · MySQL",
+    },
+  ],
+
+  openSource: [
+    {
+      title: "VikSslcommerz",
+      href: "https://github.com/adityakdevin/VikSslcommerz",
+      note: "SSLCommerz payment gateway plugin for VikBooking (Joomla) - most-starred repo.",
+    },
+    {
+      title: "Laravel utility repos",
+      href: "https://github.com/adityakdevin?tab=repositories",
+      note: "stripe-payments, add-watermark-pdf (PDF pipelines), s3upload (AWS S3) - reusable, open-sourced.",
+    },
+    {
+      title: "8.3k+ GitHub contributions",
+      href: "https://github.com/adityakdevin",
+      note: "Consistent, public shipping history.",
+    },
+  ],
+
+  languages: [
+    { name: "English", level: "Professional" },
+    { name: "Hindi", level: "Native" },
+  ],
+
+  // No certifications on record yet - section is omitted when empty. Never fabricate.
+  certifications: [] as { name: string; issuer: string; year: string }[],
+
+  education: [
+    {
+      degree: "Master of Computer Applications (MCA), Computer Science",
+      school: "Integral University, Lucknow",
+      year: "2017",
+      score: "85.10%",
+    },
+    {
+      degree: "PG Diploma in Web Designing",
+      school: "Government Polytechnic, Lucknow",
+      year: "2015",
+      score: "70.73%",
+    },
+    {
+      degree: "B.Sc.",
+      school: "M. J. P. Rohilkhand University, Bareilly",
+      year: "2014",
+      score: "58%",
+    },
+  ],
 } as const;
 
 export type Profile = typeof profile;

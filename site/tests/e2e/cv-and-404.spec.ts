@@ -12,8 +12,8 @@ test.describe("/cv", () => {
   test("print stylesheet hides chrome and flips to light (S8)", async ({ page }) => {
     await page.goto("/cv");
     await page.emulateMedia({ media: "print" });
-    // Download button and sticky chrome are data-no-print
-    await expect(page.getByRole("button", { name: /download pdf/i })).toBeHidden();
+    // Download link and sticky chrome are data-no-print
+    await expect(page.getByRole("link", { name: /download pdf/i })).toBeHidden();
     const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(bodyBg).toBe("rgb(255, 255, 255)");
   });

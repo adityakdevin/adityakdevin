@@ -157,7 +157,20 @@ details[open] summary { color: var(--accent); }
 .prose-post table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; display: block; overflow-x: auto; }
 .prose-post th, .prose-post td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
 
-/* ── CV print stylesheet (S8) ── */
+/* ── CV section heading: label + cyan bar, standard name for ATS ── */
+.cv-section {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.cv-section::after {
+  content: ""; display: block; width: 44px; height: 3px;
+  margin-top: 8px; background: var(--accent);
+}
+
+/* ── CV print stylesheet (S8) - single linear column, ATS reads in DOM order ── */
 @media print {
   [data-no-print] { display: none !important; }
   :root, [data-theme="light"], [data-theme="dark"] {
@@ -167,8 +180,10 @@ details[open] summary { color: var(--accent); }
   }
   body { font-size: 11pt; background: #fff; color: #111; }
   a { color: #111; text-decoration: none; }
-  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #444; }
-  h2, h3 { break-after: avoid; }
+  main a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #444; }
+  /* header contact links already show their text - don't double up */
+  header a::after { content: "" !important; }
+  h2, h3, .cv-section { break-after: avoid; }
   section, li { break-inside: avoid; }
   @page { size: A4; margin: 14mm; }
 }

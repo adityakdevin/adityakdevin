@@ -214,7 +214,6 @@ GA4 only - loaded on first interaction or 3s idle (never in the critical path). 
 
 -  Fake testimonials (Saul Goodman et al.) - delete; real testimonials only when collected (S13).
 -  Lorem ipsum skills intro, empty About text, `.` placeholders - replaced by real copy.
--  Phone `+91 737664320` vs `+91 7376624320` - confirm the correct one, use once.
 -  Age hardcoded "25" - compute from DOB or omit.
 -  Email mismatch - one address: contact@adityadev.in.
 -  Empty favicon/manifest hrefs - real favicon set (terminal `>_` or ASCII-A monogram).
