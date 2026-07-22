@@ -19,6 +19,9 @@ export const profile = {
   github: "https://github.com/adityakdevin",
   linkedin: "https://www.linkedin.com/in/adityakdevin",
   twitter: "https://twitter.com/adityakdevin",
+  upwork: "https://www.upwork.com/freelancers/adityakdevin",
+  freelancer: "https://www.freelancer.com/u/aditaykumar2012",
+  peopleperhour: "https://pph.me/adityakdevin",
   devto: "https://dev.to/adityakdevin",
   devtoUsername: "adityakdevin",
 

@@ -24,7 +24,7 @@ export function personJsonLd() {
       addressRegion: "Uttar Pradesh",
       addressCountry: "IN",
     },
-    sameAs: [profile.github, profile.linkedin, profile.twitter, profile.devto],
+    sameAs: [profile.github, profile.linkedin, profile.twitter, profile.upwork, profile.freelancer, profile.peopleperhour, profile.devto],
     knowsAbout: Object.values(profile.skills).flat(),
   };
 }

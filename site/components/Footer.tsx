@@ -17,6 +17,9 @@ export function Footer() {
             <a href={profile.github}>GitHub</a>
             <a href={profile.linkedin}>LinkedIn</a>
             <a href={profile.twitter}>X</a>
+            <a href={profile.upwork}>Upwork</a>
+            <a href={profile.freelancer}>Freelancer</a>
+            <a href={profile.peopleperhour}>PeoplePerHour</a>
             <a href={profile.devto}>Dev.to</a>
             <a href={`mailto:${profile.email}`}>{profile.email}</a>
           </nav>

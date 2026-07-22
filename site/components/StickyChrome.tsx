@@ -155,6 +155,9 @@ export function StickyChrome() {
             <Link href="/#faq" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
               ~/faq
             </Link>
+            <Link href="/hire" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+              ~/hire
+            </Link>
             <ThemeToggle />
             <a
               href={withRef(profile.bookingUrl, "nav")}
