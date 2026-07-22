@@ -109,6 +109,16 @@ export default async function Home() {
               <p className="mono mt-3 text-sm" style={{ color: "var(--accent)" }}>
                 {profile.featuredWork.lead.stack}
               </p>
+              {profile.featuredWork.lead.metric ? (
+                <p className="mono mt-3 text-sm">
+                  <span className="font-semibold" style={{ color: "var(--accent)" }}>
+                    {profile.featuredWork.lead.metric.value}
+                  </span>{" "}
+                  <span style={{ color: "var(--muted)" }}>
+                    {profile.featuredWork.lead.metric.label}
+                  </span>
+                </p>
+              ) : null}
             </article>
             <div className="space-y-6 md:border-l md:pl-8" style={{ borderColor: "var(--border)" }}>
               {profile.featuredWork.links.map((l) => (

@@ -1,6 +1,6 @@
 import { profile } from "@/content/data/profile";
 import { faq } from "@/content/data/faq";
-import { caseStudies } from "@/content/data/work";
+import { publishedCaseStudies } from "@/content/data/work";
 
 /**
  * Cached full-corpus system prompt for /api/chat (SPEC S6).
@@ -26,10 +26,12 @@ export function buildSystemPrompt(): string {
 
   const faqBlock = faq.map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n");
 
-  const work = caseStudies
+  const work = publishedCaseStudies
     .map(
       (c) =>
-        `${c.title} (${c.stack.join(", ")}) - ${c.repo}\n${c.summary}\n` +
+        // repo is optional (client work has none); guard so a repo-less study
+        // never writes "- undefined" into the cached corpus. See ceo-plan row 8.
+        `${c.title} (${c.stack.join(", ")})${c.repo ? ` - ${c.repo}` : ""}\n${c.summary}\n` +
         c.sections.map((s) => `${s.h}: ${s.body}`).join("\n"),
     )
     .join("\n\n");

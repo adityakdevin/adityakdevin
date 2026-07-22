@@ -68,6 +68,9 @@ export const profile = {
       story:
         "A personal-finance manager built end-to-end in Laravel: budgets, tracking, reports. Designed, built, and shipped solo - schema to UI.",
       stack: "PHP · Laravel · MySQL",
+      // Headline outcome, rendered inline on the home card when set. Null until a
+      // real, honest number exists - never fabricate (E4).
+      metric: null as { value: string; label: string } | null,
     },
     links: [
       {
