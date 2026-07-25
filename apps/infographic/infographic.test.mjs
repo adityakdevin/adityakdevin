@@ -191,3 +191,77 @@ test('resolveProvider honors an explicit choice', () => {
   // auto-detect returns one of the known providers
   assert.ok(['claude', 'codex', 'api'].includes(resolveProvider()));
 });
+
+// --- post kit (S1.5): staging for BOTH image pipelines -----------------------
+// These were the untested filesystem functions; they now use a real temp tree
+// rather than mocks, because the bug they guard against is a filename mismatch.
+
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, basename } from 'node:path';
+import { findPngs, findSlides, postKit } from './post.mjs';
+
+function fixture(slug, files) {
+  const root = mkdtempSync(join(tmpdir(), 'infographic-test-'));
+  const dir = join(root, 'ops', 'social', 'posts', slug);
+  mkdirSync(join(dir, 'assets'), { recursive: true });
+  for (const [name, body] of Object.entries(files)) {
+    const p = name.startsWith('assets/') ? join(dir, name) : join(dir, name);
+    writeFileSync(p, body ?? '');
+  }
+  return { root, dir };
+}
+
+test('findSlides picks up blog-carousel PNGs in natural order', () => {
+  const { dir } = fixture('post', {
+    'assets/slide-1-hook.png': '', 'assets/slide-2-problem.png': '',
+    'assets/slide-10-cta.png': '',
+  });
+  const got = findSlides(join(dir, 'assets')).map((p) => basename(p));
+  assert.deepEqual(got, ['slide-1-hook.png', 'slide-2-problem.png', 'slide-10-cta.png']);
+});
+
+test('findPngs does NOT match blog slides (they belong to the other pipeline)', () => {
+  const { dir } = fixture('my-topic', { 'assets/slide-1-hook.png': '' });
+  assert.deepEqual(findPngs(join(dir, 'assets'), 'my-topic'), []);
+});
+
+test('findSlides does NOT match infographic output', () => {
+  const { dir } = fixture('my-topic', { 'assets/my-topic-table.png': '' });
+  assert.deepEqual(findSlides(join(dir, 'assets')), []);
+});
+
+test('postKit stages a blog carousel and reads its caption from instagram-facebook.md', () => {
+  // Blog packs have no caption.txt - it exists in 1 of 9 shipped pack dirs.
+  const { root } = fixture('blog-post', {
+    'assets/slide-1-hook.png': '', 'assets/slide-2-problem.png': '',
+    'instagram-facebook.md': '# Instagram / Facebook\nCaption: The real caption here.  ?ref=ig\n',
+  });
+  const kit = postKit('blog-post', root);
+  assert.equal(kit.pngs.length, 2);
+  assert.equal(kit.caption, 'The real caption here.  ?ref=ig');
+});
+
+test('postKit prefers caption.txt when present', () => {
+  const { root } = fixture('topic', {
+    'assets/topic-table.png': '',
+    'caption.txt': 'From caption.txt',
+    'instagram-facebook.md': 'Caption: from the media file\n',
+  });
+  assert.equal(postKit('topic', root).caption, 'From caption.txt');
+});
+
+test('postKit refuses to guess when a pack holds BOTH kinds', () => {
+  const { root } = fixture('both', {
+    'assets/both-table.png': '', 'assets/slide-1-hook.png': '',
+  });
+  assert.throws(() => postKit('both', root), /Pick one: --infographic or --slides/);
+  // ...but an explicit kind resolves it.
+  assert.equal(postKit('both', root, { kind: 'slides' }).pngs.length, 1);
+  assert.equal(postKit('both', root, { kind: 'infographic' }).pngs.length, 1);
+});
+
+test('postKit names both render commands when nothing is rendered', () => {
+  const { root } = fixture('empty', {});
+  assert.throws(() => postKit('empty', root), /render\.mjs empty[\s\S]*social-card empty/);
+});
