@@ -151,6 +151,26 @@ test('buildPrompt embeds layout bounds and retry errors', () => {
   assert.match(shapeFor('grid'), /cells/);
 });
 
+// The assertion that was missing. `fix` shipped with BOUNDS, a validator, 8 tests
+// and a renderer, but no prompt shape - shapeFor's switch had no case for it and
+// fell through to `default: return ''`. So `--layout fix` sent the model "Return
+// ONLY a JSON object in this exact shape:" followed by nothing, and surfaced as a
+// validation retry loop rather than an error naming the real problem.
+test('EVERY layout has a prompt shape (the fix-layout regression)', () => {
+  for (const layout of LAYOUTS) {
+    const shape = shapeFor(layout);
+    assert.ok(shape.length > 0, `${layout} has an empty prompt shape`);
+    assert.match(shape, new RegExp(`"layout"\\s*:\\s*"${layout}"`), `${layout} shape must name its own layout`);
+    assert.match(buildPrompt('X', layout), /exact shape:\n\{/, `${layout} prompt must carry a JSON schema`);
+  }
+});
+
+test('shapeFor throws on a layout with no prompt shape', () => {
+  // Fail loud, not silent. An unknown layout used to return '' and the model got
+  // a schema-less prompt; now you get an error that names what to add and where.
+  assert.throws(() => shapeFor('nonexistent'), /no prompt shape for layout "nonexistent"/);
+});
+
 // Fake fetch that replays queued reply strings as API responses.
 function fakeFetch(replies) {
   let i = 0;

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // infographic AI draft (v1b) - topic -> schema-valid infographic.json.
 //
-//   node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram> [--slug <slug>] [--model <id>]
+//   node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram|fix> [--slug <slug>] [--model <id>]
 //
 // The model drafts the DATA only; the deterministic renderer draws it. The shared
 // validate() is the retry gate: an invalid draft is sent back once with its errors
@@ -34,17 +34,34 @@ export function extractJson(text) {
   return JSON.parse(body.slice(start, end + 1));
 }
 
-// The per-layout shape + bounds the model must fill. Kept in sync with schema.mjs
-// via BOUNDS so the prompt and the validator never drift.
+// The per-layout prompt shape the model must fill. Bounds come from schema.mjs so
+// the prompt and the validator agree on the numbers, but this is deliberately a
+// SEPARATE map rather than one merged per-layout object: what the validator
+// enforces and what the model is told to produce are different concerns, and a
+// single object would pull templates.mjs render config in next.
+//
+// EVERY entry in LAYOUTS must appear here. shapeFor throws otherwise and
+// infographic.test.mjs asserts the coverage, because `fix` shipped with bounds,
+// a validator, 8 tests and a renderer but no prompt shape - so `--layout fix`
+// sent the model a schema-less prompt and failed as a confusing retry loop.
+const PROMPT_SHAPES = {
+  table: (b) => `{"layout":"table","chip":"SHORT LABEL","title":"X vs Y","columns":["Aspect","X","Y"],"rows":[["label","x val","y val"], ...]} - exactly 3 columns; <=${b.maxRows} rows; every cell <=${b.maxCell} chars (terse).`,
+  grid: (b) => `{"layout":"grid","chip":"SHORT LABEL","title":"...","cells":[{"code":"200","label":"OK","desc":"short"}, ...]} - <=${b.maxCells} cells; code <=${b.maxCode}, label <=${b.maxLabel}, desc <=${b.maxDesc} chars. For HTTP codes the code drives cell color.`,
+  cheatsheet: (b) => `{"layout":"cheatsheet","chip":"SHORT LABEL","title":"...","sections":[{"title":"...","lines":["...", ...]}, ...]} - <=${b.maxSections} sections; <=${b.maxLines} lines each; keep lines terse.`,
+  diagram: (b) => `{"layout":"diagram","chip":"SHORT LABEL","title":"...","center":"hub label","satellites":["A","B", ...]} - <=${b.maxSatellites} satellites; short labels.`,
+  fix: (b) => `{"layout":"fix","chip":"SHORT LABEL","title":"N+1 queries","kicker":"optional","subtitle":"optional","wrong":{"label":"the mistake","code":"Post::all()","metric":"101 queries","metricNote":"optional","note":"optional"},"right":{"label":"the fix","code":"Post::with('author')->get()","metric":"2 queries","metricNote":"optional","note":"optional"},"footnote":"optional"} - code is a REAL multi-line snippet: <=${b.maxCodeLines} lines, every line <=${b.maxCodeLine} chars (it is NOT wrapped, so a long line overflows the frame). label <=${b.maxLabel}, metric <=${b.maxMetric}, metricNote <=${b.maxMetricNote}, note <=${b.maxNote}, kicker <=${b.maxKicker}, subtitle <=${b.maxSubtitle}, footnote <=${b.maxFootnote}. Give BOTH sides a metric or NEITHER - a one-sided number is an assertion, not a comparison. The measured before/after IS the payload.`,
+};
+
 export function shapeFor(layout) {
-  const b = BOUNDS[layout];
-  switch (layout) {
-    case 'table': return `{"layout":"table","chip":"SHORT LABEL","title":"X vs Y","columns":["Aspect","X","Y"],"rows":[["label","x val","y val"], ...]} - exactly 3 columns; <=${b.maxRows} rows; every cell <=${b.maxCell} chars (terse).`;
-    case 'grid': return `{"layout":"grid","chip":"SHORT LABEL","title":"...","cells":[{"code":"200","label":"OK","desc":"short"}, ...]} - <=${b.maxCells} cells; code <=${b.maxCode}, label <=${b.maxLabel}, desc <=${b.maxDesc} chars. For HTTP codes the code drives cell color.`;
-    case 'cheatsheet': return `{"layout":"cheatsheet","chip":"SHORT LABEL","title":"...","sections":[{"title":"...","lines":["...", ...]}, ...]} - <=${b.maxSections} sections; <=${b.maxLines} lines each; keep lines terse.`;
-    case 'diagram': return `{"layout":"diagram","chip":"SHORT LABEL","title":"...","center":"hub label","satellites":["A","B", ...]} - <=${b.maxSatellites} satellites; short labels.`;
-    default: return '';
+  const build = PROMPT_SHAPES[layout];
+  if (!build) {
+    throw new Error(
+      `no prompt shape for layout "${layout}" - add one to PROMPT_SHAPES in draft.mjs. ` +
+      `This used to return an empty string, which sent the model a prompt with no ` +
+      `schema at all and surfaced as a validation retry loop instead of an error.`,
+    );
   }
+  return build(BOUNDS[layout]);
 }
 
 export function buildPrompt(topic, layout, errors) {
@@ -113,7 +130,7 @@ async function main() {
   const opt = (name, def) => { const i = args.indexOf(name); return i !== -1 ? args[i + 1] : def; };
   const layout = opt('--layout');
   if (!topic || !layout) {
-    console.error('usage: node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram> [--via claude|codex|api] [--slug <slug>] [--model <id>]');
+    console.error('usage: node apps/infographic/draft.mjs "<topic>" --layout <table|grid|cheatsheet|diagram|fix> [--via claude|codex|api] [--slug <slug>] [--model <id>]');
     process.exit(1);
   }
   const slug = opt('--slug', slugify(topic));
