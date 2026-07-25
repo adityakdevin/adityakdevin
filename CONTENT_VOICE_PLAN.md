@@ -41,10 +41,14 @@ Gets a draft from ~90% to ~20-30% AI:
 - Throughout: keep `ops/voice.md` (gitignored) of phrases that are yours.
 
 ## Track 3: Fix the pipeline (done)
-- Shared rules: `~/.claude/skills/draft-social-post/human-voice.md`.
+- Shared rules: `~/.claude/skills/post/human-voice.md`.
 - Private phrases: `ops/voice.md` (gitignored) - fill it from real client talk.
-- The three draft-* skills (social-text, social-media, devto) now read both
-  before writing, so drafts start human.
+- `/post` (all sections) and `/draft-devto-post` read both before writing, so
+  drafts start human. The old `draft-social-*` family was consolidated into
+  `/post` on 2026-07-25.
+- Mechanical backstop: `node scripts/text-hygiene.mjs --phrases --dir ops` checks
+  drafts for banned phrasings and un-permissioned client claims. `ops/social/` is
+  gitignored so no pre-commit hook can reach it - `/post` runs this itself.
 
 ## The standing assignment
 Rewrite the first 5 lines of any AI draft by hand (Track 1), no humanizer, then

@@ -128,19 +128,34 @@ active channel is the reason the budget went from ~90 min to ~2 hrs; that's the
 honest cost of a second active audience. Bluesky/Mastodon/Threads/IG/FB stay
 fire-and-forget or skipped without guilt.
 
-## Automation - a command family, split by modality
+## Automation - one command, two entry points
 
-Social drafting is split by content type (they're genuinely different jobs), each
-a skill that writes a **publish checklist** (not just copy) under `ops/social/`
-(gitignored - see "Where drafts live"). Each starts with a short content/visual
-brief (the plan phase) before drafting:
+**Superseded 2026-07-25.** The four-skill family below was consolidated into a
+single `/post` command. Social drafting is no longer split by modality: one brief,
+one approval gate, one writer per pack. `/post` writes a **publish checklist**
+(not just copy) under `ops/social/posts/<slug>/` (gitignored - see "Where drafts
+live"), one file per channel:
 
 | Command | Covers | Writes | Type |
 |---------|--------|--------|------|
-| **`/draft-social-text`** | X, LinkedIn, text mirrors (Bluesky/Mastodon/Threads), text submissions (Reddit/HN/newsletter) | `ops/social/<slug>.text.md` | short text |
-| **`/draft-social-media`** | Instagram + Facebook: carousels + **reels** (script, shot list, on-screen text) | `ops/social/<slug>.media.md` | visual / video |
-| **`/draft-devto-post`** | blog canonical + Dev.to | the post itself | long-form |
-| **`/draft-social-post`** | router - dispatches to the right one, or runs both text+media | - | - |
+| **`/post <slug>`** | a pack for a published article: X, LinkedIn, mirrors (Bluesky/Mastodon/Threads), Reddit/HN, IG/FB carousel | `ops/social/posts/<slug>/{pack,linkedin,x,mirror,reddit,hackernews,instagram-facebook,posting}.md` | full pack |
+| **`/post --topic "<atom>"`** | a standalone tip with no article behind it - needs `atom: {claim, failure_mode, verification}` in `pack.md` | same layout, minus `canonicalPath` | full pack |
+| **`/draft-devto-post`** | blog canonical + Dev.to syndication | the post itself, then `npm run devto:sync -- <slug> --commit` to update | long-form |
+
+The durable tools underneath, which outlive any skill wording:
+
+| Job | Command |
+|---|---|
+| Gate + paste a pack | `npm run post -- <slug>` (dry run), `--commit` to paste |
+| Render carousel slides | `cd site && bun run social-card <slug>` |
+| Draft / render a reference card | `npm run draft`, `npm run render`, `npm run stage` |
+| Update a syndicated Dev.to body | `npm run devto:sync -- <slug> --commit` (never changes `published`) |
+| Check drafts for banned phrasing and un-permissioned claims | `node scripts/text-hygiene.mjs --phrases --dir ops` |
+| Bank a shipped atom into an accumulating draft | `cd site && bun run atom -- <draft-slug> --claim ... --failure ... --verify ...` |
+
+**Reels were removed 2026-07-25.** Fifteen frames were rendered across three packs
+and zero were recorded, because the runbook shipped "skip until recorded" as its
+default. There is no video track and no `--reel` flag; passing one exits 1.
 
 The text checklist structure (media is analogous with a `slides:` + reel block):
 
@@ -180,9 +195,10 @@ Design decisions locked by the eng review:
 - **Do NOT build `/api/social-card` in the first cut.** A public `?slug=&slide=`
   satori route is an unauthenticated CPU-amplification endpoint - the repo
   already avoids exactly this in `opengraph-image.tsx:16` via build-time render.
-  Carousels come later as a **build script** emitting static PNGs into
-  `ops/social/<slug>/slide-N.png`, only after the pack format proves useful and
-  IG/FB clear the month-2 kill-timer.
+  Carousels ship as a **build script** emitting static PNGs into
+  `ops/social/posts/<slug>/assets/slide-*.png`. Built and in use since 2026-07-18
+  (`cd site && bun run social-card <slug>`), brought forward past the month-2
+  kill-timer once FB Page + IG Business were ready.
 - **The carousel is a new template, not `og.tsx` reuse.** `og.tsx` is a fixed
   1200×630 landscape with a hard-coded accent width; carousels are 1080×1350
   (4:5). Reuse only the font-loader (~6 lines) and color tokens. Satori can't
@@ -275,8 +291,10 @@ handles you won't feed; an abandoned Mastodon reads as quit, worse than absent.
 - No vanity-metric chasing; the metric is qualified conversations.
 - No fixed posting quota - trigger-based, quality-gated.
 - No local-India-SMB / city-service language here (deferred track in `CONTENT_PLAN.md`).
-- No `/api/social-card` public route in the first cut; no carousels before the
-  IG/FB kill-timer clears.
+- No `/api/social-card` public route, ever - it would be an unauthenticated
+  CPU-amplification endpoint. Rendering is a local, on-demand script.
+- No hashtags on any channel (owner decision, 2026-07-25).
+- No reels or video (removed 2026-07-25 - 15 frames rendered, 0 recorded).
 
 ## Out of scope
 
@@ -290,7 +308,7 @@ handles you won't feed; an abandoned Mastodon reads as quit, worse than absent.
 | Item | Where | Effort |
 |------|-------|--------|
 | `?ref` capture + accept + `withRef` helper | `site/lib/track.ts`, `site/app/api/contact/route.ts`, cal.com links | ~2 h |
-| Social command family (`/draft-social-text`, `/draft-social-media`, router) | `~/.claude/skills/draft-social-*/SKILL.md` -  built | done |
+| Social command (`/post`, consolidated from the old `draft-social-*` family 2026-07-25) | `~/.claude/skills/post/SKILL.md` + `sections/{text,visual,article}.md` - built | done |
 | Tests (track + contact route) | `site/tests/unit/` | ~1 h |
 | Carousel PNG **build script** ( built, brought forward - FB Page + IG Business ready) | `site/scripts/social-card.mjs` (`bun run social-card <slug>`), reuses og.tsx font/color primitives | done |
 | Outreach system + `social-setup.md` | manual + one config file | ~2 h setup |
