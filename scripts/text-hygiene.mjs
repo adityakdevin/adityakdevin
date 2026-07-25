@@ -16,7 +16,8 @@
 // Dependency-free Node ESM. No build step. Run with `node` or `tsx`.
 
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 // ---------------------------------------------------------------------------
 // Tables (all keyed by numeric Unicode code point - ASCII-only source)
@@ -387,6 +388,134 @@ function isIgnored(path) {
   return IGNORE_REGEXES.some((re) => re.test(path));
 }
 
+// ---------------------------------------------------------------------------
+// Phrase lens (--phrases): banned PHRASINGS and un-permissioned CLAIMS.
+//
+// A separate lens on purpose. The character lenses above are about typography
+// and would drown a social pack in em-dash findings that nobody cares about;
+// this one is about what the copy SAYS. Run it over ops/ (which is gitignored,
+// so no pre-commit hook can ever see those files - the /post skill invokes this
+// itself before its review gate).
+//
+// Sources: ops/voice.md's "Not me (never use)" list and its permissioned-numbers
+// ALLOWLIST, plus ~/.claude/skills/draft-social-post/human-voice.md's AI tells.
+// A claim lands here when it appears in a draft but not on the allowlist.
+// ---------------------------------------------------------------------------
+
+const BANNED_PHRASES = [
+  // --- AI vocabulary: ops/voice.md "Not me (never use)" ---
+  { re: /\bdelve\w*\b/gi, category: 'ai-vocab', suggestion: 'say "dig into" or just say the thing' },
+  { re: /\bleverag\w+\b/gi, category: 'ai-vocab', suggestion: 'use / with' },
+  { re: /\bin today'?s landscape\b/gi, category: 'ai-vocab', suggestion: 'cut it' },
+  { re: /\bunlocks?\b/gi, category: 'ai-vocab', suggestion: 'name what it actually lets you do' },
+  { re: /\bsupercharg\w+\b/gi, category: 'ai-vocab', suggestion: 'cut it' },
+  { re: /\bseamless(ly)?\b/gi, category: 'ai-vocab', suggestion: 'name the friction it removes' },
+  { re: /\bgame[- ]chang\w+\b/gi, category: 'ai-vocab', suggestion: 'cut it' },
+  { re: /\brobust\b/gi, category: 'ai-vocab', suggestion: 'say what it survives' },
+  { re: /\bcrucial\b/gi, category: 'ai-vocab', suggestion: 'important, or cut' },
+
+  // --- launch cosplay: human-voice.md ---
+  { re: /\bI'?m (so )?excited to share\b/gi, category: 'launch-cosplay', suggestion: 'open on the thing itself' },
+  { re: /\b(I'?m )?thrilled\b/gi, category: 'launch-cosplay', suggestion: 'cut it' },
+
+  // --- round/safe numbers: human-voice.md:25 ("Predictable = high AI probability") ---
+  { re: /\b\d{1,3}-\d{1,3}%/g, category: 'round-number', suggestion: 'one odd specific number, e.g. "about 1 in 8"' },
+  // Spelled-out ranges too: a reel voiceover said "ten, fifteen percent" and the
+  // digit pattern above sailed straight past it. Percentages hide in words.
+  {
+    re: /\b(one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)[, ]+(and )?(one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety) percent\b/gi,
+    category: 'round-number',
+    suggestion: 'a spelled-out range is still a range - use one odd specific number',
+  },
+
+  // --- un-permissioned claims: NOT on ops/voice.md's allowlist (2026-07-25) ---
+  // Provenance of the first: an (e.g.) placeholder that used to sit in voice.md.
+  { re: /1 in 8 answers/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
+  // Catch the reworded forms too. The literal "shipped four of these" was purged
+  // from the drafts, and "four systems I've actually shipped" sailed straight past
+  // a pattern that only matched the first phrasing. A claim is a claim in any word
+  // order, so match the ASSERTION (a count + shipped), not one sentence.
+  { re: /shipped four of these/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
+  {
+    re: /\b(four|four|\d+) [a-z ]{0,20}(systems?|of these|automations?|bots?)[a-z ,'-]{0,25}(I'?ve |I have )?(actually )?(shipped|built|delivered)\b/gi,
+    category: 'unpermissioned-claim',
+    suggestion: 'asserts a shipped COUNT - allowlist it or describe the article instead',
+  },
+  {
+    re: /\b(I'?ve|I have) (actually )?shipped (four|\d+)\b/gi,
+    category: 'unpermissioned-claim',
+    suggestion: 'asserts a shipped COUNT - allowlist it or drop the number',
+  },
+  { re: /paid for (itself|themselves)/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
+  { re: /drop(ped)? ~?\d+% overnight/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
+];
+
+// Files that DEFINE the banned set necessarily contain it, so the phrase lens
+// exempts them - exactly as this source file avoids literal banned glyphs so it
+// passes its own character check. Kept separate from IGNORE_REGEXES because
+// these files SHOULD still be scanned for typography.
+const PHRASE_LENS_IGNORE = [
+  /(^|\/)voice\.md$/,
+  /(^|\/)human-voice\.md$/,
+  /(^|\/)text-hygiene\.mjs$/,
+];
+
+export function isPhraseLensExempt(path) {
+  return PHRASE_LENS_IGNORE.some((re) => re.test(path));
+}
+
+export function detectPhrases(text) {
+  const findings = [];
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    for (const { re, category, suggestion } of BANNED_PHRASES) {
+      re.lastIndex = 0; // shared regex objects: reset between lines
+      let m;
+      while ((m = re.exec(lines[i])) !== null) {
+        findings.push({
+          line: i + 1,
+          col: m.index + 1,
+          match: m[0],
+          category,
+          action: 'rewrite',
+          suggestion,
+        });
+        if (m[0].length === 0) re.lastIndex++; // guard against a zero-width match looping
+      }
+    }
+  }
+  // Several patterns deliberately overlap (the same shipped-count claim is caught
+  // by a literal AND two generalised forms), so collapse overlapping spans on the
+  // same line to one finding. Otherwise a single sentence reports three times and
+  // the count stops meaning "how many problems".
+  findings.sort((a, b) => a.line - b.line || a.col - b.col || b.match.length - a.match.length);
+  const kept = [];
+  for (const f of findings) {
+    const covered = kept.some(
+      (k) => k.line === f.line && f.col < k.col + k.match.length && f.col + f.match.length > k.col,
+    );
+    if (!covered) kept.push(f);
+  }
+  return kept;
+}
+
+// Recursive file walk, for trees git cannot enumerate. ops/social/ is
+// .gitignore line 7, so --all (git ls-files) can never reach the social packs.
+function walkDir(dir, out = []) {
+  let names;
+  try {
+    names = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const d of names) {
+    const p = join(dir, d.name);
+    if (d.isDirectory()) walkDir(p, out);
+    else if (d.isFile() && /\.(md|mdx|txt|json)$/i.test(d.name)) out.push(p);
+  }
+  return out;
+}
+
 // Treat a buffer as binary (and skip) if it contains a NUL byte in the first 8KB.
 function looksBinary(buf) {
   const n = Math.min(buf.length, 8192);
@@ -439,6 +568,9 @@ function gitLines(args) {
 // ---------------------------------------------------------------------------
 
 function formatFinding(path, f) {
+  if (f.action === 'rewrite') {
+    return `  ${path}:${f.line}:${f.col}  ${JSON.stringify(f.match)} (${f.category})  ->  ${f.suggestion}`;
+  }
   const sug =
     f.action === 'transliterate'
       ? `replace with ${JSON.stringify(f.suggestion)}`
@@ -490,6 +622,23 @@ function selftest() {
   assert('TM -> (TM)', transliterate('Nova\u2122') === 'Nova(TM)');
   assert('section sign -> S', transliterate('SPEC ' + String.fromCharCode(0xa7) + '6') === 'SPEC S6');
 
+  // Phrase lens
+  assert('flags the banned round number', detectPhrases('about 10-15% wrong').length === 1);
+  assert('flags an un-permissioned claim', detectPhrases('getting 1 in 8 answers wrong').length === 1);
+  assert('flags "paid for themselves"', detectPhrases('A couple paid for themselves inside a month.').length === 1);
+  assert('flags "shipped four of these"', detectPhrases("I've shipped four of these now.").length === 1);
+  assert('flags overnight-drop claim', detectPhrases('I watched one drop ~12% overnight.').length === 1);
+  assert('flags ai-vocab', detectPhrases('This will unlock seamless delivery').length === 2);
+  assert('phrase lens ignores typography', detectPhrases('an em\u2014dash and \u201Cquotes\u201D').length === 0);
+  assert('clean copy has no phrase findings', detectPhrases('Order-status replies. First-pass triage.').length === 0);
+  assert('phrase findings report line and col', detectPhrases('ok\nthrilled').every((f) => f.line > 0 && f.col > 0));
+  assert('repeated match found twice on one line', detectPhrases('unlock and unlock').length === 2);
+  assert('flags the REWORDED shipped-count claim', detectPhrases("four systems I've actually shipped").length >= 1);
+  assert('flags "I have shipped four"', detectPhrases("I've shipped four of them").length >= 1);
+  assert('does not flag describing the article', detectPhrases('Wrote up four of these systems in detail').length === 0);
+  assert('flags a SPELLED-OUT range', detectPhrases('getting ten, fifteen percent of answers wrong').length === 1);
+  assert('does not flag a single spelled-out percentage', detectPhrases('about ten percent of them').length === 0);
+
   // GSM-7 lens
   assert('e-acute is GSM-7 (not flagged)', detectNonGsm7('caf\u00E9').length === 0);
   assert('em dash is not GSM-7', detectNonGsm7('a\u2014b').length === 1);
@@ -525,6 +674,14 @@ function usage() {
       '  --path <file>     in --stdin mode, skip if <file> is on the ignore list',
       '  --fix             rewrite scanned files, transliterating banned chars',
       '  --gsm7            use the GSM-7 lens (flag all non-GSM-7 chars)',
+      '  --phrases         use the PHRASE lens instead of the character lenses:',
+      '                    banned phrasings + un-permissioned claims. Needs judgment,',
+      '                    so --fix is refused. Sources: ops/voice.md allowlist +',
+      '                    human-voice.md tells.',
+      '  --dir <path>      walk a directory tree (reaches gitignored trees like',
+      '                    ops/social/, which git ls-files cannot enumerate)',
+      '',
+      '  Social pack check:  node scripts/text-hygiene.mjs --phrases --dir ops/social',
       '  --selftest        run built-in assertions and exit',
       '  --quiet           print only the violation count',
       '',
@@ -543,6 +700,8 @@ function parseArgs(argv) {
     path: null,
     fix: false,
     gsm7: false,
+    phrases: false,
+    dir: null,
     selftest: false,
     quiet: false,
     help: false,
@@ -556,6 +715,8 @@ function parseArgs(argv) {
     else if (a === '--path') opts.path = argv[++i] || null;
     else if (a === '--fix') opts.fix = true;
     else if (a === '--gsm7') opts.gsm7 = true;
+    else if (a === '--phrases') opts.phrases = true;
+    else if (a === '--dir') opts.dir = argv[++i] || null;
     else if (a === '--selftest') opts.selftest = true;
     else if (a === '--quiet') opts.quiet = true;
     else if (a === '-h' || a === '--help') opts.help = true;
@@ -577,7 +738,14 @@ function main() {
   if (opts.help) return usage();
   if (opts.selftest) return selftest();
 
-  const scan = opts.gsm7 ? detectNonGsm7 : detect;
+  // --phrases is a REPLACEMENT lens, not an addition: running the typography
+  // lenses over ops/ would bury the claim findings under em-dash noise.
+  if (opts.phrases && opts.fix) {
+    process.stderr.write('text-hygiene: --fix does not apply to --phrases (these need judgment, not transliteration).\n');
+    process.exit(2);
+  }
+  const scan = opts.phrases ? detectPhrases : opts.gsm7 ? detectNonGsm7 : detect;
+  const unit = opts.phrases ? 'banned phrase / un-permissioned claim' : 'banned character';
 
   // stdin mode: used by the Claude PreToolUse hook. Reports and exits 1 on any
   // finding (the bash hook maps that to a block with exit 2). --path lets the
@@ -602,6 +770,8 @@ function main() {
   // base SHA, shallow clone, missing ref) we exit 2 rather than scan nothing
   // and report clean.
   const entries = opts.files.map((p) => ({ path: p, staged: false }));
+  // --dir walks the filesystem, so it reaches gitignored trees (ops/social/).
+  if (opts.dir) for (const p of walkDir(opts.dir)) entries.push({ path: p, staged: false });
   try {
     if (opts.all)
       for (const p of gitLines(['ls-files', '-z'])) entries.push({ path: p, staged: false });
@@ -637,6 +807,7 @@ function main() {
   const report = [];
 
   for (const entry of files) {
+    if (opts.phrases && isPhraseLensExempt(entry.path)) continue;
     // For gating (detection), staged files are read from the index blob. For
     // --fix we operate on the working tree (you fix files on disk).
     const text = entry.staged && !opts.fix ? readStagedBlob(entry.path) : readText(entry.path);
@@ -670,11 +841,13 @@ function main() {
     process.stdout.write(`${String(totalFindings)}\n`);
   } else if (totalFindings > 0) {
     process.stderr.write(
-      `text-hygiene: ${totalFindings} banned character(s) in ${scannedFiles} scanned file(s)\n`,
+      `text-hygiene: ${totalFindings} ${unit}(s) in ${scannedFiles} scanned file(s)\n`,
     );
     process.stderr.write(`${report.join('\n')}\n`);
     process.stderr.write(
-      '\nFix with: node scripts/text-hygiene.mjs --fix <files>  (or: npm run hygiene:fix)\n',
+      opts.phrases
+        ? '\nThese need judgment, not a codemod. Rewrite the copy, or add a claim to the\n"Numbers I can cite" allowlist in ops/voice.md if it is true and permissioned.\n'
+        : '\nFix with: node scripts/text-hygiene.mjs --fix <files>  (or: npm run hygiene:fix)\n',
     );
   } else if (opts.fix) {
     process.stdout.write(`text-hygiene: transliterated ${fixedFiles} file(s); clean.\n`);
