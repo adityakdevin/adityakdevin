@@ -41,6 +41,21 @@ export type Post = {
   devtoId?: number;
   canonical?: string;
   client?: string;
+  /**
+   * Publication gate. `published: false` keeps a post out of getAllPosts(), and
+   * therefore out of /blog, /blog/<slug>, generateStaticParams, the sitemap, the
+   * RSS feed and the homepage - every one of those reads through getAllPosts().
+   *
+   * Gating at the loader rather than at each consumer is deliberate: the case-study
+   * gate had to be applied in six places, and the failure mode there is that a
+   * missed generateStaticParams renders every draft as a live route regardless of
+   * whether the index lists it.
+   *
+   * DEFAULTS TO TRUE, so existing posts need no migration. A post is a draft only
+   * if it says so explicitly - which is why the atom accumulator always writes
+   * `published: false` and a test asserts it does.
+   */
+  published?: boolean;
   content: string;
 };
 
@@ -75,6 +90,13 @@ function parsePost(file: string, dir: string): Post {
     // would render twice.
     throw new Error(`content/posts/${file}: devtoId must be an integer`);
   }
+  if (data.published !== undefined && typeof data.published !== "boolean") {
+    // `published: "false"` is a string and would be truthy - a draft would ship.
+    // This is a safety gate, so it fails loudly rather than coercing.
+    throw new Error(
+      `content/posts/${file}: published must be a boolean (got ${typeof data.published} "${data.published}")`,
+    );
+  }
 
   return {
     slug,
@@ -85,16 +107,16 @@ function parsePost(file: string, dir: string): Post {
     ...(data.devtoId !== undefined ? { devtoId: Number(data.devtoId) } : {}),
     ...(data.canonical ? { canonical: String(data.canonical) } : {}),
     ...(data.client ? { client: String(data.client) } : {}),
+    ...(data.published !== undefined ? { published: data.published as boolean } : {}),
     content,
   };
 }
 
 let defaultDirCache: Post[] | undefined;
 
-/** All posts, newest first. Missing/empty dir → [] (index renders empty state).
- *  The default dir is memoized - posts are immutable within a build/server
- *  process, and getPost is called per slug per render (metadata + page + OG). */
-export function getAllPosts(dir: string = POSTS_DIR): Post[] {
+/** Every post on disk, drafts INCLUDED. Only drafting tooling should call this -
+ *  anything that renders, links, or lists must use getAllPosts(). */
+export function getAllPostsIncludingDrafts(dir: string = POSTS_DIR): Post[] {
   if (dir === POSTS_DIR && defaultDirCache) return defaultDirCache;
   if (!existsSync(dir)) return [];
   const posts = readdirSync(dir)
@@ -105,6 +127,14 @@ export function getAllPosts(dir: string = POSTS_DIR): Post[] {
     .sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
   if (dir === POSTS_DIR) defaultDirCache = posts;
   return posts;
+}
+
+/** PUBLISHED posts, newest first. Missing/empty dir → [] (index renders empty
+ *  state). Every renderer, route, sitemap and feed reads through here, so the
+ *  publication gate applies once, in one place, rather than at six call sites
+ *  where the one that gets missed becomes a live route for unfinished work. */
+export function getAllPosts(dir: string = POSTS_DIR): Post[] {
+  return getAllPostsIncludingDrafts(dir).filter((p) => p.published !== false);
 }
 
 export function getPost(slug: string, dir: string = POSTS_DIR): Post | null {
