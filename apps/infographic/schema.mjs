@@ -26,7 +26,7 @@ export const BOUNDS = {
     maxCodeLine: 42,
     maxCodeLines: 5,
     maxLabel: 44,
-    maxMetric: 16,
+    maxMetric: 20,   // nowrap, sits beside the label: ~22 chars fit the header row
     maxMetricNote: 20,
     maxNote: 72,
     maxFootnote: 90,
