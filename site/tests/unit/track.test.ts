@@ -85,4 +85,25 @@ describe("lib/track.ts (D15)", () => {
     expect(() => stampSession()).not.toThrow();
     expect(getAttribution()).toEqual({ source_page: "/", first_landing: "", referrer: "", ref: "" });
   });
+
+  it("S1.0 regression: a contact_submit event carries first_ref, not just first_landing", () => {
+    // The bug this guards: ContactForm passed ONLY first_landing, so the ?ref
+    // token was captured into sessionStorage on every social visit and then
+    // dropped one line before analytics. GA4 never saw a single value, which made
+    // "which channel produced this lead" unanswerable from data.
+    const store = stubBrowser({ pathname: "/blog/x", search: "?ref=li" });
+    stampSession();
+    const attribution = getAttribution();
+    expect(attribution.ref).toBe("li");
+
+    const dataLayer: unknown[] = [];
+    vi.stubGlobal("window", { dataLayer });
+    track("contact_submit", { first_landing: attribution.first_landing, first_ref: attribution.ref });
+
+    expect(dataLayer).toHaveLength(1);
+    expect(dataLayer[0]).toMatchObject({ event: "contact_submit", first_ref: "li" });
+    // And the raw external referrer must NOT be along for the ride.
+    expect(dataLayer[0]).not.toHaveProperty("referrer");
+    expect(store.get(REF_KEY)).toBe("li");
+  });
 });
