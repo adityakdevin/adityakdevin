@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {
   CHANNELS, AUTO_ELIGIBLE, isAutoPost, extractBody, parseThread, validateChannel, runDryRun,
   readPlatforms, channelsForPlatforms, isPosted, markPosted, refProblems,
-  readEntry, readAtom, atomProblems, factConflicts,
+  readEntry, readAtom, atomProblems, factConflicts, splitPayloads,
 } from './post.mjs';
 
 test('CRITICAL: LinkedIn and Reddit can never be auto-posted', () => {
@@ -297,4 +297,67 @@ test('the dry run prints the exact --commit command, with the npm separator', ()
   const out = lines.join('\n');
   assert.match(out, /npm run post -- my-slug --commit/);
   assert.match(out, /"--" is required/);
+});
+
+// --- multi-payload channels -------------------------------------------------
+// Reported from real use: the LinkedIn paste contained the body AND the
+// "FIRST COMMENT:" URL as one blob, so the canonical link landed in the body -
+// defeating the entire reason it goes in a comment. extractBody only honours a
+// `---` fence when it finds a CLOSING one, and linkedin.md has a single opener.
+
+test('LinkedIn splits into body and first comment, link OUT of the body', () => {
+  const raw = [
+    '# LinkedIn', '', '[ ] posted   ·   link in the FIRST COMMENT, not the body', '',
+    'The body of the post.', 'Second line.', '',
+    '---', 'FIRST COMMENT:', 'Full build: https://adityadev.in/blog/x?ref=li',
+  ].join('\n');
+
+  const p = splitPayloads('linkedin', raw);
+  assert.equal(p.length, 2);
+  assert.equal(p[0].label, 'body');
+  assert.ok(!p[0].text.includes('adityadev.in'), 'the LINK must not be in the body payload');
+  assert.ok(!p[0].text.includes('FIRST COMMENT'), 'the marker must not be in the body');
+  assert.ok(!/-{3,}\s*$/.test(p[0].text), 'the trailing --- separator is not content');
+  assert.match(p[1].label, /FIRST COMMENT/);
+  assert.match(p[1].text, /https:\/\/adityadev\.in\/blog\/x\?ref=li/);
+});
+
+test('LinkedIn without a first comment stays a single paste', () => {
+  const p = splitPayloads('linkedin', '# LinkedIn\n\n[ ] posted\n\nJust a body.');
+  assert.equal(p.length, 1);
+  assert.equal(p[0].text, 'Just a body.');
+});
+
+test('Reddit splits title from body and drops the Subreddit routing note', () => {
+  const raw = [
+    '# Reddit', '', '[ ] posted', 'Subreddit: r/laravel   (fallback: r/PHP)',
+    'Title: The actual title', '', 'The body text.',
+  ].join('\n');
+
+  const p = splitPayloads('reddit', raw);
+  assert.deepEqual(p.map((x) => x.label), ['title', 'body']);
+  assert.equal(p[0].text, 'The actual title');
+  assert.ok(!p[1].text.includes('Subreddit:'), 'routing note is not a payload');
+  assert.ok(!p[1].text.includes('Title:'), 'the title is not repeated in the body');
+});
+
+test('Hacker News splits title from the url block', () => {
+  const raw = '# Hacker News\n\n[ ] posted\nTitle: Show HN: a thing\n\nhttps://adityadev.in/blog/x?ref=hn';
+  const p = splitPayloads('hackernews', raw);
+  assert.deepEqual(p.map((x) => x.label), ['title', 'url + notes']);
+  assert.equal(p[0].text, 'Show HN: a thing');
+  assert.match(p[1].text, /\?ref=hn/);
+});
+
+test('single-payload channels are unchanged', () => {
+  const p = splitPayloads('mirror', '# Mirrors\n\n[ ] posted\n\n---\nThe blurb.\n---');
+  assert.equal(p.length, 1);
+  assert.equal(p[0].text, 'The blurb.');
+});
+
+test('validateChannel exposes payloads, and a thread payload per tweet', () => {
+  const x = validateChannel('x', '# X\n\n1/ one\n\n2/ two');
+  assert.deepEqual(x.payloads.map((p) => p.label), ['1/2', '2/2']);
+  const li = validateChannel('linkedin', '# LinkedIn\n\nBody.\n\n---\nFIRST COMMENT:\nhttps://adityadev.in/blog/x?ref=li');
+  assert.equal(li.payloads.length, 2);
 });

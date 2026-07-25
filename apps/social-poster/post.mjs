@@ -257,6 +257,47 @@ export function parseThread(body) {
   return segments.filter((s) => s.length > 0);
 }
 
+// Several channels are NOT one paste. LinkedIn is a body and then a separate
+// first comment; Reddit is a title field and a body field; HN is a title and a
+// URL. Flattening those into one clipboard blob is not a cosmetic problem - it
+// pasted the canonical link INTO the LinkedIn body, which is the exact thing
+// "link in the first comment" exists to prevent.
+//
+// Returns [{label, text}, ...] in the order they must be pasted.
+export function splitPayloads(key, raw) {
+  const body = extractBody(raw);
+  if (!body) return [];
+
+  if (key === 'linkedin') {
+    const lines = body.split('\n');
+    const at = lines.findIndex((l) => /^FIRST COMMENT:?\s*$/i.test(l.trim()));
+    if (at === -1) return [{ label: 'body', text: body }];
+    // A lone `---` above the marker is a separator, not content.
+    const end = lines.slice(0, at).join('\n').replace(/\n*-{3,}\s*$/, '').trim();
+    const comment = lines.slice(at + 1).join('\n').trim();
+    return comment
+      ? [{ label: 'body', text: end }, { label: 'FIRST COMMENT (post the body first)', text: comment }]
+      : [{ label: 'body', text: end }];
+  }
+
+  if (key === 'reddit' || key === 'hackernews') {
+    const lines = body.split('\n');
+    const at = lines.findIndex((l) => /^title:/i.test(l.trim()));
+    if (at === -1) return [{ label: 'body', text: body }];
+    const title = lines[at].replace(/^title:\s*/i, '').trim();
+    // Subreddit: is a routing note for the human, not a payload.
+    const rest = lines
+      .filter((l, i) => i !== at && !/^subreddit:/i.test(l.trim()))
+      .join('\n')
+      .trim();
+    const out = [{ label: 'title', text: title }];
+    if (rest) out.push({ label: key === 'hackernews' ? 'url + notes' : 'body', text: rest });
+    return out;
+  }
+
+  return [{ label: 'post', text: body }];
+}
+
 // Validate one channel's extracted content. Returns an array of problem strings
 // (empty === OK). This is the whole of what --dry-run checks.
 export function validateChannel(key, raw) {
@@ -265,14 +306,14 @@ export function validateChannel(key, raw) {
   const body = extractBody(raw);
   if (!body) {
     problems.push(`${cfg.label}: empty after stripping metadata`);
-    return { problems, segments: [] };
+    return { problems, segments: [], payloads: [] };
   }
   let segments;
   try {
     segments = cfg.thread ? parseThread(body) : [body];
   } catch (err) {
     problems.push(`${cfg.label}: ${err.message}`);
-    return { problems, segments: [] };
+    return { problems, segments: [], payloads: [] };
   }
   segments.forEach((seg, i) => {
     if (seg.length > cfg.limit) {
@@ -281,7 +322,13 @@ export function validateChannel(key, raw) {
     }
   });
   problems.push(...refProblems(cfg.label, body));
-  return { problems, segments };
+
+  // A thread's payloads ARE its segments; everything else splits by field.
+  const payloads = cfg.thread
+    ? segments.map((text, i) => ({ label: `${i + 1}/${segments.length}`, text }))
+    : splitPayloads(key, raw);
+
+  return { problems, segments, payloads };
 }
 
 export function readPack(slug, root = process.cwd(), { force = false } = {}) {
@@ -394,8 +441,12 @@ export function runDryRun(pack) {
   console.log('DRY RUN (default) - validating, posting nothing.\n');
   if (pack.platforms) console.log(`  platforms: ${pack.platforms.join(', ')}\n`);
   for (const { key, cfg, raw } of pack.channels) {
-    const { problems, segments } = validateChannel(key, raw);
-    const shape = cfg.thread ? `${segments.length} segments` : `${(segments[0] || '').length} chars`;
+    const { problems, segments, payloads } = validateChannel(key, raw);
+    const shape = cfg.thread
+      ? `${segments.length} segments`
+      : payloads.length > 1
+        ? `${payloads.length} pastes: ${payloads.map((p) => `${p.label} ${p.text.length}c`).join(' + ')}`
+        : `${(segments[0] || '').length} chars`;
     if (problems.length) {
       anyProblem = true;
       console.log(`  [FAIL] ${cfg.label} (${shape})`);
@@ -425,21 +476,22 @@ async function runCommit(pack) {
   console.log('COMMIT (v0) - copy text + open composer per channel. You paste + post.\n');
   const done = [];
   for (const { key, cfg, raw, path } of pack.channels) {
-    const { problems, segments } = validateChannel(key, raw);
+    const { problems, payloads } = validateChannel(key, raw);
     if (problems.length) {
       console.log(`  [skip] ${cfg.label} skipped (validation): ${problems[0]}`);
       continue;
     }
 
-    // One prompt PER SEGMENT. This used to join an 8-tweet thread into a single
-    // clipboard blob with `---` separators, which meant re-splitting all eight by
-    // hand in the composer - the single largest piece of manual work in the run.
+    // One prompt PER PAYLOAD. Two bugs live here historically: an 8-tweet thread
+    // was joined into a single clipboard blob (re-split by hand in the composer),
+    // and LinkedIn's first-comment URL was pasted into the body - which defeats
+    // the entire reason the link goes in a comment.
     let abandoned = false;
-    for (const [i, seg] of segments.entries()) {
-      const where = segments.length > 1 ? ` ${i + 1}/${segments.length}` : '';
-      copyToClipboard(seg);
-      if (i === 0) openUrl(cfg.composer); // one tab per channel, not per segment
-      const a = (await ask(`  ${cfg.label}${where}: copied (${seg.length} chars). [Enter]=pasted, s=skip channel: `)).trim().toLowerCase();
+    for (const [i, p] of payloads.entries()) {
+      const where = payloads.length > 1 ? ` [${p.label}]` : '';
+      copyToClipboard(p.text);
+      if (i === 0) openUrl(cfg.composer); // one tab per channel, not per payload
+      const a = (await ask(`  ${cfg.label}${where}: copied (${p.text.length} chars). [Enter]=pasted, s=skip channel: `)).trim().toLowerCase();
       if (a === 's') { abandoned = true; break; }
     }
 
