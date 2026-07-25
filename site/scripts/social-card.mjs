@@ -12,9 +12,15 @@
 //
 // Usage (from site/):
 //   bun run social-card <slug>          → carousel slides   (1080x1350, IG 4:5)   from `slides:`
-//   bun run social-card <slug> --reel   → reel frames        (1080x1920, IG 9:16)  from `reel:`
-//   bun run social-card <slug> --all    → both
 // Reads:  ../ops/social/posts/<slug>/pack.md   Writes: ../ops/social/posts/<slug>/assets/*.png
+//
+// Reels were removed 2026-07-25. The renderer used to also emit 1080x1920 reel
+// storyboard frames from a `reel:` block. Across the three shipped packs that
+// produced 15 PNGs and zero recorded reels - and POSTING-TEMPLATE.md shipped
+// "Reel: skip until recorded" as its DEFAULT, so the skip was decided before the
+// script ever ran. Every frame was drafted, rendered and eyeballed for nothing.
+// If reels come back, they come back as five lines of on-screen text in the pack,
+// not a second render target.
 
 import { ImageResponse } from "next/og";
 import { createElement as h } from "react";
@@ -107,21 +113,6 @@ function slideElement(item, i, total, slug) {
     footer(slug, cfg.accent, i, total));
 }
 
-// Reel frame - 1080x1920, big burned-in caption (a storyboard card)
-function reelElement(item, i, total, slug) {
-  const accent = "#22d3ee", tint = "#0d3b46";
-  const mid = h("div", { style: { display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", flexGrow: 1, gap: 40 } },
-    rule(accent, 140),
-    h("div", { style: { display: "flex", fontSize: 82, fontWeight: 600, lineHeight: 1.18, color: TEXT, textAlign: "center" } }, safe(item.text)));
-  const shot = item.note
-    ? h("div", { style: { display: "flex", fontSize: 26, color: MUTED } }, `shot: ${safe(item.note)}`)
-    : h("div", { style: { display: "flex" } });
-  return h("div", { style: { width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 90, backgroundImage: bgStyle(tint), fontFamily: "Plex" } },
-    h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, chip(`REEL * ${item.t || ""}`, accent), counter(`${i + 1} / ${total}`, accent)),
-    mid,
-    h("div", { style: { display: "flex", flexDirection: "column", gap: 26 } }, shot, footer(slug, accent, i, total)));
-}
-
 async function render(items, kind, { W, Hgt, el, fonts, outDir, slug }) {
   // Clear stale files of this kind first - a shorter set (or renumbered slides)
   // must not leave orphans (e.g. an old slide-6 after dropping to 5).
@@ -142,10 +133,16 @@ async function render(items, kind, { W, Hgt, el, fonts, outDir, slug }) {
 
 async function main() {
   const slug = process.argv[2];
-  const mode = process.argv[3] || "";
-  if (!slug) { console.error("usage: bun run social-card <slug> [--reel|--all]"); process.exit(1); }
-  const wantReel = mode === "--reel" || mode === "--all";
-  const wantCarousel = mode === "" || mode === "--all";
+  if (!slug) { console.error("usage: bun run social-card <slug>"); process.exit(1); }
+  // --reel / --all used to select a second render target. Accept them for one
+  // release and say what happened, rather than silently rendering half of what
+  // the caller asked for.
+  const stale = process.argv.slice(3).find((a) => a === "--reel" || a === "--all");
+  if (stale) {
+    console.error(`${stale} is gone: reel rendering was removed 2026-07-25 (15 frames rendered, 0 used).`);
+    console.error("Re-run without it to render the carousel slides.");
+    process.exit(1);
+  }
 
   const packPath = path.join(SOCIAL_DIR, "posts", slug, "pack.md");
   const raw = await readFile(packPath, "utf-8").catch(() => null);
@@ -163,17 +160,14 @@ async function main() {
   const outDir = path.join(SOCIAL_DIR, "posts", slug, "assets");
   await mkdir(outDir, { recursive: true });
 
-  let total = 0;
-  if (wantCarousel) {
-    if (Array.isArray(data.slides) && data.slides.length) {
-      total += await render(data.slides, "slide", { W: 1080, Hgt: 1350, el: slideElement, fonts, outDir, slug });
-    } else if (!wantReel) { console.error("no `slides:` array in the pack frontmatter"); process.exit(1); }
+  if (!Array.isArray(data.slides) || !data.slides.length) {
+    console.error("no `slides:` array in the pack frontmatter");
+    process.exit(1);
   }
-  if (wantReel) {
-    if (Array.isArray(data.reel) && data.reel.length) {
-      total += await render(data.reel, "reel", { W: 1080, Hgt: 1920, el: reelElement, fonts, outDir, slug });
-    } else { console.error("no `reel:` array in the pack frontmatter - add one (see /draft-social-media)"); process.exit(1); }
+  if (Array.isArray(data.reel) && data.reel.length) {
+    console.error(`warning: ${path.relative(ROOT, packPath)} still has a \`reel:\` block. Nothing renders it - delete it.`);
   }
+  const total = await render(data.slides, "slide", { W: 1080, Hgt: 1350, el: slideElement, fonts, outDir, slug });
 
   console.log(`Rendered ${total} image(s) → ${path.relative(ROOT, outDir)}/`);
   console.log(`Dir now has: ${(await readdir(outDir)).sort().join(", ")}`);
