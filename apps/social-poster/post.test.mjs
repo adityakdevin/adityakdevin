@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {
   CHANNELS, AUTO_ELIGIBLE, isAutoPost, extractBody, parseThread, validateChannel, runDryRun,
   readPlatforms, channelsForPlatforms, isPosted, markPosted, refProblems,
-  readEntry, readAtom, atomProblems, factConflicts, splitPayloads,
+  readEntry, readAtom, atomProblems, factConflicts, splitPayloads, unwrap,
 } from './post.mjs';
 
 test('CRITICAL: LinkedIn and Reddit can never be auto-posted', () => {
@@ -360,4 +360,40 @@ test('validateChannel exposes payloads, and a thread payload per tweet', () => {
   assert.deepEqual(x.payloads.map((p) => p.label), ['1/2', '2/2']);
   const li = validateChannel('linkedin', '# LinkedIn\n\nBody.\n\n---\nFIRST COMMENT:\nhttps://adityadev.in/blog/x?ref=li');
   assert.equal(li.payloads.length, 2);
+});
+
+// --- unwrapping (reported from real use) ------------------------------------
+// Channel files are hard-wrapped at ~80 cols for editing. Social composers do not
+// reflow, so pasting that verbatim put a line break every ~80 chars and the post
+// rendered broken. 6 paragraphs came out as 23 lines.
+
+test('unwrap joins a hard-wrapped paragraph but keeps paragraph breaks', () => {
+  const wrapped = 'This is a long line that was\nwrapped at eighty columns for\nediting.\n\nA second paragraph.';
+  assert.equal(unwrap(wrapped), 'This is a long line that was wrapped at eighty columns for editing.\n\nA second paragraph.');
+});
+
+test('unwrap preserves list items - the break IS the content there', () => {
+  const md = 'Intro line\nkeeps going.\n\n- first bullet\n- second bullet';
+  assert.equal(unwrap(md), 'Intro line keeps going.\n\n- first bullet\n- second bullet');
+});
+
+test('unwrap leaves fenced code exactly alone', () => {
+  const md = 'Before.\n\n```php\n$a = 1;\n$b = 2;\n```\n\nAfter.';
+  assert.equal(unwrap(md), md);
+});
+
+test('unwrap leaves indented code alone', () => {
+  const md = 'Look:\n\n    ->where(1)\n    ->first();';
+  assert.equal(unwrap(md), md);
+});
+
+test('the LinkedIn body payload arrives unwrapped', () => {
+  const raw = [
+    '# LinkedIn', '', '[ ] posted', '',
+    'A paragraph that was hard wrapped', 'across two lines in the file.', '',
+    '---', 'FIRST COMMENT:', 'https://adityadev.in/blog/x?ref=li',
+  ].join('\n');
+  const [body] = splitPayloads('linkedin', raw);
+  assert.equal(body.text, 'A paragraph that was hard wrapped across two lines in the file.');
+  assert.ok(!body.text.includes('\n'), 'a single paragraph must be a single line');
 });

@@ -257,6 +257,48 @@ export function parseThread(body) {
   return segments.filter((s) => s.length > 0);
 }
 
+// Channel files are hard-wrapped at ~80 columns because they are markdown and a
+// human reads them in an editor. Social composers do NOT reflow, so pasting that
+// verbatim renders a line break every ~80 characters - the post looks broken.
+//
+// So: join the lines within a paragraph, keep blank lines as paragraph breaks.
+// Lines that carry their own structure are left exactly as they are - list items,
+// anything inside a code fence, and indented blocks - because there the break IS
+// the content.
+export function unwrap(text) {
+  const out = [];
+  let para = [];
+  let inFence = false;
+
+  const flush = () => {
+    if (para.length) out.push(para.join(' '));
+    para = [];
+  };
+
+  for (const line of String(text ?? '').split('\n')) {
+    if (/^\s*```/.test(line)) {
+      flush();
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+    if (inFence) { out.push(line); continue; }
+
+    if (line.trim() === '') { flush(); out.push(''); continue; }
+    // Structural lines keep their own break: bullets, numbered items, quotes,
+    // headings, and indented code.
+    if (/^\s*([-*+]|\d+[.)]|>|#{1,6}\s)/.test(line) || /^\s{4,}\S/.test(line)) {
+      flush();
+      out.push(line);
+      continue;
+    }
+    para.push(line.trim());
+  }
+  flush();
+
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
 // Several channels are NOT one paste. LinkedIn is a body and then a separate
 // first comment; Reddit is a title field and a body field; HN is a title and a
 // URL. Flattening those into one clipboard blob is not a cosmetic problem - it
@@ -265,6 +307,12 @@ export function parseThread(body) {
 //
 // Returns [{label, text}, ...] in the order they must be pasted.
 export function splitPayloads(key, raw) {
+  // Every payload is unwrapped on the way out - what lands on the clipboard is
+  // what the composer will render, not what the markdown file looks like.
+  return splitFields(key, raw).map((p) => ({ ...p, text: unwrap(p.text) }));
+}
+
+function splitFields(key, raw) {
   const body = extractBody(raw);
   if (!body) return [];
 
@@ -325,7 +373,7 @@ export function validateChannel(key, raw) {
 
   // A thread's payloads ARE its segments; everything else splits by field.
   const payloads = cfg.thread
-    ? segments.map((text, i) => ({ label: `${i + 1}/${segments.length}`, text }))
+    ? segments.map((text, i) => ({ label: `${i + 1}/${segments.length}`, text: unwrap(text) }))
     : splitPayloads(key, raw);
 
   return { problems, segments, payloads };
