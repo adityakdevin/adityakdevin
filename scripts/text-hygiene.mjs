@@ -428,8 +428,19 @@ const BANNED_PHRASES = [
     suggestion: 'a spelled-out range is still a range - use one odd specific number',
   },
 
-  // --- un-permissioned claims: NOT on ops/voice.md's allowlist (2026-07-25) ---
-  // Provenance of the first: an (e.g.) placeholder that used to sit in voice.md.
+  // --- un-permissioned claims: NOT on ops/voice.md's allowlist ---
+  //
+  // THIS BLOCK IS THE AUDIT RECORD. The 2026-07-25 audit found six claims sitting
+  // in ops/social/posts/ai-automation-that-pays-for-itself/. All six were removed
+  // from the drafts in b53b08d and each is a blocking pattern below, with its
+  // provenance in the comment beside it. voice.md no longer carries that list:
+  // a file the drafting model READS must contain zero quotable claims, even ones
+  // marked prohibited, because a header saying "do not use" is not a control.
+  // This file is the right home - it is read by no drafting skill and is exempt
+  // from its own phrase lens (PHRASE_LENS_IGNORE below).
+  //
+  // Provenance of the first: an (e.g.) placeholder that used to sit in voice.md
+  // and was lifted verbatim into linkedin.md:9 and x.md:39 as a client story.
   { re: /1 in 8 answers/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
   // Catch the reworded forms too. The literal "shipped four of these" was purged
   // from the drafts, and "four systems I've actually shipped" sailed straight past
@@ -437,7 +448,7 @@ const BANNED_PHRASES = [
   // order, so match the ASSERTION (a count + shipped), not one sentence.
   { re: /shipped four of these/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
   {
-    re: /\b(four|four|\d+) [a-z ]{0,20}(systems?|of these|automations?|bots?)[a-z ,'-]{0,25}(I'?ve |I have )?(actually )?(shipped|built|delivered)\b/gi,
+    re: /\b(four|\d+) [a-z ]{0,20}(systems?|of these|automations?|bots?)[a-z ,'-]{0,25}(I'?ve |I have )?(actually )?(shipped|built|delivered)\b/gi,
     category: 'unpermissioned-claim',
     suggestion: 'asserts a shipped COUNT - allowlist it or describe the article instead',
   },
@@ -448,6 +459,18 @@ const BANNED_PHRASES = [
   },
   { re: /paid for (itself|themselves)/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
   { re: /drop(ped)? ~?\d+% overnight/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
+  // The sixth audited claim: "A client messaged me six weeks after we shipped
+  // their support bot" (linkedin.md:6-15, the opening scene). Not a number, but a
+  // specific client interaction, which needs permission just the same. Matched
+  // ASSERTION-shaped per the rule above: a client contact WITH a timeframe. A
+  // vague "clients tell me" carries no specific interaction and stays legal, and
+  // so does human-voice.md's own scene-setting guidance - it is a real moment
+  // once you have permission for it, and this pattern is what makes you get it.
+  {
+    re: /\ba client (messaged|emailed|called|pinged|texted|reached out to) me[a-z ,'-]{0,20}(a |two |three |four |five |six |\d+ )?(day|week|month)s?\b/gi,
+    category: 'unpermissioned-claim',
+    suggestion: 'a dated client interaction needs permission - allowlist it, or drop the timeframe and the client',
+  },
 ];
 
 // Files that DEFINE the banned set necessarily contain it, so the phrase lens
