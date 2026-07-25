@@ -276,3 +276,25 @@ test('factConflicts ignores channels that cite no figures', () => {
   ];
   assert.deepEqual(factConflicts(channels), []);
 });
+
+test('the dry run prints the exact --commit command, with the npm separator', () => {
+  // `npm run post <slug> --commit` silently runs a DRY RUN: npm swallows the flag,
+  // the bare slug still passes through, and the output looks like success. The fix
+  // that actually sticks is the tool printing the correct string.
+  const lines = [];
+  const log = console.log;
+  console.log = (...a) => lines.push(a.join(' '));
+  try {
+    runDryRun({
+      channels: [{ key: 'linkedin', cfg: CHANNELS.linkedin, raw: '# LinkedIn\n\nGood post.', dir: '/x/ops/social/posts/my-slug' }],
+      skipped: [],
+      platforms: null,
+      facts: [],
+    });
+  } finally {
+    console.log = log;
+  }
+  const out = lines.join('\n');
+  assert.match(out, /npm run post -- my-slug --commit/);
+  assert.match(out, /"--" is required/);
+});

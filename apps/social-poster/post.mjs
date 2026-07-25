@@ -409,9 +409,15 @@ export function runDryRun(pack) {
     anyProblem = true;
     console.log(`  [FACT] ${c}`);
   }
+  // Print the EXACT command, `--` included. npm swallows any argument starting
+  // with `--` unless it is separated, so `npm run post <slug> --commit` silently
+  // runs a dry run - and because the bare slug still gets through, it looks like
+  // it worked. Telling the user the right string here beats documenting it.
+  const slug = pack.channels[0]?.dir?.split('/').pop() ?? '<slug>';
+  const cmd = `npm run post -- ${slug} --commit`;
   console.log(anyProblem
-    ? '\nProblems found. Fix the packs above, then re-run with --commit.'
-    : '\nAll channels valid. Re-run with --commit to copy + open composers.');
+    ? `\nProblems found. Fix the packs above, then:\n  ${cmd}`
+    : `\nAll channels valid. To copy + open composers:\n  ${cmd}\n\n(the "--" is required - without it npm eats the flag and you get this dry run again)`);
   return !anyProblem;
 }
 
