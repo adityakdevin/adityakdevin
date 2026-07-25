@@ -53,8 +53,8 @@ test('validate rejects an empty cell', () => {
   assert.ok(problems.some((p) => /is empty/.test(p)));
 });
 
-test('validate knows the other 3 layouts (shape-checks them)', () => {
-  assert.deepEqual(LAYOUTS, ['table', 'grid', 'cheatsheet', 'diagram']);
+test('validate knows the other layouts (shape-checks them)', () => {
+  assert.deepEqual(LAYOUTS, ['table', 'grid', 'cheatsheet', 'diagram', 'fix']);
   assert.ok(validate('grid', { title: 'x', cells: [] }).problems.some((p) => /at least 1 cell/.test(p)));
   assert.ok(validate('cheatsheet', { title: 'x', sections: [] }).problems.some((p) => /at least 1 section/.test(p)));
   assert.ok(validate('diagram', { title: 'x', satellites: [] }).problems.some((p) => /at least 1 satellite/.test(p)));
@@ -264,4 +264,60 @@ test('postKit refuses to guess when a pack holds BOTH kinds', () => {
 test('postKit names both render commands when nothing is rendered', () => {
   const { root } = fixture('empty', {});
   assert.throws(() => postKit('empty', root), /render\.mjs empty[\s\S]*social-card empty/);
+});
+
+// --- the "fix" layout -------------------------------------------------------
+// Added after four real LinkedIn posts showed the pattern: the ones that travel
+// are TEACHING artifacts (605, 620, 145 reactions) and the one that died was a
+// polished self-promo mockup (4). The strongest technical one was a mistake-vs-fix
+// comparison whose entire payload was a measured before/after.
+
+test('fix layout accepts a complete comparison', () => {
+  const { problems } = validate('fix', {
+    title: 'N+1',
+    wrong: { label: 'the mistake', code: 'Post::all()', metric: '101 queries' },
+    right: { label: 'the fix', code: "Post::with('author')->get()", metric: '2 queries' },
+  });
+  assert.deepEqual(problems, []);
+});
+
+test('fix layout rejects a ONE-SIDED number', () => {
+  // A metric on one side only is an assertion dressed as a comparison.
+  const { problems } = validate('fix', {
+    title: 'N+1',
+    wrong: { label: 'the mistake', code: 'Post::all()', metric: '101 queries' },
+    right: { label: 'the fix', code: 'with()' },
+  });
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /BOTH sides a metric/);
+});
+
+test('fix layout allows neither side having a metric', () => {
+  const { problems } = validate('fix', {
+    title: 'A',
+    wrong: { label: 'x', code: 'a()' },
+    right: { label: 'y', code: 'b()' },
+  });
+  assert.deepEqual(problems, []);
+});
+
+test('fix layout rejects code that would wrap mid-token', () => {
+  // At 64 chars the render broke "Post::with('author')-" / ">get()", which reads
+  // as a typo in the code. 44 keeps each snippet on one rendered line.
+  const long = "foreach (Post::with('author')->get() as $p) { $p->author->name; }";
+  const { problems } = validate('fix', {
+    title: 'A',
+    wrong: { label: 'x', code: long },
+    right: { label: 'y', code: 'b()' },
+  });
+  assert.ok(problems.some((p) => /wrong\.code/.test(p) && /44 limit/.test(p)));
+});
+
+test('fix layout requires both sides to exist', () => {
+  const { problems } = validate('fix', { title: 'A', wrong: { label: 'x', code: 'a()' } });
+  assert.ok(problems.some((p) => /needs a "right" object/.test(p)));
+});
+
+test('fix is a known layout', () => {
+  assert.ok(LAYOUTS.includes('fix'));
 });

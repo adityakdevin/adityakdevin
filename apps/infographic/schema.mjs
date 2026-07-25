@@ -6,7 +6,7 @@
 // constraints (what stays legible at 1080x1350), enforced as hard rejects. Over-
 // bound data is rejected with a message so a human trims it - never shrunk to fit.
 
-export const LAYOUTS = ['table', 'grid', 'cheatsheet', 'diagram'];
+export const LAYOUTS = ['table', 'grid', 'cheatsheet', 'diagram', 'fix'];
 
 // Legibility ceilings per layout. Calibrated against real renders: at maxRows=8
 // / maxCells=18 the footer (adityadev.in + dots) gets pushed off the 1350px
@@ -17,6 +17,14 @@ export const BOUNDS = {
   grid:       { maxCells: 15, maxCode: 8, maxLabel: 22, maxDesc: 40 },
   cheatsheet: { maxSections: 6, maxLines: 5, maxLine: 40 },
   diagram:    { maxSatellites: 8, maxLabel: 22 },
+  // fix: two code lines have to stay on ~2 rendered lines each beside a metric
+  // chip, so the ceilings are tight. The metric is the payload - keep it short
+  // enough to read at a glance from the feed ("500 MB", not "roughly 500 MB").
+  // maxCode 44 keeps each snippet on ONE rendered line beside the metric chip.
+  // At 64 it wrapped, and the break landed mid-token ("Post::with('author')-" /
+  // ">get()"), which reads as a typo. Trim the snippet instead - "{ ... }" is
+  // fine, the reader only needs the one call that changed.
+  fix:        { maxCode: 44, maxLabel: 44, maxMetric: 12, maxNote: 52, maxFootnote: 78 },
 };
 
 const nonEmpty = (s) => typeof s === 'string' && s.trim().length > 0;
@@ -59,6 +67,24 @@ export function validate(layout, data) {
         });
       });
     }
+  } else if (layout === 'fix') {
+    for (const side of ['wrong', 'right']) {
+      const v = data[side];
+      if (v == null || typeof v !== 'object') { problems.push(`fix needs a "${side}" object`); continue; }
+      if (!nonEmpty(v.label)) problems.push(`${side}.label is required`);
+      if (!nonEmpty(v.code)) problems.push(`${side}.code is required`);
+      tooLong(v.label, b.maxLabel, `${side}.label`);
+      tooLong(v.code, b.maxCode, `${side}.code`);
+      tooLong(v.metric, b.maxMetric, `${side}.metric`);
+      tooLong(v.note, b.maxNote, `${side}.note`);
+    }
+    // The whole point of this layout is the measured difference. One side with a
+    // number and the other without reads as an assertion, not a comparison.
+    const wm = nonEmpty(data.wrong?.metric);
+    const rm = nonEmpty(data.right?.metric);
+    if (wm !== rm) problems.push('fix: give BOTH sides a metric, or neither - a one-sided number is not a comparison');
+    tooLong(data.footnote, b.maxFootnote, 'footnote');
+    tooLong(data.subtitle, b.maxFootnote, 'subtitle');
   } else if (layout === 'grid') {
     if (!Array.isArray(data.cells) || data.cells.length === 0) {
       problems.push('grid needs at least 1 cell');

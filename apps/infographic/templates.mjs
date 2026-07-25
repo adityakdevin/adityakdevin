@@ -12,7 +12,7 @@ export function esc(s) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 
-function shell({ fontRegular, fontSemibold, chip, title, accent, body, page }) {
+function shell({ fontRegular, fontSemibold, chip, title, subtitle, accent, body, page }) {
   // Pager (counter + dots) only appears in a real multi-slide carousel. A single
   // standalone card shows none of it, so it never implies images that don't exist.
   const paged = page && page.total > 1;
@@ -50,6 +50,19 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 .dsvg{position:absolute;inset:0}
 .dnode{position:absolute;transform:translate(-50%,-50%);background:${BRAND.panel};border:1px solid ${BRAND.border};border-left:5px solid var(--dc,${BRAND.border});border-radius:10px;padding:14px 22px;font-size:24px;font-weight:600;color:${BRAND.text};white-space:nowrap;text-align:center}
 .dnode.center{border:3px solid ${BRAND.accent.cyan};color:${BRAND.accent.cyan};font-size:32px;padding:24px 34px}
+.subtitle{font-size:28px;color:${BRAND.muted};margin:-16px 0 34px;line-height:1.35}
+.fix{display:flex;flex-direction:column;gap:26px}
+.fbox{background:${BRAND.panel};border:1px solid ${BRAND.border};border-left:8px solid var(--fc);border-radius:14px;padding:26px 28px;display:flex;flex-direction:column;gap:16px}
+.fhdr{display:flex;align-items:center;gap:14px;font-size:27px;font-weight:600;color:var(--fc)}
+.fdot{width:16px;height:16px;border-radius:999px;background:var(--fc);flex:none}
+.frow{display:flex;align-items:center;gap:24px}
+.fcode{flex-grow:1;background:#0d1117;border:1px solid ${BRAND.border};border-radius:10px;padding:20px 22px;font-size:25px;line-height:1.4;color:${BRAND.text};white-space:pre-wrap;word-break:break-word}
+.fmetric{flex:none;min-width:210px;text-align:center;background:var(--fc)1a;border:1px solid var(--fc)66;border-radius:10px;padding:16px 18px}
+.fnum{font-size:46px;font-weight:600;color:var(--fc);line-height:1.05}
+.fnote{font-size:22px;color:${BRAND.muted};margin-top:4px}
+.fsub{font-size:23px;color:${BRAND.muted};line-height:1.35}
+.ffoot{font-size:24px;color:${BRAND.muted};line-height:1.4;margin-top:6px}
+.fkick{font-size:28px;font-weight:600;color:${BRAND.accent.green};margin-top:2px}
 .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center}
 .dom{display:flex;align-items:center;font-size:26px;font-weight:600}
 .tick{width:40px;height:6px;background:${accent};border-radius:999px;margin-right:16px}
@@ -59,7 +72,7 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 </style></head><body><div class="card">
 <div class="tophdr"><div class="chip">${esc(chip)}</div>${counter}</div>
 <div class="title">${esc(title)}</div>
-<div class="rule"></div>
+<div class="rule"></div>${subtitle ? `<div class="subtitle">${esc(subtitle)}</div>` : ''}
 <div class="body">${body}</div>
 <div class="footer"><div class="dom"><span class="tick"></span>adityadev.in</div>${dots}</div>
 </div></body></html>`;
@@ -120,6 +133,26 @@ function diagramBody(data) {
   return `<div class="diagram">${svg}${nodes}${center}</div>`;
 }
 
+// Mistake-vs-fix. The highest-signal shape in a dev feed: one wrong line, one
+// right line, and the measured difference between them sitting right next to
+// each. Red box then green box, top to bottom, because that is the order the
+// reader lives it in - they wrote the wrong one first.
+function fixBody(data) {
+  const box = (side, color) => {
+    const metric = side.metric
+      ? `<div class="fmetric" style="--fc:${color}"><div class="fnum">${esc(side.metric)}</div>`
+        + `${side.metricNote ? `<div class="fnote">${esc(side.metricNote)}</div>` : ''}</div>`
+      : '';
+    return `<div class="fbox" style="--fc:${color}">`
+      + `<div class="fhdr"><span class="fdot"></span>${esc(side.label)}</div>`
+      + `<div class="frow"><div class="fcode">${esc(side.code)}</div>${metric}</div>`
+      + `${side.note ? `<div class="fsub">${esc(side.note)}</div>` : ''}</div>`;
+  };
+  const foot = data.footnote ? `<div class="ffoot">${esc(data.footnote)}</div>` : '';
+  const kick = data.kicker ? `<div class="fkick">${esc(data.kicker)}</div>` : '';
+  return `<div class="fix">${box(data.wrong, BRAND.accent.red)}${box(data.right, BRAND.accent.green)}${foot}${kick}</div>`;
+}
+
 // (layout, data, {fontRegular, fontSemibold}) -> HTML string.
 export function fillTemplate(layout, data, { fontRegular, fontSemibold, page } = {}) {
   const common = { fontRegular, fontSemibold, title: data.title, accent: BRAND.accent.cyan, page };
@@ -134,6 +167,9 @@ export function fillTemplate(layout, data, { fontRegular, fontSemibold, page } =
   }
   if (layout === 'diagram') {
     return shell({ ...common, chip: data.chip || 'MAP', body: diagramBody(data) });
+  }
+  if (layout === 'fix') {
+    return shell({ ...common, chip: data.chip || 'THE FIX', subtitle: data.subtitle, body: fixBody(data) });
   }
   throw new Error(`layout "${layout}" is not a known layout`);
 }
