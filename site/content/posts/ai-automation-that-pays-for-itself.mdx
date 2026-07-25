@@ -1,6 +1,6 @@
 ---
 title: "AI Automation That Pays for Itself: What to Automate First"
-description: "An AI engineer's guide to automation that earns its keep - which work is worth automating, four systems I've actually shipped, what they cost to run, and the failure mode that quietly burns your budget."
+description: "An AI engineer's guide to automation that earns its keep - which work is worth automating, four systems worth building, what they cost to run, and the failure mode that quietly burns your budget."
 date: "2026-07-18"
 tags: ["AI", "Automation", "Founders"]
 devtoId: 4169119
@@ -10,9 +10,9 @@ devtoId: 4169119
 
 Not "should we use AI?" - everyone's past that. The question I get hired to answer is narrower and harder: *what, specifically, is worth automating, and will it save more than it costs to build and run?*
 
-I build these systems for a living. I've shipped AI automation into production for small companies across a few stacks - customer support, document extraction, internal reporting, ticket routing - some in Laravel, some in Node, some in Python. Some of it paid for itself in the first month. Some of it I talked the client out of before we wrote a line. The difference was never the model or the framework. It was picking the right work and engineering it so it survives contact with real users.
+I build these systems for a living - customer support, document extraction, internal reporting, ticket routing, in Laravel, Node and Python. The pattern that decides whether one of them earns its keep has nothing to do with the model or the framework. It is picking the right work, and engineering it so it survives contact with real users. Sometimes the most valuable line in the report is: don't automate this one.
 
-I'll walk through how I decide what to automate, four systems I've actually built (with the engineering that matters and the numbers that matter), what it really costs, and the failure mode almost nobody budgets for.
+I'll walk through how I decide what to automate, four systems worth building (with the engineering that matters and the numbers that matter), what it really costs, and the failure mode almost nobody budgets for.
 
 ## The band worth automating
 
@@ -23,13 +23,13 @@ The work worth automating sits in a narrow band: **high-volume, repetitive, and 
 
 Founders get this backwards constantly. They want to automate the impressive, judgment-heavy work - "an AI that handles our hardest customers." That's the expensive, risky end, and it's where AI is weakest. The return is in the boring middle: the hundred small, identical tasks that quietly eat a person's afternoon. As an engineer, I *want* the boring problems - they're the ones I can make reliable.
 
-## Four systems I've actually shipped
+## Four systems worth building
 
 ### 1. Support triage that looks things up instead of guessing
 
 Most inbound support to a small e-commerce or SaaS team is the same handful of questions: order status, "how do I reset X," "do you support Y." A person reads each one, looks something up, and types a reply they've typed a hundred times.
 
-The automation is not "a chatbot that talks to customers." It's narrower and far more useful: an assistant that reads the message, *looks up the real answer in your own systems*, and drafts a reply for a human to approve or send. It handles the repetitive 60-70%; the person spends their time on the 30% that needs a human.
+The automation is not "a chatbot that talks to customers." It's narrower and far more useful: an assistant that reads the message, *looks up the real answer in your own systems*, and drafts a reply for a human to approve or send. It handles the repetitive majority; the person spends their time on the minority that genuinely needs a human.
 
 The engineering that makes it safe: the model never invents an order number, because the number comes from a **tool call** into your database, scoped in code to the authenticated customer - not from the model's imagination. The model decides *which* tool it needs; your code decides *what it's allowed to see*. That authorization boundary is the whole game, and it lives in your code, never in the prompt. (I wrote up [the tool-calling loop in detail](/blog/building-ai-agents-in-php-tool-calling-with-laravel) - it's a few hundred lines of plain application code, whichever stack you're on. No platform to buy.)
 
