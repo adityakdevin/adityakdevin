@@ -397,3 +397,47 @@ test('the LinkedIn body payload arrives unwrapped', () => {
   assert.equal(body.text, 'A paragraph that was hard wrapped across two lines in the file.');
   assert.ok(!body.text.includes('\n'), 'a single paragraph must be a single line');
 });
+
+// --- image on the clipboard -------------------------------------------------
+// Requested from real use: "why not in clipboard during posting?" Dragging PNGs
+// out of Finder was the last piece of manual work left in a run, and on a
+// multi-image LinkedIn post it is one drag per slide.
+
+import { mkdtempSync, mkdirSync, writeFileSync as writeF } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join as pjoin } from 'node:path';
+import { findAssets, IMAGE_CHANNELS } from './post.mjs';
+
+function packWithAssets(slug, files) {
+  const root = mkdtempSync(pjoin(tmpdir(), 'poster-'));
+  const dir = pjoin(root, 'ops', 'social', 'posts', slug);
+  mkdirSync(pjoin(dir, 'assets'), { recursive: true });
+  for (const f of files) writeF(pjoin(dir, 'assets', f), '');
+  return dir;
+}
+
+test('findAssets picks up carousel slides in upload order', () => {
+  const dir = packWithAssets('p', ['slide-2-problem.png', 'slide-10-cta.png', 'slide-1-hook.png']);
+  const got = findAssets(dir, 'p').map((f) => f.split('/').pop());
+  assert.deepEqual(got, ['slide-1-hook.png', 'slide-2-problem.png', 'slide-10-cta.png']);
+});
+
+test('findAssets picks up an infographic card', () => {
+  const dir = packWithAssets('time-to-first-token', ['time-to-first-token-fix.png']);
+  assert.equal(findAssets(dir, 'time-to-first-token').length, 1);
+});
+
+test('findAssets ignores unrelated files', () => {
+  const dir = packWithAssets('p', ['scratch.png', 'slide-1-hook.png']);
+  assert.deepEqual(findAssets(dir, 'p').map((f) => f.split('/').pop()), ['slide-1-hook.png']);
+});
+
+test('findAssets is empty when nothing is rendered', () => {
+  assert.deepEqual(findAssets('/nope/nothing', 'p'), []);
+});
+
+test('X never gets an image - text is its best format', () => {
+  assert.ok(IMAGE_CHANNELS.has('linkedin'));
+  assert.ok(!IMAGE_CHANNELS.has('x'), 'attaching a card to X costs a paste and buys nothing');
+  assert.ok(!IMAGE_CHANNELS.has('reddit'));
+});

@@ -16,7 +16,7 @@
 //
 // ponytail: no deps. pbcopy/open are macOS; wrappers no-op with a warning elsewhere.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createInterface } from 'node:readline';
@@ -346,6 +346,22 @@ function splitFields(key, raw) {
   return [{ label: 'post', text: body }];
 }
 
+// Channels an image can actually be attached to. X is absent on purpose: text is
+// its highest-engagement format, so the card would cost a paste and buy nothing.
+export const IMAGE_CHANNELS = new Set(['linkedin', 'mirror']);
+
+// Rendered cards for a pack, in upload order. Covers both renderers:
+// social-card.mjs writes slide-N-role.png, infographic render.mjs writes
+// <slug>-<layout>.png.
+export function findAssets(dir, slug) {
+  const assets = join(dir, 'assets');
+  if (!existsSync(assets)) return [];
+  return readdirSync(assets)
+    .filter((f) => f.endsWith('.png') && (/^slide-\d+/.test(f) || f.startsWith(`${slug}-`)))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    .map((f) => join(assets, f));
+}
+
 // Validate one channel's extracted content. Returns an array of problem strings
 // (empty === OK). This is the whole of what --dry-run checks.
 export function validateChannel(key, raw) {
@@ -419,7 +435,7 @@ export function readPack(slug, root = process.cwd(), { force = false } = {}) {
     const why = skipped.length ? ` Skipped: ${skipped.join(', ')}. Use --force to include them.` : '';
     throw new Error(`no postable .md files to do in ${dir}.${why}`);
   }
-  return { channels: found, skipped, platforms, entry, facts: factConflicts(found) };
+  return { slug, channels: found, skipped, platforms, entry, facts: factConflicts(found) };
 }
 
 // Cross-channel fact check. validateChannel sees ONE file at a time, so two
@@ -467,6 +483,26 @@ function copyToClipboard(text) {
     return;
   }
   spawnSync('pbcopy', [], { input: text });
+}
+
+function copyImageToClipboard(path) {
+  if (process.platform !== 'darwin') {
+    console.warn(`  (image copy skipped - not macOS. Upload it by hand: ${path})`);
+    return false;
+  }
+  // pbcopy cannot carry an image; AppleScript can, via the PNGf clipboard class.
+  // The class name MUST be wrapped in guillemets - that is AppleScript syntax, not
+  // typography - but this file stays ASCII (text-hygiene bans those glyphs and is
+  // right to), so they are written as escapes exactly as text-hygiene.mjs does for
+  // its own banned set.
+  const L = '\u00ab', R = '\u00bb';
+  const script = `set the clipboard to (read (POSIX file "${path}") as ${L}class PNGf${R})`;
+  const r = spawnSync('osascript', ['-e', script]);
+  if (r.status !== 0) {
+    console.warn(`  (image copy failed - upload it by hand: ${path})`);
+    return false;
+  }
+  return true;
 }
 
 function openUrl(url) {
@@ -523,12 +559,24 @@ export function runDryRun(pack) {
 async function runCommit(pack) {
   console.log('COMMIT (v0) - copy text + open composer per channel. You paste + post.\n');
   const done = [];
-  for (const { key, cfg, raw, path } of pack.channels) {
-    const { problems, payloads } = validateChannel(key, raw);
+  for (const { key, cfg, raw, path, dir } of pack.channels) {
+    const { problems, payloads: textPayloads } = validateChannel(key, raw);
     if (problems.length) {
       console.log(`  [skip] ${cfg.label} skipped (validation): ${problems[0]}`);
       continue;
     }
+
+    // The card goes on the clipboard too, one image at a time, BEFORE the text.
+    // Dragging PNGs out of Finder was the last piece of manual work in the run,
+    // and on a multi-image LinkedIn post it is one drag per slide.
+    const images = IMAGE_CHANNELS.has(key) ? findAssets(dir, pack.slug) : [];
+    const payloads = [
+      ...images.map((img, i) => ({
+        label: images.length > 1 ? `image ${i + 1}/${images.length}` : 'image',
+        image: img,
+      })),
+      ...textPayloads,
+    ];
 
     // One prompt PER PAYLOAD. Two bugs live here historically: an 8-tweet thread
     // was joined into a single clipboard blob (re-split by hand in the composer),
@@ -537,9 +585,12 @@ async function runCommit(pack) {
     let abandoned = false;
     for (const [i, p] of payloads.entries()) {
       const where = payloads.length > 1 ? ` [${p.label}]` : '';
-      copyToClipboard(p.text);
+      const what = p.image
+        ? (copyImageToClipboard(p.image) ? 'image on clipboard - paste it' : 'see path above')
+        : `${p.text.length} chars`;
+      if (!p.image) copyToClipboard(p.text);
       if (i === 0) openUrl(cfg.composer); // one tab per channel, not per payload
-      const a = (await ask(`  ${cfg.label}${where}: copied (${p.text.length} chars). [Enter]=pasted, s=skip channel: `)).trim().toLowerCase();
+      const a = (await ask(`  ${cfg.label}${where}: ${what}. [Enter]=pasted, s=skip channel: `)).trim().toLowerCase();
       if (a === 's') { abandoned = true; break; }
     }
 
