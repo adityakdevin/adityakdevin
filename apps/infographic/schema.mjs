@@ -17,14 +17,15 @@ export const BOUNDS = {
   grid:       { maxCells: 15, maxCode: 8, maxLabel: 22, maxDesc: 40 },
   cheatsheet: { maxSections: 6, maxLines: 5, maxLine: 40 },
   diagram:    { maxSatellites: 8, maxLabel: 22 },
-  // fix: two code lines have to stay on ~2 rendered lines each beside a metric
-  // chip, so the ceilings are tight. The metric is the payload - keep it short
-  // enough to read at a glance from the feed ("500 MB", not "roughly 500 MB").
-  // maxCode 44 keeps each snippet on ONE rendered line beside the metric chip.
-  // At 64 it wrapped, and the break landed mid-token ("Post::with('author')-" /
-  // ">get()"), which reads as a typo. Trim the snippet instead - "{ ... }" is
-  // fine, the reader only needs the one call that changed.
-  fix:        { maxCode: 44, maxLabel: 44, maxMetric: 12, maxNote: 52, maxFootnote: 78 },
+  // fix: the metric chip is deliberately large - the measured number IS the
+  // payload of this layout - which leaves the code box about 490px wide. maxCode
+  // 34 keeps each snippet on ONE rendered line beside it. Calibrated twice: at 64
+  // and again at 44 the code wrapped, and the break landed mid-token
+  // ("Post::with('author')-" / ">get()"), which reads as a typo in the code.
+  // Trim the snippet instead - the reader only needs the call that changed, and
+  // "..." carries the rest. Keep the metric short enough to read from the feed
+  // ("500 MB", not "roughly 500 MB").
+  fix:        { maxCode: 34, maxLabel: 44, maxMetric: 12, maxNote: 52, maxFootnote: 78 },
 };
 
 const nonEmpty = (s) => typeof s === 'string' && s.trim().length > 0;

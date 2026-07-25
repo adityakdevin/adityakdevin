@@ -276,7 +276,7 @@ test('fix layout accepts a complete comparison', () => {
   const { problems } = validate('fix', {
     title: 'N+1',
     wrong: { label: 'the mistake', code: 'Post::all()', metric: '101 queries' },
-    right: { label: 'the fix', code: "Post::with('author')->get()", metric: '2 queries' },
+    right: { label: 'the fix', code: 'with()->get()', metric: '2 queries' },
   });
   assert.deepEqual(problems, []);
 });
@@ -302,15 +302,16 @@ test('fix layout allows neither side having a metric', () => {
 });
 
 test('fix layout rejects code that would wrap mid-token', () => {
-  // At 64 chars the render broke "Post::with('author')-" / ">get()", which reads
-  // as a typo in the code. 44 keeps each snippet on one rendered line.
+  // The metric chip is deliberately large (the number IS the payload), leaving the
+  // code box ~490px. Past 34 chars it wraps, and a break landing mid-token reads as
+  // a typo in the code itself.
   const long = "foreach (Post::with('author')->get() as $p) { $p->author->name; }";
   const { problems } = validate('fix', {
     title: 'A',
     wrong: { label: 'x', code: long },
     right: { label: 'y', code: 'b()' },
   });
-  assert.ok(problems.some((p) => /wrong\.code/.test(p) && /44 limit/.test(p)));
+  assert.ok(problems.some((p) => /wrong\.code/.test(p) && /34 limit/.test(p)));
 });
 
 test('fix layout requires both sides to exist', () => {

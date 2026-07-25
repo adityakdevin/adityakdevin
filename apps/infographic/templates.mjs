@@ -12,7 +12,7 @@ export function esc(s) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 
-function shell({ fontRegular, fontSemibold, chip, title, subtitle, accent, body, page }) {
+function shell({ fontRegular, fontSemibold, chip, title, subtitle, accent, body, page, cardClass }) {
   // Pager (counter + dots) only appears in a real multi-slide carousel. A single
   // standalone card shows none of it, so it never implies images that don't exist.
   const paged = page && page.total > 1;
@@ -51,25 +51,28 @@ tbody tr:nth-child(odd){background:${BRAND.panel}}
 .dnode{position:absolute;transform:translate(-50%,-50%);background:${BRAND.panel};border:1px solid ${BRAND.border};border-left:5px solid var(--dc,${BRAND.border});border-radius:10px;padding:14px 22px;font-size:24px;font-weight:600;color:${BRAND.text};white-space:nowrap;text-align:center}
 .dnode.center{border:3px solid ${BRAND.accent.cyan};color:${BRAND.accent.cyan};font-size:32px;padding:24px 34px}
 .subtitle{font-size:28px;color:${BRAND.muted};margin:-16px 0 34px;line-height:1.35}
-.fix{display:flex;flex-direction:column;gap:26px}
-.fbox{background:${BRAND.panel};border:1px solid ${BRAND.border};border-left:8px solid var(--fc);border-radius:14px;padding:26px 28px;display:flex;flex-direction:column;gap:16px}
-.fhdr{display:flex;align-items:center;gap:14px;font-size:27px;font-weight:600;color:var(--fc)}
-.fdot{width:16px;height:16px;border-radius:999px;background:var(--fc);flex:none}
-.frow{display:flex;align-items:center;gap:24px}
-.fcode{flex-grow:1;background:#0d1117;border:1px solid ${BRAND.border};border-radius:10px;padding:20px 22px;font-size:25px;line-height:1.4;color:${BRAND.text};white-space:pre-wrap;word-break:break-word}
-.fmetric{flex:none;min-width:210px;text-align:center;background:var(--fc)1a;border:1px solid var(--fc)66;border-radius:10px;padding:16px 18px}
-.fnum{font-size:46px;font-weight:600;color:var(--fc);line-height:1.05}
-.fnote{font-size:22px;color:${BRAND.muted};margin-top:4px}
-.fsub{font-size:23px;color:${BRAND.muted};line-height:1.35}
-.ffoot{font-size:24px;color:${BRAND.muted};line-height:1.4;margin-top:6px}
-.fkick{font-size:28px;font-weight:600;color:${BRAND.accent.green};margin-top:2px}
+.fix{display:flex;flex-direction:column;gap:20px}
+.fixcard .title{font-size:58px}
+.fixcard .subtitle{margin:-10px 0 26px}
+.fixcard .rule{margin:22px 0 30px}
+.fbox{background:linear-gradient(100deg,var(--fc)26 0%,${BRAND.panel} 42%,${BRAND.panel} 100%);border:1px solid var(--fc)59;border-left:16px solid var(--fc);border-radius:16px;padding:30px 32px;display:flex;flex-direction:column;gap:18px;box-shadow:0 0 0 1px #00000040,0 18px 40px -22px var(--fc)}
+.fhdr{display:flex;align-items:center;gap:16px;font-size:31px;font-weight:600;color:var(--fc);letter-spacing:0.4px}
+.fdot{width:20px;height:20px;border-radius:999px;background:var(--fc);flex:none;box-shadow:0 0 18px var(--fc)}
+.frow{display:flex;align-items:stretch;gap:26px}
+.fcode{flex-grow:1;display:flex;align-items:center;background:#080b10;border:1px solid var(--fc)40;border-radius:12px;padding:20px 22px;font-size:24px;line-height:1.35;color:${BRAND.text};white-space:pre-wrap;word-break:break-word}
+.fmetric{flex:none;min-width:224px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--fc)26;border:2px solid var(--fc);border-radius:12px;padding:14px 20px}
+.fnum{font-size:64px;font-weight:600;color:var(--fc);line-height:1}
+.fnote{font-size:23px;color:${BRAND.text};opacity:0.75;margin-top:6px}
+.fsub{font-size:25px;color:${BRAND.muted};line-height:1.35}
+.ffoot{font-size:25px;color:${BRAND.muted};line-height:1.4;margin-top:10px}
+.fkick{font-size:33px;font-weight:600;color:${BRAND.accent.green};line-height:1.25;margin-top:4px}
 .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center}
 .dom{display:flex;align-items:center;font-size:26px;font-weight:600}
 .tick{width:40px;height:6px;background:${accent};border-radius:999px;margin-right:16px}
 .dots{display:flex;gap:12px}
 .dot{width:14px;height:14px;border-radius:999px;background:#2a3038}
 .dot.on{background:${accent}}
-</style></head><body><div class="card">
+</style></head><body><div class="card${cardClass ? ' ' + cardClass : ''}">
 <div class="tophdr"><div class="chip">${esc(chip)}</div>${counter}</div>
 <div class="title">${esc(title)}</div>
 <div class="rule"></div>${subtitle ? `<div class="subtitle">${esc(subtitle)}</div>` : ''}
@@ -169,7 +172,7 @@ export function fillTemplate(layout, data, { fontRegular, fontSemibold, page } =
     return shell({ ...common, chip: data.chip || 'MAP', body: diagramBody(data) });
   }
   if (layout === 'fix') {
-    return shell({ ...common, chip: data.chip || 'THE FIX', subtitle: data.subtitle, body: fixBody(data) });
+    return shell({ ...common, chip: data.chip || 'THE FIX', subtitle: data.subtitle, body: fixBody(data), cardClass: 'fixcard' });
   }
   throw new Error(`layout "${layout}" is not a known layout`);
 }
