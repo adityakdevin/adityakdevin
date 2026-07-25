@@ -5,7 +5,7 @@
 // CPU-amplification endpoint). Reuses the site's IBM Plex Mono fonts + OG color
 // tokens so cards match adityadev.in.
 //
-// These PNGs go to Instagram + Facebook (the /draft-social-media pack; the text
+// These PNGs go to LinkedIn, Instagram + Facebook (the /post visual pack; the text
 // pack renders no images). So the look is tuned for a scroll feed, not a dev
 // terminal: per-role color, gradient wash, a filled role chip, editor chrome on
 // code slides, progress dots. Brand stays IBM Plex Mono + adityadev.in.

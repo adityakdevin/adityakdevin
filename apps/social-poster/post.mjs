@@ -71,16 +71,70 @@ const PLATFORM_TO_CHANNEL = {
   nl: null,
 };
 
-// Minimal reader for the one key we need. NOT a YAML parser - pack.md frontmatter
-// contains inline objects (`refs: { ig: ig, facebook: fb }`) that a naive parser
-// mangles, and `platforms:` is always a flow sequence. Returns null when the key
-// is absent, which callers must treat as "no filter" rather than "no channels".
-export function readPlatforms(packRaw) {
+// The frontmatter block, as lines. NOT a YAML parser - pack.md contains inline
+// objects (`refs: { ig: ig, facebook: fb }`) that a naive parser mangles, and we
+// only ever need a handful of scalar keys plus one flow sequence.
+export function frontmatterLines(packRaw) {
   const lines = String(packRaw ?? '').replace(/\r\n/g, '\n').split('\n');
   if (lines[0]?.trim() !== '---') return null;
   const end = lines.findIndex((l, i) => i > 0 && l.trim() === '---');
-  const front = lines.slice(1, end === -1 ? lines.length : end);
-  const line = front.find((l) => /^platforms:/.test(l.trim()));
+  return lines.slice(1, end === -1 ? lines.length : end);
+}
+
+const unquote = (s) => s.trim().replace(/^["']|["']$/g, '').trim();
+
+// article (default) = built from a published canonical post.
+// topic = an atom that ships without an article, per the two-entry-point decision.
+export function readEntry(packRaw) {
+  const front = frontmatterLines(packRaw);
+  const line = front?.find((l) => /^entry:/.test(l.trim()));
+  if (!line) return 'article';
+  const v = unquote(line.split(':').slice(1).join(':')).toLowerCase();
+  return v === 'topic' ? 'topic' : 'article';
+}
+
+// The atom block:
+//   atom:
+//     claim: "18k -> 4k tokens by scoping the file globs"
+//     failure_mode: "..."
+//     verification: "..."
+export function readAtom(packRaw) {
+  const front = frontmatterLines(packRaw);
+  if (!front) return null;
+  const start = front.findIndex((l) => /^atom:\s*$/.test(l.trim()));
+  if (start === -1) return null;
+  const atom = {};
+  for (let i = start + 1; i < front.length; i++) {
+    const line = front[i];
+    if (!/^\s+\S/.test(line)) break; // dedent ends the block
+    const idx = line.indexOf(':');
+    if (idx === -1) continue;
+    atom[line.slice(0, idx).trim()] = unquote(line.slice(idx + 1));
+  }
+  return atom;
+}
+
+// The three required fields, enforced in CODE rather than as prose in a SKILL.md.
+// This is the one differentiator the research found a tech audience measurably
+// wants and that a generic AI-tips account structurally cannot fake: content that
+// required having actually run the thing. A style note would not survive contact
+// with a hurried draft; a throw does.
+export function atomProblems(entry, atom) {
+  if (entry !== 'topic') return [];
+  if (!atom) return ['topic entry: no `atom:` block in pack.md (needs claim, failure_mode, verification)'];
+  const problems = [];
+  if (!atom.claim) problems.push('atom.claim is missing (the claim, WITH a real number)');
+  else if (!/\d/.test(atom.claim)) problems.push(`atom.claim has no number in it: "${atom.claim}"`);
+  if (!atom.failure_mode) problems.push('atom.failure_mode is missing (how this goes wrong)');
+  if (!atom.verification) problems.push('atom.verification is missing (the 10-second check a reader can run)');
+  return problems;
+}
+
+// Returns null when `platforms:` is absent, which callers must treat as "no
+// filter" rather than "no channels".
+export function readPlatforms(packRaw) {
+  const front = frontmatterLines(packRaw);
+  const line = front?.find((l) => /^platforms:/.test(l.trim()));
   if (!line) return null;
   const m = line.match(/\[([^\]]*)\]/);
   if (!m) return null;
@@ -238,8 +292,21 @@ export function readPack(slug, root = process.cwd(), { force = false } = {}) {
   // present in only one of the three shipped packs, so defaulting to "none" would
   // make the tool post nothing for the other two).
   const packPath = join(dir, 'pack.md');
-  const platforms = existsSync(packPath) ? readPlatforms(readFileSync(packPath, 'utf8')) : null;
+  const packRaw = existsSync(packPath) ? readFileSync(packPath, 'utf8') : '';
+  const platforms = readPlatforms(packRaw);
   const wanted = channelsForPlatforms(platforms);
+
+  // A topic-entry pack ships without a canonical article, so the atom itself is
+  // the whole product. Throw BEFORE any channel work rather than letting an
+  // unverifiable atom reach a composer.
+  const entry = readEntry(packRaw);
+  const atomIssues = atomProblems(entry, readAtom(packRaw));
+  if (atomIssues.length) {
+    throw new Error(
+      `${slug}: topic-entry pack is missing required atom fields:\n  - ${atomIssues.join('\n  - ')}\n` +
+        'Every atom needs a claim with a real number, the failure mode, and a 10-second verification.',
+    );
+  }
 
   const found = [];
   const skipped = [];
@@ -257,7 +324,44 @@ export function readPack(slug, root = process.cwd(), { force = false } = {}) {
     const why = skipped.length ? ` Skipped: ${skipped.join(', ')}. Use --force to include them.` : '';
     throw new Error(`no postable .md files to do in ${dir}.${why}`);
   }
-  return { channels: found, skipped, platforms };
+  return { channels: found, skipped, platforms, entry, facts: factConflicts(found) };
+}
+
+// Cross-channel fact check. validateChannel sees ONE file at a time, so two
+// channels citing two different numbers for the same fact both pass it - which is
+// exactly what shipped: "1 in 8" in linkedin.md and x.md against "10-15%" in
+// reddit.md, same claim, same pack, different numbers. Reddit was the last paste
+// and the audience most likely to check.
+//
+// Deliberately narrow: it compares the NUMBERS each channel cites and reports when
+// a pack's channels disagree about how many there are. It cannot know which is
+// right - that is the human's call - but it can refuse to let the disagreement be
+// invisible.
+export function factConflicts(channels) {
+  const numbersIn = (text) => {
+    const found = new Set();
+    // percentages, ratios, and bare figures with a unit-ish neighbour
+    for (const m of text.matchAll(/\b\d+(?:\.\d+)?\s*%|\b\d+\s*in\s*\d+\b|\b\d+(?:\.\d+)?\s*-\s*\d+(?:\.\d+)?\s*%/gi)) {
+      found.add(m[0].replace(/\s+/g, '').toLowerCase());
+    }
+    return found;
+  };
+
+  const perChannel = channels.map(({ cfg, raw }) => ({ label: cfg.label, nums: numbersIn(extractBody(raw)) }));
+  const conflicts = [];
+  for (let i = 0; i < perChannel.length; i++) {
+    for (let j = i + 1; j < perChannel.length; j++) {
+      const a = perChannel[i];
+      const b = perChannel[j];
+      if (!a.nums.size || !b.nums.size) continue;
+      const shared = [...a.nums].filter((n) => b.nums.has(n));
+      if (shared.length) continue; // they agree on at least one figure
+      conflicts.push(
+        `${a.label} cites ${[...a.nums].join(', ')} but ${b.label} cites ${[...b.nums].join(', ')} - same pack, no figure in common. One of them is wrong.`,
+      );
+    }
+  }
+  return conflicts;
 }
 
 // ---- side-effecting IO (thin, not unit-tested; exercised only under --commit) ----
@@ -301,6 +405,10 @@ export function runDryRun(pack) {
     }
   }
   for (const s of pack.skipped) console.log(`  [--]   ${s}`);
+  for (const c of pack.facts ?? []) {
+    anyProblem = true;
+    console.log(`  [FACT] ${c}`);
+  }
   console.log(anyProblem
     ? '\nProblems found. Fix the packs above, then re-run with --commit.'
     : '\nAll channels valid. Re-run with --commit to copy + open composers.');

@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import {
   CHANNELS, AUTO_ELIGIBLE, isAutoPost, extractBody, parseThread, validateChannel, runDryRun,
   readPlatforms, channelsForPlatforms, isPosted, markPosted, refProblems,
+  readEntry, readAtom, atomProblems, factConflicts,
 } from './post.mjs';
 
 test('CRITICAL: LinkedIn and Reddit can never be auto-posted', () => {
@@ -192,4 +193,86 @@ test('parseThread still handles the marker-alone shape, and mixtures', () => {
 
 test('parseThread still fails loudly on a gap with inline numbering', () => {
   assert.throws(() => parseThread('1/ a\n\n3/ c'), /not contiguous/);
+});
+
+// --- atom schema (Stage 2) -------------------------------------------------
+// Enforced in the pack reader, NOT validateChannel: the three fields are
+// properties of the atom, while validateChannel checks one channel file against a
+// character limit. A prose rule in a SKILL.md is unenforced on any run that skips
+// that section, which is the whole reason this is code.
+
+const ATOM_PACK = [
+  '---', 'entry: topic', 'atom:',
+  '  claim: "18k -> 4k tokens by scoping the file globs"',
+  '  failure_mode: "scoping too tight drops the file the answer was in"',
+  '  verification: "run it twice and diff the token count in the status line"',
+  '---',
+].join('\n');
+
+test('readEntry defaults to article and recognises topic', () => {
+  assert.equal(readEntry('---\npostSlug: x\n---'), 'article');
+  assert.equal(readEntry(ATOM_PACK), 'topic');
+  assert.equal(readEntry('no frontmatter'), 'article');
+});
+
+test('readAtom parses the nested block', () => {
+  const atom = readAtom(ATOM_PACK);
+  assert.equal(atom.claim, '18k -> 4k tokens by scoping the file globs');
+  assert.match(atom.failure_mode, /too tight/);
+  assert.match(atom.verification, /diff the token count/);
+});
+
+test('atomProblems passes a complete atom', () => {
+  assert.deepEqual(atomProblems('topic', readAtom(ATOM_PACK)), []);
+});
+
+test('atomProblems ignores article-entry packs entirely', () => {
+  assert.deepEqual(atomProblems('article', null), []);
+});
+
+test('atomProblems requires a NUMBER in the claim, not just a claim', () => {
+  const p = atomProblems('topic', { claim: 'it uses way fewer tokens', failure_mode: 'x', verification: 'y' });
+  assert.equal(p.length, 1);
+  assert.match(p[0], /no number in it/);
+});
+
+test('atomProblems names each missing field', () => {
+  const p = atomProblems('topic', { claim: 'cut 18k tokens' });
+  assert.equal(p.length, 2);
+  assert.ok(p.some((x) => /failure_mode/.test(x)));
+  assert.ok(p.some((x) => /verification/.test(x)));
+});
+
+test('atomProblems catches a topic pack with no atom block at all', () => {
+  const p = atomProblems('topic', null);
+  assert.equal(p.length, 1);
+  assert.match(p[0], /no `atom:` block/);
+});
+
+// --- cross-channel fact check ----------------------------------------------
+
+test('factConflicts catches the exact bug that shipped (1 in 8 vs 10-15%)', () => {
+  const channels = [
+    { cfg: { label: 'LinkedIn' }, raw: '# LinkedIn\n\ngetting 1 in 8 answers wrong' },
+    { cfg: { label: 'Reddit' }, raw: '# Reddit\n\nquietly gets 10-15% of answers wrong' },
+  ];
+  const c = factConflicts(channels);
+  assert.equal(c.length, 1);
+  assert.match(c[0], /LinkedIn cites 1in8.*Reddit cites 10-15%/);
+});
+
+test('factConflicts stays quiet when channels agree on a figure', () => {
+  const channels = [
+    { cfg: { label: 'LinkedIn' }, raw: '# LinkedIn\n\nabout 1 in 8 wrong' },
+    { cfg: { label: 'X' }, raw: '# X\n\n1 in 8 answers, subtly wrong' },
+  ];
+  assert.deepEqual(factConflicts(channels), []);
+});
+
+test('factConflicts ignores channels that cite no figures', () => {
+  const channels = [
+    { cfg: { label: 'LinkedIn' }, raw: '# LinkedIn\n\n1 in 8 wrong' },
+    { cfg: { label: 'Hacker News' }, raw: '# Hacker News\n\nShow HN: a thing' },
+  ];
+  assert.deepEqual(factConflicts(channels), []);
 });

@@ -398,7 +398,7 @@ function isIgnored(path) {
 // itself before its review gate).
 //
 // Sources: ops/voice.md's "Not me (never use)" list and its permissioned-numbers
-// ALLOWLIST, plus ~/.claude/skills/draft-social-post/human-voice.md's AI tells.
+// ALLOWLIST, plus ~/.claude/skills/post/human-voice.md's AI tells.
 // A claim lands here when it appears in a draft but not on the allowlist.
 // ---------------------------------------------------------------------------
 
