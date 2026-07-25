@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   CHANNELS, AUTO_ELIGIBLE, isAutoPost, extractBody, parseThread, validateChannel, runDryRun,
+  readPlatforms, channelsForPlatforms, isPosted, markPosted, refProblems,
 } from './post.mjs';
 
 test('CRITICAL: LinkedIn and Reddit can never be auto-posted', () => {
@@ -66,8 +67,108 @@ test('validateChannel passes clean content', () => {
 });
 
 test('runDryRun performs no IO and returns validity', () => {
-  const pack = [{ key: 'linkedin', cfg: CHANNELS.linkedin, raw: '# LinkedIn\n\nGood post.' }];
+  const pack = {
+    channels: [{ key: 'linkedin', cfg: CHANNELS.linkedin, raw: '# LinkedIn\n\nGood post.' }],
+    skipped: [],
+    platforms: null,
+  };
   // If runDryRun tried to post/copy/open it would need the network or a binary;
   // it returns a boolean synchronously, proving it is pure reporting.
   assert.equal(runDryRun(pack), true);
+});
+
+// --- platforms: filter (S1.9) ---------------------------------------------
+
+test('readPlatforms parses a flow sequence without choking on inline objects', () => {
+  // The inline `refs: { ... }` object is exactly what a naive YAML split mangles.
+  const pack = [
+    '---',
+    'postSlug: x',
+    'refs: { ig: ig, facebook: fb }',
+    'platforms: [linkedin, x]',
+    '---',
+  ].join('\n');
+  assert.deepEqual(readPlatforms(pack), ['linkedin', 'x']);
+});
+
+test('readPlatforms returns null when the key is absent (means NO FILTER)', () => {
+  // Only 1 of 3 shipped packs has platforms:. Defaulting to "none" would make the
+  // tool silently post nothing for the other two.
+  assert.equal(readPlatforms('---\npostSlug: x\n---'), null);
+  assert.equal(readPlatforms('no frontmatter at all'), null);
+});
+
+test('channelsForPlatforms maps aliases and drops image/email platforms', () => {
+  const keys = channelsForPlatforms(['linkedin', 'hn', 'bluesky', 'ig', 'newsletter']);
+  assert.deepEqual([...keys].sort(), ['hackernews', 'linkedin', 'mirror']);
+});
+
+test('channelsForPlatforms accepts "mirror" (the shape the shipped packs use)', () => {
+  // streaming-ai-responses' pack.md says `platforms: [linkedin, x, reddit, mirror,
+  // newsletter]` - the file name, not the three platform names. Skipping it here
+  // silently dropped a channel the pack explicitly asked for.
+  const keys = channelsForPlatforms(['linkedin', 'x', 'reddit', 'mirror', 'newsletter']);
+  assert.deepEqual([...keys].sort(), ['linkedin', 'mirror', 'reddit', 'x']);
+});
+
+test('channelsForPlatforms ignores an unknown name rather than failing', () => {
+  const keys = channelsForPlatforms(['linkedin', 'tiktok']);
+  assert.deepEqual([...keys], ['linkedin']);
+});
+
+test('channelsForPlatforms returns null for null (no filter, not empty set)', () => {
+  assert.equal(channelsForPlatforms(null), null);
+});
+
+// --- posted state (S1.6) ---------------------------------------------------
+
+test('isPosted distinguishes ticked from unticked', () => {
+  assert.equal(isPosted('# X\n\n[ ] posted\n\nbody'), false);
+  assert.equal(isPosted('# X\n\n[x] posted\n\nbody'), true);
+  assert.equal(isPosted('# X\n\nno marker'), false);
+});
+
+test('markPosted ticks the box and leaves the body alone', () => {
+  const raw = '# LinkedIn\n\n[ ] posted   ·   founder-facing\n\nThe body.';
+  const out = markPosted(raw);
+  assert.ok(out.includes('[x] posted   ·   founder-facing'));
+  assert.ok(out.includes('The body.'));
+  assert.equal(isPosted(out), true);
+});
+
+test('markPosted returns null when there is no marker to tick', () => {
+  assert.equal(markPosted('# X\n\nbody only'), null);
+});
+
+test('the ticked marker never reaches the clipboard', () => {
+  // extractBody strips [..] lines, so ticking is invisible to the paste.
+  assert.equal(extractBody(markPosted('# X\n\n[ ] posted\n\nBody.')), 'Body.');
+});
+
+// --- ?ref validation (S1.9) -----------------------------------------------
+
+test('refProblems flags a missing ref', () => {
+  const p = refProblems('X', 'read it https://adityadev.in/blog/thing');
+  assert.equal(p.length, 1);
+  assert.match(p[0], /no \?ref=/);
+});
+
+test('refProblems flags an uppercase ref (track.ts is case-sensitive)', () => {
+  const p = refProblems('Mirror', 'https://adityadev.in/blog/thing?ref=Bsky');
+  assert.equal(p.length, 1);
+  assert.match(p[0], /must be lowercase/);
+});
+
+test('refProblems passes a correct lowercase ref', () => {
+  assert.deepEqual(refProblems('X', 'https://adityadev.in/blog/thing?ref=x'), []);
+});
+
+test('refProblems ignores bodies with no adityadev.in link (hackernews title-only)', () => {
+  assert.deepEqual(refProblems('Hacker News', 'Show HN: a thing I built'), []);
+});
+
+test('validateChannel now surfaces ref problems too', () => {
+  const { problems } = validateChannel('linkedin', '# LinkedIn\n\nSee https://adityadev.in/blog/x');
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /no \?ref=/);
 });

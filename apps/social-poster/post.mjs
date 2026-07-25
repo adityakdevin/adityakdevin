@@ -7,11 +7,16 @@
 //
 // Usage:
 //   node apps/social-poster/post.mjs <slug>            # dry-run (default): validate only
-//   node apps/social-poster/post.mjs <slug> --commit   # clipboard + open composer per channel
+//   node apps/social-poster/post.mjs <slug> --commit   # clipboard + open composer, one prompt per segment
+//   node apps/social-poster/post.mjs <slug> --force    # re-offer channels already marked [x] posted
+//
+// Threads prompt PER SEGMENT (an 8-tweet thread is 8 prompts, not one blob), only
+// channels listed in pack.md's `platforms:` are offered, and each posted channel
+// gets its `[ ] posted` line ticked so a session spread over hours can resume.
 //
 // ponytail: no deps. pbcopy/open are macOS; wrappers no-op with a warning elsewhere.
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createInterface } from 'node:readline';
@@ -30,7 +35,105 @@ export const CHANNELS = {
 
 // v0.2 auto-post targets. LinkedIn (#1 lead channel) and Reddit (spam/ban risk)
 // are deliberately absent and must stay that way - post.test.mjs asserts it.
+//
+// NOTE: no CHANNELS key matches either entry, so this set is currently INERT.
+// It becomes live the day `mirror` is split into bluesky/mastodon/threads
+// entries - which is deferred until those accounts actually exist
+// (ops/social/social-setup.md still has blank profile rows for both). Whoever
+// does that split must extend the never-auto-post test to the new keys.
 export const AUTO_ELIGIBLE = new Set(['bluesky', 'mastodon']);
+
+// pack.md `platforms:` names are the human-facing channel list; CHANNELS keys are
+// the FILES that feed them. One file can serve three platforms (mirror.md), and
+// some platforms have no text file at all (a carousel is not a .md).
+const PLATFORM_TO_CHANNEL = {
+  linkedin: 'linkedin',
+  x: 'x',
+  twitter: 'x',
+  reddit: 'reddit',
+  hn: 'hackernews',
+  hackernews: 'hackernews',
+  bluesky: 'mirror',
+  bsky: 'mirror',
+  mastodon: 'mirror',
+  masto: 'mirror',
+  threads: 'mirror',
+  // The shipped packs write the FILE name here, not the platform names - keep both
+  // shapes working rather than silently skipping a channel the pack asked for.
+  mirror: 'mirror',
+  mirrors: 'mirror',
+  // Deliberately mapped to nothing: these ship as images or email, not pack text.
+  ig: null,
+  instagram: null,
+  facebook: null,
+  fb: null,
+  newsletter: null,
+  nl: null,
+};
+
+// Minimal reader for the one key we need. NOT a YAML parser - pack.md frontmatter
+// contains inline objects (`refs: { ig: ig, facebook: fb }`) that a naive parser
+// mangles, and `platforms:` is always a flow sequence. Returns null when the key
+// is absent, which callers must treat as "no filter" rather than "no channels".
+export function readPlatforms(packRaw) {
+  const lines = String(packRaw ?? '').replace(/\r\n/g, '\n').split('\n');
+  if (lines[0]?.trim() !== '---') return null;
+  const end = lines.findIndex((l, i) => i > 0 && l.trim() === '---');
+  const front = lines.slice(1, end === -1 ? lines.length : end);
+  const line = front.find((l) => /^platforms:/.test(l.trim()));
+  if (!line) return null;
+  const m = line.match(/\[([^\]]*)\]/);
+  if (!m) return null;
+  return m[1]
+    .split(',')
+    .map((s) => s.trim().replace(/^["']|["']$/g, '').toLowerCase())
+    .filter(Boolean);
+}
+
+// Which CHANNELS keys a `platforms:` list selects. Unknown names are ignored
+// rather than fatal - the list is hand-edited and a typo should not silently
+// post nothing.
+export function channelsForPlatforms(platforms) {
+  if (!platforms) return null; // no filter
+  const keys = new Set();
+  for (const p of platforms) {
+    const key = PLATFORM_TO_CHANNEL[p];
+    if (key) keys.add(key);
+  }
+  return keys;
+}
+
+const POSTED_RE = /^\[( |x)\]\s*posted/im;
+
+export function isPosted(raw) {
+  const m = String(raw ?? '').match(POSTED_RE);
+  return m ? m[1] === 'x' : false;
+}
+
+// Flip `[ ] posted` to `[x] posted` in place. Returns the new text, or null when
+// there is no marker to flip (so callers can warn instead of silently doing
+// nothing). extractBody() strips these lines, so the marker never reaches the
+// clipboard.
+export function markPosted(raw) {
+  const text = String(raw ?? '');
+  if (!POSTED_RE.test(text)) return null;
+  return text.replace(POSTED_RE, (m) => m.replace('[ ]', '[x]'));
+}
+
+// Every posted link must carry a lowercase ?ref= token: site/lib/track.ts matches
+// it case-sensitively, so `?ref=Bsky` is silently dropped and the attribution
+// this whole scheme exists to collect is lost with no error anywhere.
+export function refProblems(label, body) {
+  const problems = [];
+  const urls = body.match(/https?:\/\/(?:www\.)?adityadev\.in\/[^\s)>\]]*/g) ?? [];
+  for (const url of urls) {
+    const m = url.match(/[?&]ref=([^&\s]*)/);
+    if (!m) problems.push(`${label}: link has no ?ref= (attribution lost): ${url}`);
+    else if (m[1] !== m[1].toLowerCase()) problems.push(`${label}: ?ref=${m[1]} must be lowercase (track.ts is case-sensitive)`);
+    else if (!m[1]) problems.push(`${label}: empty ?ref= on ${url}`);
+  }
+  return problems;
+}
 
 // v0 never auto-posts anything. Kept as a function so v0.2 flips one place.
 export function isAutoPost(/* channelKey */) {
@@ -117,19 +220,38 @@ export function validateChannel(key, raw) {
       problems.push(`${cfg.label}:${where} ${seg.length} chars > ${cfg.limit} limit`);
     }
   });
+  problems.push(...refProblems(cfg.label, body));
   return { problems, segments };
 }
 
-export function readPack(slug, root = process.cwd()) {
+export function readPack(slug, root = process.cwd(), { force = false } = {}) {
   const dir = join(root, 'ops', 'social', 'posts', slug);
   if (!existsSync(dir)) throw new Error(`no pack directory: ${dir}`);
+
+  // `platforms:` in pack.md is the post-this-time set. Absent -> no filter (it is
+  // present in only one of the three shipped packs, so defaulting to "none" would
+  // make the tool post nothing for the other two).
+  const packPath = join(dir, 'pack.md');
+  const platforms = existsSync(packPath) ? readPlatforms(readFileSync(packPath, 'utf8')) : null;
+  const wanted = channelsForPlatforms(platforms);
+
   const found = [];
+  const skipped = [];
   for (const [key, cfg] of Object.entries(CHANNELS)) {
     const path = join(dir, cfg.file);
-    if (existsSync(path)) found.push({ key, cfg, raw: readFileSync(path, 'utf8'), dir });
+    if (!existsSync(path)) continue;
+    if (wanted && !wanted.has(key)) { skipped.push(`${cfg.label} (not in platforms:)`); continue; }
+    const raw = readFileSync(path, 'utf8');
+    // Resume: the runbook tells you to space channels out over hours, so a
+    // re-run must not re-offer what you already posted.
+    if (!force && isPosted(raw)) { skipped.push(`${cfg.label} (already [x] posted)`); continue; }
+    found.push({ key, cfg, raw, dir, path });
   }
-  if (found.length === 0) throw new Error(`no postable .md files in ${dir}`);
-  return found;
+  if (found.length === 0) {
+    const why = skipped.length ? ` Skipped: ${skipped.join(', ')}. Use --force to include them.` : '';
+    throw new Error(`no postable .md files to do in ${dir}.${why}`);
+  }
+  return { channels: found, skipped, platforms };
 }
 
 // ---- side-effecting IO (thin, not unit-tested; exercised only under --commit) ----
@@ -160,7 +282,8 @@ function ask(question) {
 export function runDryRun(pack) {
   let anyProblem = false;
   console.log('DRY RUN (default) - validating, posting nothing.\n');
-  for (const { key, cfg, raw } of pack) {
+  if (pack.platforms) console.log(`  platforms: ${pack.platforms.join(', ')}\n`);
+  for (const { key, cfg, raw } of pack.channels) {
     const { problems, segments } = validateChannel(key, raw);
     const shape = cfg.thread ? `${segments.length} segments` : `${(segments[0] || '').length} chars`;
     if (problems.length) {
@@ -171,6 +294,7 @@ export function runDryRun(pack) {
       console.log(`  [ok]   ${cfg.label} (${shape}) -> composer: ${cfg.composer}`);
     }
   }
+  for (const s of pack.skipped) console.log(`  [--]   ${s}`);
   console.log(anyProblem
     ? '\nProblems found. Fix the packs above, then re-run with --commit.'
     : '\nAll channels valid. Re-run with --commit to copy + open composers.');
@@ -180,33 +304,54 @@ export function runDryRun(pack) {
 async function runCommit(pack) {
   console.log('COMMIT (v0) - copy text + open composer per channel. You paste + post.\n');
   const done = [];
-  for (const { key, cfg, raw } of pack) {
+  for (const { key, cfg, raw, path } of pack.channels) {
     const { problems, segments } = validateChannel(key, raw);
     if (problems.length) {
       console.log(`  [skip] ${cfg.label} skipped (validation): ${problems[0]}`);
       continue;
     }
-    const text = cfg.thread ? segments.join('\n\n---\n\n') : segments[0];
-    copyToClipboard(text);
-    openUrl(cfg.composer);
-    const a = (await ask(`  ${cfg.label}: text copied, composer opened. [Enter]=posted, s=skip: `)).trim().toLowerCase();
-    done.push({ channel: cfg.label, posted: a !== 's' });
+
+    // One prompt PER SEGMENT. This used to join an 8-tweet thread into a single
+    // clipboard blob with `---` separators, which meant re-splitting all eight by
+    // hand in the composer - the single largest piece of manual work in the run.
+    let abandoned = false;
+    for (const [i, seg] of segments.entries()) {
+      const where = segments.length > 1 ? ` ${i + 1}/${segments.length}` : '';
+      copyToClipboard(seg);
+      if (i === 0) openUrl(cfg.composer); // one tab per channel, not per segment
+      const a = (await ask(`  ${cfg.label}${where}: copied (${seg.length} chars). [Enter]=pasted, s=skip channel: `)).trim().toLowerCase();
+      if (a === 's') { abandoned = true; break; }
+    }
+
+    if (abandoned) {
+      done.push({ channel: cfg.label, posted: false });
+      continue;
+    }
+
+    // Write the tick back so a session resumed hours later does not re-offer this.
+    const marked = markPosted(raw);
+    if (marked) writeFileSync(path, marked);
+    else console.log(`      (no "[ ] posted" line in ${cfg.file} - nothing to tick)`);
+    done.push({ channel: cfg.label, posted: true });
   }
   console.log('\nSummary:');
   for (const d of done) console.log(`  ${d.posted ? '[posted] ' : '[skipped]'}  ${d.channel}`);
+  console.log('\nTicked channels are recorded in the pack files. Re-run any time to continue;');
+  console.log('add --force to re-offer everything.');
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const slug = args.find((a) => !a.startsWith('-'));
   const commit = args.includes('--commit');
+  const force = args.includes('--force');
   if (!slug) {
-    console.error('usage: node apps/social-poster/post.mjs <slug> [--commit]');
+    console.error('usage: node apps/social-poster/post.mjs <slug> [--commit] [--force]');
     process.exit(1);
   }
   let pack;
   try {
-    pack = readPack(slug);
+    pack = readPack(slug, process.cwd(), { force });
   } catch (err) {
     console.error(err.message);
     process.exit(1);

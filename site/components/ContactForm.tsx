@@ -53,7 +53,19 @@ export function ContactForm() {
         body: JSON.stringify({ ...data, ...getAttribution() }),
       });
       setStatus(res.ok ? "success" : "error");
-      if (res.ok) track("contact_submit", { first_landing: getAttribution().first_landing });
+      if (res.ok) {
+        // first_ref is the ?ref= campaign token (li / x / bsky / reddit / ...). It
+        // has been captured into sessionStorage on every social visit for months
+        // but was never passed here, so GA4 has never received a single value and
+        // "which channel produced this lead" was unanswerable. Named fields only:
+        // spreading getAttribution() would also ship `referrer` (a raw external
+        // URL) into analytics, which is a separate decision nobody has made.
+        const attribution = getAttribution();
+        track("contact_submit", {
+          first_landing: attribution.first_landing,
+          first_ref: attribution.ref,
+        });
+      }
     } catch {
       setStatus("error");
     }
