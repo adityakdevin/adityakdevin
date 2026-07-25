@@ -172,3 +172,24 @@ test('validateChannel now surfaces ref problems too', () => {
   assert.equal(problems.length, 1);
   assert.match(problems[0], /no \?ref=/);
 });
+
+test('parseThread handles INLINE numbering (the shape that parsed as one segment)', () => {
+  // building-ai-agents' x.md numbers as "1/ text" rather than "1/\ntext". The
+  // marker-alone-only regex matched nothing, so the whole 1718-char thread came
+  // back as a single segment and the 280-char per-tweet check never ran on it.
+  const body = '1/ first tweet\n\n2/ second tweet\n\n3/ third tweet';
+  assert.deepEqual(parseThread(body), ['first tweet', 'second tweet', 'third tweet']);
+});
+
+test('parseThread handles inline numbering with continuation lines', () => {
+  const body = '1/ opener\ncontinues here\n\n2/ second';
+  assert.deepEqual(parseThread(body), ['opener\ncontinues here', 'second']);
+});
+
+test('parseThread still handles the marker-alone shape, and mixtures', () => {
+  assert.deepEqual(parseThread('1/\naaa\n\n2/ bbb'), ['aaa', 'bbb']);
+});
+
+test('parseThread still fails loudly on a gap with inline numbering', () => {
+  assert.throws(() => parseThread('1/ a\n\n3/ c'), /not contiguous/);
+});

@@ -171,7 +171,12 @@ export function extractBody(raw) {
 // silently posts a broken thread.
 export function parseThread(body) {
   const lines = body.replace(/\r\n/g, '\n').split('\n');
-  const marker = /^(\d+)\/\s*$/;
+  // Two marker shapes are in use across the shipped packs, and only supporting
+  // the first meant an inline-numbered thread parsed as ONE segment - so the
+  // per-tweet length check silently never ran on it:
+  //   "1/"            marker alone on its line, content follows
+  //   "1/ Some text"   marker inline, content on the same line
+  const marker = /^(\d+)\/(\s+(.*))?$/;
   if (!lines.some((l) => marker.test(l.trim()))) return [body.trim()];
 
   const segments = [];
@@ -182,7 +187,8 @@ export function parseThread(body) {
     if (m) {
       seen.push(Number(m[1]));
       if (current !== null) segments.push(current.trim());
-      current = '';
+      // Inline content after the marker is the segment's first line.
+      current = m[3] ? m[3] + '\n' : '';
     } else if (current !== null) {
       current += line + '\n';
     }
