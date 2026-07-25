@@ -17,15 +17,22 @@ export const BOUNDS = {
   grid:       { maxCells: 15, maxCode: 8, maxLabel: 22, maxDesc: 40 },
   cheatsheet: { maxSections: 6, maxLines: 5, maxLine: 40 },
   diagram:    { maxSatellites: 8, maxLabel: 22 },
-  // fix: the metric chip is deliberately large - the measured number IS the
-  // payload of this layout - which leaves the code box about 490px wide. maxCode
-  // 34 keeps each snippet on ONE rendered line beside it. Calibrated twice: at 64
-  // and again at 44 the code wrapped, and the break landed mid-token
-  // ("Post::with('author')-" / ">get()"), which reads as a typo in the code.
-  // Trim the snippet instead - the reader only needs the call that changed, and
-  // "..." carries the rest. Keep the metric short enough to read from the feed
-  // ("500 MB", not "roughly 500 MB").
-  fix:        { maxCode: 34, maxLabel: 44, maxMetric: 12, maxNote: 52, maxFootnote: 78 },
+  // fix: code is a real multi-line block (a whole SQL statement reads better than
+  // a truncated one-liner), so the bound is per LINE, not per snippet - wrapping
+  // is what makes code look broken, and a break landing mid-token reads as a typo.
+  // maxCodeLines 5 keeps both cards on one canvas at 1080x1350. The badge sits
+  // beside the code, so it stays short enough to read from a feed.
+  fix: {
+    maxCodeLine: 42,
+    maxCodeLines: 5,
+    maxLabel: 44,
+    maxMetric: 16,
+    maxMetricNote: 20,
+    maxNote: 72,
+    maxFootnote: 90,
+    maxSubtitle: 72,
+    maxKicker: 56,
+  },
 };
 
 const nonEmpty = (s) => typeof s === 'string' && s.trim().length > 0;
@@ -75,17 +82,26 @@ export function validate(layout, data) {
       if (!nonEmpty(v.label)) problems.push(`${side}.label is required`);
       if (!nonEmpty(v.code)) problems.push(`${side}.code is required`);
       tooLong(v.label, b.maxLabel, `${side}.label`);
-      tooLong(v.code, b.maxCode, `${side}.code`);
       tooLong(v.metric, b.maxMetric, `${side}.metric`);
+      tooLong(v.metricNote, b.maxMetricNote, `${side}.metricNote`);
       tooLong(v.note, b.maxNote, `${side}.note`);
+
+      // Code is bounded per line: one long line wraps and the break lands
+      // mid-token, which reads as a typo in the code itself.
+      const lines = String(v.code ?? '').split('\n');
+      if (lines.length > b.maxCodeLines) {
+        problems.push(`${side}.code is ${lines.length} lines > ${b.maxCodeLines} max (both cards must fit one canvas)`);
+      }
+      lines.forEach((line, i) => tooLong(line, b.maxCodeLine, `${side}.code line ${i + 1}`));
     }
-    // The whole point of this layout is the measured difference. One side with a
-    // number and the other without reads as an assertion, not a comparison.
+    // The whole point of this layout is the contrast. One side with a badge and
+    // the other without reads as an assertion, not a comparison.
     const wm = nonEmpty(data.wrong?.metric);
     const rm = nonEmpty(data.right?.metric);
-    if (wm !== rm) problems.push('fix: give BOTH sides a metric, or neither - a one-sided number is not a comparison');
+    if (wm !== rm) problems.push('fix: give BOTH sides a metric, or neither - a one-sided badge is not a comparison');
     tooLong(data.footnote, b.maxFootnote, 'footnote');
-    tooLong(data.subtitle, b.maxFootnote, 'subtitle');
+    tooLong(data.subtitle, b.maxSubtitle, 'subtitle');
+    tooLong(data.kicker, b.maxKicker, 'kicker');
   } else if (layout === 'grid') {
     if (!Array.isArray(data.cells) || data.cells.length === 0) {
       problems.push('grid needs at least 1 cell');

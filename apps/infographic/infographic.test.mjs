@@ -301,17 +301,44 @@ test('fix layout allows neither side having a metric', () => {
   assert.deepEqual(problems, []);
 });
 
-test('fix layout rejects code that would wrap mid-token', () => {
-  // The metric chip is deliberately large (the number IS the payload), leaving the
-  // code box ~490px. Past 34 chars it wraps, and a break landing mid-token reads as
-  // a typo in the code itself.
-  const long = "foreach (Post::with('author')->get() as $p) { $p->author->name; }";
+test('fix layout bounds code PER LINE, not per snippet', () => {
+  // Code is a real multi-line block now, so a total-length bound is the wrong
+  // shape - what breaks the render is one long LINE wrapping, and a break landing
+  // mid-token reads as a typo in the code itself.
   const { problems } = validate('fix', {
     title: 'A',
-    wrong: { label: 'x', code: long },
-    right: { label: 'y', code: 'b()' },
+    wrong: { label: 'x', code: 'SELECT id\n' + 'x'.repeat(BOUNDS.fix.maxCodeLine + 1) },
+    right: { label: 'y', code: 'CREATE INDEX foo ON bar' },
   });
-  assert.ok(problems.some((p) => /wrong\.code/.test(p) && /34 limit/.test(p)));
+  assert.ok(problems.some((p) => /wrong\.code line 2/.test(p)), 'names the offending LINE');
+});
+
+test('fix layout accepts a multi-line statement within bounds', () => {
+  const { problems } = validate('fix', {
+    title: 'A',
+    wrong: { label: 'x', code: 'SELECT id\nFROM documents\nORDER BY embedding <=> $1\nLIMIT 5;' },
+    right: { label: 'y', code: 'CREATE INDEX documents_embedding_hnsw_idx\nON documents\nUSING hnsw (embedding vector_cosine_ops);' },
+  });
+  assert.deepEqual(problems, []);
+});
+
+test('fix layout rejects a code block with too many lines', () => {
+  const tall = Array.from({ length: BOUNDS.fix.maxCodeLines + 1 }, (_, i) => `line ${i}`).join('\n');
+  const { problems } = validate('fix', {
+    title: 'A', wrong: { label: 'x', code: tall }, right: { label: 'y', code: 'ok()' },
+  });
+  assert.ok(problems.some((p) => /lines >/.test(p) && /one canvas/.test(p)));
+});
+
+test('fix layout allows a worded badge, not just a number', () => {
+  // "Fast ANN search" is the honest badge when a latency figure would be a claim
+  // the repo cannot reproduce.
+  const { problems } = validate('fix', {
+    title: 'A',
+    wrong: { label: 'x', code: 'a()', metric: 'full scan', metricNote: 'every query' },
+    right: { label: 'y', code: 'b()', metric: 'Fast ANN search', metricNote: 'at 100k+ rows' },
+  });
+  assert.deepEqual(problems, []);
 });
 
 test('fix layout requires both sides to exist', () => {
