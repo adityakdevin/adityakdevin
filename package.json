@@ -17,6 +17,7 @@
     "hygiene": "node scripts/text-hygiene.mjs --all",
     "hygiene:fix": "node scripts/text-hygiene.mjs --fix --all",
     "post": "node apps/social-poster/post.mjs",
+    "devto:sync": "node apps/devto-sync/sync.mjs",
     "draft": "node apps/infographic/draft.mjs",
     "render": "node apps/infographic/render.mjs",
     "stage": "node apps/infographic/post.mjs"
