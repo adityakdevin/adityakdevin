@@ -18,6 +18,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 // ---------------------------------------------------------------------------
 // Tables (all keyed by numeric Unicode code point - ASCII-only source)
@@ -471,20 +472,62 @@ const BANNED_PHRASES = [
     category: 'unpermissioned-claim',
     suggestion: 'a dated client interaction needs permission - allowlist it, or drop the timeframe and the client',
   },
+  // First-person outcome verbs aimed at a CLIENT. Scoped to the word client or
+  // customer on purpose, NOT to a bare number: voice.md explicitly exempts
+  // measured technical numbers you can reproduce ("cut 18k tokens to 4k by
+  // scoping the globs"), so a pattern keyed on "cut ... by N" would flag exactly
+  // the atom content this pipeline exists to publish. Whose outcome it is, not
+  // whether there is a number, is the line.
+  {
+    re: /\b(we|I) (reduced|cut|saved|shaved|halved|slashed)\b[a-z ,'-]{0,40}\b(client|customer)s?\b/gi,
+    category: 'unpermissioned-claim',
+    suggestion: 'a client outcome needs permission - allowlist it, or write about the technique instead of the result',
+  },
+  {
+    re: /\ba (client|customer) (told|said to|showed) me\b[a-z ,'-]{0,30}~?\d+/gi,
+    category: 'unpermissioned-claim',
+    suggestion: 'a quantified client statement needs permission - allowlist it or cut the figure',
+  },
+  // NOT added, deliberately: a bare /I watched/. human-voice.md requires opening
+  // on a real observed moment, so "I watched the queue back up for six hours" is
+  // the house style, not a claim. The overnight-drop pattern above already
+  // catches the version that asserts a client result.
 ];
 
 // Files that DEFINE the banned set necessarily contain it, so the phrase lens
 // exempts them - exactly as this source file avoids literal banned glyphs so it
 // passes its own character check. Kept separate from IGNORE_REGEXES because
 // these files SHOULD still be scanned for typography.
+// An entry with no `categories` is exempt from the WHOLE phrase lens. An entry
+// WITH one is exempt only from those categories and is still scanned for the
+// rest - which is the difference between "this file defines the banned words"
+// and "this file may say anything at all".
 const PHRASE_LENS_IGNORE = [
-  /(^|\/)voice\.md$/,
-  /(^|\/)human-voice\.md$/,
-  /(^|\/)text-hygiene\.mjs$/,
+  // voice.md legitimately contains the banned vocabulary (its "Not me (never
+  // use)" list) and round numbers (its allowlist scope note quotes "1 in 8" and
+  // "12%" to explain that they are the same claim). Scanning it for those is
+  // guaranteed false positives, and a check that cries wolf gets switched off.
+  //
+  // It is NOT exempt from unpermissioned-claim, and that is the whole point.
+  // The 2026-07-25 audit sat in that file for weeks holding six quotable
+  // first-person client claims, and nothing in this repo could ever have
+  // noticed, because the exemption was all-or-nothing.
+  { re: /(^|\/)voice\.md$/, categories: ['ai-vocab', 'round-number', 'launch-cosplay'] },
+  // Fully exempt: these two DEFINE every category, claims included.
+  { re: /(^|\/)human-voice\.md$/ },
+  { re: /(^|\/)text-hygiene\.mjs$/ },
 ];
 
-export function isPhraseLensExempt(path) {
-  return PHRASE_LENS_IGNORE.some((re) => re.test(path));
+// Called two ways. With no category: "is this file exempt from the lens
+// entirely?" - the file-skip decision. With a category: "is this finding
+// exempt on this file?" - the per-finding decision.
+export function isPhraseLensExempt(path, category) {
+  for (const entry of PHRASE_LENS_IGNORE) {
+    if (!entry.re.test(path)) continue;
+    if (!entry.categories) return true;
+    if (category != null && entry.categories.includes(category)) return true;
+  }
+  return false;
 }
 
 export function detectPhrases(text) {
@@ -607,7 +650,10 @@ function formatFinding(path, f) {
 // Self-test (glyphs here are normalized to \u escapes at authoring time)
 // ---------------------------------------------------------------------------
 
-function selftest() {
+// The assertions, as DATA - no printing, no process.exit. Split out so a test
+// runner can turn each case into a real test instead of shelling out to the CLI
+// and parsing stdout. selftest() below is the unchanged CLI face of this.
+export function selftestCases() {
   const cases = [];
   const assert = (name, cond) => cases.push({ name, ok: !!cond });
 
@@ -670,6 +716,11 @@ function selftest() {
   assert('backtick is not GSM-7', detectNonGsm7('`x`').length === 2);
   assert('tab is not GSM-7', detectNonGsm7('a\tb').length === 1);
 
+  return cases;
+}
+
+function selftest() {
+  const cases = selftestCases();
   const failed = cases.filter((c) => !c.ok);
   for (const c of cases) process.stdout.write(`${c.ok ? 'ok  ' : 'FAIL'} ${c.name}\n`);
   if (failed.length) {
@@ -852,7 +903,13 @@ function main() {
       continue;
     }
 
-    const findings = scan(text);
+    // Per-CATEGORY exemption: a partially-exempt file (voice.md) is scanned, then
+    // the categories it legitimately defines are dropped from its findings. Doing
+    // this here rather than inside detectPhrases keeps that function pure and
+    // path-free, which is what makes it testable.
+    const findings = opts.phrases
+      ? scan(text).filter((f) => !isPhraseLensExempt(entry.path, f.category))
+      : scan(text);
     if (findings.length) {
       totalFindings += findings.length;
       report.push(`${entry.path}:`);
@@ -881,4 +938,10 @@ function main() {
   process.exit(totalFindings > 0 ? 1 : 0);
 }
 
-main();
+// Run the CLI only when this file IS the entry point. Without this guard, any
+// test file that imports detectPhrases runs the whole scan and then hits
+// main()'s process.exit(), killing the test runner mid-suite - which is why
+// detectPhrases and isPhraseLensExempt were exported for years with no importer.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}
