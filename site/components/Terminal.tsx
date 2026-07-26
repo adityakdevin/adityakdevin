@@ -259,7 +259,15 @@ export function Terminal() {
           </button>
         </div>
 
-        <div ref={scrollRef} className="mono flex-1 space-y-1.5 overflow-y-auto p-4 text-sm">
+        {/* role="log" alone: aria-live="polite" and aria-relevant="additions" are
+            its implicit values. Streaming text is aria-hidden until the chunk
+            loop finishes, so a screen reader announces the finished answer once
+            instead of on every token. */}
+        <div
+          ref={scrollRef}
+          role="log"
+          className="mono flex-1 space-y-1.5 overflow-y-auto p-4 text-sm"
+        >
           {lines.map((line, i) => (
             <p
               key={i}
@@ -269,7 +277,7 @@ export function Terminal() {
               }}
             >
               {line.kind === "cmd" ? <span style={{ color: "var(--dark-accent)" }}>$ </span> : null}
-              {line.text}
+              {line.cursor ? <span aria-hidden>{line.text}</span> : line.text}
               {line.cursor ? <span className="cursor" aria-hidden /> : null}
             </p>
           ))}

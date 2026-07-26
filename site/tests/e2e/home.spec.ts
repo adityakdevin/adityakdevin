@@ -98,6 +98,9 @@ test.describe("contact form states (S5A)", () => {
     await page.getByLabel(/what are you building/i).fill("A test message long enough to pass.");
     await page.getByRole("button", { name: /send message/i }).click();
     await expect(page.getByText(/I reply within 24 hours/)).toBeVisible();
+    // The panel replaces the form, unmounting the focused button - without the
+    // focus move a screen-reader user is dumped back at <body>.
+    await expect(page.locator('[role="status"]')).toBeFocused();
   });
 
   test("API failure shows retry message with direct email fallback", async ({ page }) => {

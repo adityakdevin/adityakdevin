@@ -65,8 +65,20 @@ export default function RootLayout({
         className={`${plexMono.variable} ${plexSans.variable} flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
         <Attribution />
+        {/* Skip link + the one #main target. Wrapping here beats adding an id to
+            fifteen page files; tabIndex is required or Safari moves the scroll
+            position without moving focus. */}
+        <a
+          href="#main"
+          className="mono sr-only rounded px-4 py-2 text-sm font-semibold focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+          style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+        >
+          Skip to content
+        </a>
         <StickyChrome />
-        {children}
+        <div id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+          {children}
+        </div>
         <Footer />
         <Terminal />
         {/* Tag management - deferred: never in the critical path (SPEC S9).

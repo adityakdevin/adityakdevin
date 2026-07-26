@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { profile } from "@/content/data/profile";
 import { EMAIL_RE } from "@/lib/site";
 
@@ -15,6 +15,14 @@ type Status = "idle" | "submitting" | "success" | "error";
 export function NewsletterForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  // The success panel replaces the form, unmounting the focused button - focus
+  // falls to <body> and a screen-reader user loses their place. Focus in an
+  // effect, not in the fetch handler: the panel is not committed there yet.
+  const successRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,8 +54,10 @@ export function NewsletterForm() {
   if (status === "success") {
     return (
       <div
+        ref={successRef}
+        tabIndex={-1}
         role="status"
-        className="rounded border p-5"
+        className="rounded border p-5 outline-none"
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <p className="mono text-sm font-semibold" style={{ color: "var(--accent)" }}>
@@ -107,7 +117,7 @@ export function NewsletterForm() {
       </div>
 
       {error ? (
-        <p id="nf-email-err" className="mt-2 text-sm" style={{ color: "var(--error)" }}>
+        <p id="nf-email-err" role="alert" className="mt-2 text-sm" style={{ color: "var(--error)" }}>
           {error}
         </p>
       ) : null}

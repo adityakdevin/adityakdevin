@@ -4,9 +4,13 @@ import { faq } from "@/content/data/faq";
 import { getLatestPosts } from "@/lib/devto";
 import { withRef } from "@/lib/site";
 import { getAllPosts, mergeFieldNotes } from "@/lib/posts";
-import { personJsonLd, profilePageJsonLd, faqJsonLd, jsonLdScript } from "@/lib/jsonld";
+import {
+  personJsonLd,
+  profilePageJsonLd,
+  faqJsonLd,
+  jsonLdScript,
+} from "@/lib/jsonld";
 import { Hero } from "@/components/Hero";
-import { Reveal } from "@/components/Reveal";
 import { ContactForm } from "@/components/ContactForm";
 import { ServiceStackNav } from "@/components/ServiceStackNav";
 
@@ -20,7 +24,10 @@ function Eyebrow({ cmd }: { cmd: string }) {
 
 function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <h2 id={id} className="mono h2-rule scroll-mt-20 text-3xl font-semibold tracking-tight md:text-4xl">
+    <h2
+      id={id}
+      className="mono h2-rule scroll-mt-20 text-3xl font-semibold tracking-tight md:text-4xl"
+    >
       {children}
     </h2>
   );
@@ -50,29 +57,39 @@ export default async function Home() {
 
       {/* 2 - Metric strip: one inline strip, no tile boxes; static build-time numbers */}
       <section className="border-b" style={{ borderColor: "var(--border)" }}>
-        <Reveal>
-          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
-            {profile.metrics.map((m) => (
-              <div key={m.label} className="flex items-baseline gap-2">
-                <span className="mono text-4xl font-semibold md:text-5xl" style={{ color: "var(--accent)" }}>
-                  {m.value}
-                </span>
-                <span className="text-sm" style={{ color: "var(--muted)" }}>
-                  {m.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+        {/* Reveal deleted: the class was added AFTER paint with
+            animation-fill-mode: both, so the strip snapped to opacity 0 and faded
+            back in - the site's only entrance animation read as a flicker. */}
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
+          {profile.metrics.map((m) => (
+            <div key={m.label} className="flex items-baseline gap-2">
+              <span
+                className="mono text-4xl font-semibold md:text-5xl"
+                style={{ color: "var(--accent)" }}
+              >
+                {m.value}
+              </span>
+              <span className="text-sm" style={{ color: "var(--muted)" }}>
+                {m.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* 3 - Services: numbered editorial rows, NOT cards; non-interactive at P1a */}
       <section className="mx-auto max-w-5xl px-6 py-20 md:py-24">
         <Eyebrow cmd="ls services/" />
         <H2>I ship AI features into production apps</H2>
-        <div className="mt-10 space-y-0 divide-y" style={{ borderColor: "var(--border)" }}>
+        <div
+          className="mt-10 space-y-0 divide-y"
+          style={{ borderColor: "var(--border)" }}
+        >
           {profile.services.map((s) => (
-            <div key={s.n} className="grid gap-3 py-8 md:grid-cols-[64px_240px_1fr] md:gap-8">
+            <div
+              key={s.n}
+              className="grid gap-3 py-8 md:grid-cols-[64px_240px_1fr] md:gap-8"
+            >
               <span className="mono text-sm" style={{ color: "var(--accent)" }}>
                 {s.n}
               </span>
@@ -80,7 +97,11 @@ export default async function Home() {
               <div>
                 <p className="font-medium">{s.claim}</p>
                 {s.lines.map((line) => (
-                  <p key={line} className="mt-1 text-base" style={{ color: "var(--muted)" }}>
+                  <p
+                    key={line}
+                    className="mt-1 text-base"
+                    style={{ color: "var(--muted)" }}
+                  >
                     {line}
                   </p>
                 ))}
@@ -105,17 +126,25 @@ export default async function Home() {
           <div className="mt-10 grid gap-10 md:grid-cols-[3fr_2fr]">
             <article>
               <h3 className="text-xl font-medium">
-                <Link href="/work/budgetgen">{profile.featuredWork.lead.title}</Link>
+                <Link href="/work/budgetgen">
+                  {profile.featuredWork.lead.title}
+                </Link>
               </h3>
               <p className="mt-3" style={{ color: "var(--muted)" }}>
                 {profile.featuredWork.lead.story}
               </p>
-              <p className="mono mt-3 text-sm" style={{ color: "var(--accent)" }}>
+              <p
+                className="mono mt-3 text-sm"
+                style={{ color: "var(--accent)" }}
+              >
                 {profile.featuredWork.lead.stack}
               </p>
               {profile.featuredWork.lead.metric ? (
                 <p className="mono mt-3 text-sm">
-                  <span className="font-semibold" style={{ color: "var(--accent)" }}>
+                  <span
+                    className="font-semibold"
+                    style={{ color: "var(--accent)" }}
+                  >
                     {profile.featuredWork.lead.metric.value}
                   </span>{" "}
                   <span style={{ color: "var(--muted)" }}>
@@ -124,7 +153,10 @@ export default async function Home() {
                 </p>
               ) : null}
             </article>
-            <div className="space-y-6 md:border-l md:pl-8" style={{ borderColor: "var(--border)" }}>
+            <div
+              className="space-y-6 md:border-l md:pl-8"
+              style={{ borderColor: "var(--border)" }}
+            >
               {profile.featuredWork.links.map((l) => (
                 <div key={l.title}>
                   <a href={l.href} className="mono text-base font-medium">
@@ -145,8 +177,8 @@ export default async function Home() {
         <Eyebrow cmd="checksum --verify claims" />
         <H2>Verify me yourself</H2>
         <p className="mt-3 max-w-2xl" style={{ color: "var(--muted)" }}>
-          Don&apos;t take my word for any of this - every claim below links to a source you can
-          check in ten seconds.
+          Don&apos;t take my word for any of this - every claim below links to a
+          source you can check in ten seconds.
         </p>
         <ul className="mt-8 space-y-4">
           {profile.verify.map((v) => (
@@ -169,10 +201,16 @@ export default async function Home() {
               <blockquote
                 key={t.author}
                 className="rounded border p-6"
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                style={{
+                  borderColor: "var(--border)",
+                  background: "var(--surface)",
+                }}
               >
                 <p className="italic">&ldquo;{t.quote}&rdquo;</p>
-                <footer className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
+                <footer
+                  className="mono mt-3 text-sm"
+                  style={{ color: "var(--muted)" }}
+                >
                   - {t.author}, {t.role}
                 </footer>
               </blockquote>
@@ -183,14 +221,23 @@ export default async function Home() {
 
       {/* 6 - Writing: local posts + Dev.to legacy merged (T5); hides only when BOTH are empty */}
       {notes.length > 0 ? (
-        <section className="border-y" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+        <section
+          className="border-y"
+          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+        >
           <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
             <Eyebrow cmd="ls -la ~/writing" />
             <H2>Field notes from Laravel + AI work</H2>
             <ul className="mono mt-8 space-y-4">
               {notes.map((n) => (
-                <li key={n.key} className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6">
-                  <span className="shrink-0 text-sm" style={{ color: "var(--muted)" }}>
+                <li
+                  key={n.key}
+                  className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6"
+                >
+                  <span
+                    className="shrink-0 text-sm"
+                    style={{ color: "var(--muted)" }}
+                  >
                     {n.date}
                   </span>
                   {n.href.startsWith("/") ? (
@@ -213,7 +260,10 @@ export default async function Home() {
       ) : null}
 
       {/* 7 - FAQ (single source: faq.ts → section + JSON-LD + bot) */}
-      <section id="faq" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 md:py-24">
+      <section
+        id="faq"
+        className="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 md:py-24"
+      >
         <Eyebrow cmd="man hiring-aditya" />
         <H2>Before you book</H2>
         <div className="mt-8 max-w-3xl space-y-3">
@@ -224,7 +274,10 @@ export default async function Home() {
               // a guess-which-of-six click. Server component, no handler.
               open={i === 1}
               className="group rounded border"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--surface)",
+              }}
             >
               <summary className="mono min-h-11 cursor-pointer list-none px-5 py-3.5 font-medium marker:content-none">
                 <span style={{ color: "var(--accent)" }}>?</span> {item.q}
@@ -251,7 +304,10 @@ export default async function Home() {
               <a
                 href={withRef(profile.bookingUrl, "home")}
                 className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
-                style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+                style={{
+                  background: "var(--accent)",
+                  color: "var(--on-accent)",
+                }}
               >
                 Book a free 30-min call →
               </a>
@@ -264,17 +320,23 @@ export default async function Home() {
                 </li>
                 {profile.phone ? (
                   <li>
-                    <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>{profile.phone}</a>
+                    <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>
+                      {profile.phone}
+                    </a>
                   </li>
                 ) : null}
                 <li>
-                  <a href={profile.linkedin}>LinkedIn</a> · <a href={profile.github}>GitHub</a> ·{" "}
+                  <a href={profile.linkedin}>LinkedIn</a> ·{" "}
+                  <a href={profile.github}>GitHub</a> ·{" "}
                   <a href={profile.twitter}>X</a>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="mono mb-4 text-sm" style={{ color: "var(--muted)" }}>
+              <p
+                className="mono mb-4 text-sm"
+                style={{ color: "var(--muted)" }}
+              >
                 or leave a message:
               </p>
               <ContactForm />
