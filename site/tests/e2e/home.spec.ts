@@ -136,6 +136,35 @@ test.describe("responsive S5B", () => {
     }
   });
 
+  // Regression: at 320px the hero headline, value line and CTA were clipped.
+  // Grid items default to min-width:auto, so the track was sized by the widest
+  // min-content in it - the rotating TypingCaption link (block + nowrap), whose
+  // width GROWS as it types. The section's overflow-x: hidden swallowed the
+  // symptom, which is why a documentElement.scrollWidth check never caught it.
+  // Found by /qa on 2026-07-26.
+  test("hero content stays inside the viewport at 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto("/");
+    const vw = 320;
+    for (const name of ["h1", "hero value line", "primary CTA"]) {
+      const el =
+        name === "h1"
+          ? page.locator("h1").first()
+          : name === "hero value line"
+            ? page.getByText(profile.heroLine)
+            : page.getByRole("link", { name: /book a call/i }).first();
+      const box = await el.boundingBox();
+      expect(box, name).not.toBeNull();
+      expect(box!.x + box!.width, name).toBeLessThanOrEqual(vw);
+    }
+    // The column must not be sized by a descendant's min-content, or it drifts
+    // wider as the caption types.
+    const colWidth = await page
+      .locator("h1")
+      .evaluate((h) => h.parentElement!.getBoundingClientRect().width);
+    expect(colWidth).toBeLessThanOrEqual(vw);
+  });
+
   test("no horizontal scroll on any viewport", async ({ page }) => {
     await page.goto("/");
     const overflow = await page.evaluate(
