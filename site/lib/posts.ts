@@ -146,7 +146,14 @@ export function canonicalUrl(post: Post): string {
   return post.canonical ?? `${SITE_URL}/blog/${post.slug}`;
 }
 
-export type FieldNote = { key: string; date: string; title: string; href: string };
+export type FieldNote = {
+  key: string;
+  date: string;
+  title: string;
+  href: string;
+  /** Local posts only - the Dev.to feed shape carries no summary. */
+  description?: string;
+};
 
 /**
  * Homepage "Field notes" merge (design doc 20260717 / eng review T5):
@@ -167,6 +174,7 @@ export function mergeFieldNotes(
     date: p.date,
     title: p.title,
     href: `/blog/${p.slug}`,
+    description: p.description,
   }));
   const legacyNotes: FieldNote[] = (legacy ?? [])
     .filter((p) => !syndicated.has(p.id))

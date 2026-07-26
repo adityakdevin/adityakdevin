@@ -43,35 +43,76 @@ export default function WorkIndexPage() {
       </p>
       <h1 className="mono h2-rule text-4xl font-semibold">Work</h1>
 
-      <ul className="mt-10">
+      <ul className="mt-10 space-y-5">
         {sortedStudies.map((c) => {
           const lead = c.outcome?.[0];
+          // The card's visual is the study's own architecture diagram, cropped -
+          // real content, not decoration, and it survives an NDA the way a
+          // screenshot would not. Studies without one just render without it.
+          const diagram = c.sections.find((sec) => sec.pre)?.pre?.split("\n").slice(0, 6).join("\n");
           return (
             <li
               key={c.slug}
-              className="border-b py-8 first:border-t"
-              style={{ borderColor: "var(--border)" }}
+              className="overflow-hidden rounded border"
+              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
             >
-              {/* The sort is newest-first; without the date the reader cannot
-                  see that, and `date` exists only to drive it. */}
-              <p className="mono text-sm" style={{ color: "var(--muted)" }}>
-                {c.date}
-              </p>
-              <h2 className="mt-1 text-xl font-medium">
-                <Link href={`/work/${c.slug}`}>{c.title}</Link>
-              </h2>
-              {c.client || c.period ? (
-                <p className="mono mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                  {[c.client, c.period].filter(Boolean).join(" · ")}
-                </p>
-              ) : null}
-              <p className="mt-2" style={{ color: "var(--muted)" }}>
-                {c.summary}
-              </p>
-              <p className="mono mt-3 text-sm" style={{ color: "var(--accent)" }}>
-                {c.stack.join(" · ")}
-                {lead ? `  -  ${lead.value} ${lead.metric}` : ""}
-              </p>
+              <div className="grid md:grid-cols-[3fr_2fr]">
+                <div className="p-6">
+                  {/* The sort is newest-first; without the date the reader
+                      cannot see that, and `date` exists only to drive it. */}
+                  <p className="mono text-sm" style={{ color: "var(--muted)" }}>
+                    {c.date}
+                  </p>
+                  <h2 className="mt-1 text-xl font-medium">
+                    <Link href={`/work/${c.slug}`}>{c.title}</Link>
+                  </h2>
+                  {c.client || c.period ? (
+                    <p className="mono mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      {[c.client, c.period].filter(Boolean).join(" · ")}
+                    </p>
+                  ) : null}
+                  <p className="mt-2" style={{ color: "var(--muted)" }}>
+                    {c.summary}
+                  </p>
+                  <p className="mono mt-3 text-sm" style={{ color: "var(--accent)" }}>
+                    {c.stack.join(" · ")}
+                  </p>
+                  {/* Its own line: appended to the stack list it read as one
+                      more technology rather than as the headline number. */}
+                  {lead ? (
+                    <p className="mono mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                      <span className="font-semibold" style={{ color: "var(--text)" }}>
+                        {lead.value}
+                      </span>{" "}
+                      {lead.metric}
+                    </p>
+                  ) : null}
+                </div>
+                {diagram ? (
+                  <div
+                    aria-hidden
+                    className="hidden overflow-hidden border-l md:block"
+                    style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+                  >
+                    <pre
+                      className="mono p-4 text-[10px] leading-snug"
+                      style={{
+                        color: "var(--muted)",
+                        // Fades the crop out instead of guillotining a word,
+                        // so it reads as a peek at the diagram, not a bug.
+                        maskImage:
+                          "linear-gradient(to right, #000 60%, transparent), linear-gradient(to bottom, #000 60%, transparent)",
+                        maskComposite: "intersect",
+                        WebkitMaskImage:
+                          "linear-gradient(to right, #000 60%, transparent), linear-gradient(to bottom, #000 60%, transparent)",
+                        WebkitMaskComposite: "source-in",
+                      }}
+                    >
+                      {diagram}
+                    </pre>
+                  </div>
+                ) : null}
+              </div>
             </li>
           );
         })}

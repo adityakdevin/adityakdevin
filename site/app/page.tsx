@@ -60,22 +60,36 @@ export default async function Home() {
       <Hero />
 
       {/* 2 - Metric strip: one inline strip, no tile boxes; static build-time numbers */}
-      <section className="border-b" style={{ borderColor: "var(--border)" }}>
+      <section
+        className="border-b"
+        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+      >
         {/* Reveal deleted: the class was added AFTER paint with
             animation-fill-mode: both, so the strip snapped to opacity 0 and faded
             back in - the site's only entrance animation read as a flicker. */}
-        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
-          {profile.metrics.map((m) => (
-            <div key={m.label} className="flex items-baseline gap-2">
-              <span
+        {/* A band, not four floating pairs: each figure gets its own cell with a
+            rule between them, so the row reads as one object under the hero. */}
+        <div className="mx-auto grid max-w-5xl grid-cols-2 px-6 md:grid-cols-4">
+          {profile.metrics.map((m, i) => (
+            <div
+              key={m.label}
+              className={`px-2 py-7 md:px-6 md:py-9 ${i % 2 === 1 ? "border-l" : ""} ${
+                i >= 2 ? "border-t md:border-t-0" : ""
+              } ${i === 2 ? "md:border-l" : ""} ${i === 3 ? "md:border-l" : ""}`}
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div
                 className="mono text-4xl font-semibold md:text-5xl"
                 style={{ color: "var(--accent)" }}
               >
                 {m.value}
-              </span>
-              <span className="text-sm" style={{ color: "var(--muted)" }}>
+              </div>
+              <div
+                className="mono mt-2 text-xs tracking-widest uppercase"
+                style={{ color: "var(--muted)" }}
+              >
                 {m.label}
-              </span>
+              </div>
             </div>
           ))}
         </div>
@@ -267,6 +281,17 @@ export default async function Home() {
                       {n.title}
                     </a>
                   )}
+                  {/* Local posts carry a summary; the legacy Dev.to feed does
+                      not, so the card degrades to title-only rather than
+                      inventing one. */}
+                  {n.description ? (
+                    <p
+                      className="mt-2 text-sm leading-relaxed"
+                      style={{ color: "var(--muted)", fontFamily: "var(--font-plex-sans)" }}
+                    >
+                      {n.description}
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -320,8 +345,13 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl px-6 py-14 md:py-16">
           <Eyebrow cmd="./start-project.sh" />
           <H2>Let&apos;s build your next system</H2>
-          <div className="mt-10 grid gap-12 md:grid-cols-[2fr_3fr]">
-            <div>
+          {/* One bordered object split down the middle, instead of a button
+              floating next to a bare form on a flat background. */}
+          <div
+            className="mt-10 grid overflow-hidden rounded border md:grid-cols-[2fr_3fr]"
+            style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+          >
+            <div className="border-b p-6 md:border-r md:border-b-0 md:p-8" style={{ borderColor: "var(--border)" }}>
               <a
                 href={withRef(profile.bookingUrl, "home")}
                 className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
@@ -353,11 +383,8 @@ export default async function Home() {
                 </li>
               </ul>
             </div>
-            <div>
-              <p
-                className="mono mb-4 text-sm"
-                style={{ color: "var(--muted)" }}
-              >
+            <div className="p-6 md:p-8">
+              <p className="mono mb-4 text-sm" style={{ color: "var(--muted)" }}>
                 or leave a message:
               </p>
               <ContactForm />
