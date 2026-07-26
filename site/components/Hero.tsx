@@ -36,7 +36,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-5 max-w-xl text-lg md:text-2xl" style={{ color: "var(--dark-text)" }}>
-            {profile.valueLine}
+            {profile.heroLine}
           </p>
 
           <p className="mono mt-4 text-sm md:text-base" style={{ color: "var(--dark-muted)" }}>
@@ -155,7 +155,7 @@ export function Hero() {
       </div>
 
       {/* Fold hint: seam into the light/next content */}
-      <div className="mx-auto w-full max-w-5xl px-6 pb-5">
+      <div className="mx-auto w-full max-w-7xl px-6 pb-5">
         <p className="mono text-xs" style={{ color: "var(--dark-muted)" }}>
           <span style={{ color: "var(--dark-accent)" }}>$</span> scroll --to proof ↓
         </p>

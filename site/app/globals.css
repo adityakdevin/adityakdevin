@@ -69,9 +69,27 @@ main a:not(.btn):not(.no-underline):hover { text-decoration-color: var(--accent)
 main a:not(.btn):not(.no-underline):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
 main a:not(.btn).no-underline:hover { color: var(--accent); }
 
+/* Footer sits outside <main>, so the link rules above never reached it -
+   without this its links were indistinguishable from plain text. */
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* -webkit-tap-highlight-color: transparent is global above, and only .btn had a
+   replacement - every other tap (footer, mobile tab bar) gave no feedback at all
+   until the next route painted. Opacity is deliberately not in the `a` transition
+   list, so it snaps. */
+@media (hover: none) {
+  a:active { opacity: 0.7; }
+}
+
 .btn:active { transform: translateY(1px); }
 .btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
 .btn:hover { filter: brightness(1.08); }
+
+/* Section h2s were 20px on /privacy /now /uses /hire, 24px on services and work,
+   and 30/36px on the homepage - three sizes for one role. Size only: the cyan bar
+   stays an h1 signature, and adding it under ~15 more h2s would be a redesign. */
+.h-section { font-size: 1.5rem; font-weight: 600; }
 
 /* Signature rule: cyan bar under every section heading - carries brand below the hero */
 .h2-rule::after {
@@ -119,10 +137,6 @@ details[open] summary { color: var(--accent); }
   margin-left: 2px;
 }
 
-/* Motion #2: metric settle-in (400ms ease-out on scroll-enter) */
-@keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.settle-in { animation: settle 400ms ease-out both; }
-
 /* prefers-reduced-motion disables ALL motion - keyframes AND transitions (S4, FINDING-005) */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
@@ -130,7 +144,7 @@ details[open] summary { color: var(--accent); }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .type-reveal, .settle-in { animation: none; }
+  .type-reveal { animation: none; }
   .cursor::after { animation: none; opacity: 1; }
   html { scroll-behavior: auto; }
 }

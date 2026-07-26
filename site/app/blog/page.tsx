@@ -7,7 +7,7 @@ import { NewsletterForm } from "@/components/NewsletterForm";
 export const metadata: Metadata = {
   title: "Blog - field notes from Laravel + AI work",
   description: `${BLOG_DESCRIPTION} By Aditya Kumar.`,
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: "/blog", types: { "application/rss+xml": "/blog/rss.xml" } },
 };
 
 /**
@@ -18,7 +18,7 @@ export default function BlogIndexPage() {
   const posts = getAllPosts();
 
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> ls blog/
       </p>
@@ -39,12 +39,11 @@ export default function BlogIndexPage() {
               <p className="mono text-sm" style={{ color: "var(--muted)" }}>
                 {post.date}
               </p>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="mono mt-1 block text-xl font-semibold no-underline"
-              >
-                {post.title}
-              </Link>
+              <h2 className="mt-1 text-xl font-semibold">
+                <Link href={`/blog/${post.slug}`} className="block no-underline">
+                  {post.title}
+                </Link>
+              </h2>
               <p className="mt-2" style={{ color: "var(--muted)" }}>
                 {post.description}
               </p>

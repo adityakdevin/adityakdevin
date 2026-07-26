@@ -16,6 +16,7 @@ export function personJsonLd() {
     alternateName: profile.handle,
     url: BASE,
     email: `mailto:${profile.email}`,
+    image: `${BASE}/aditya-kumar.jpeg`,
     jobTitle: `${profile.role} · Full Stack Developer & AI Engineer`,
     worksFor: { "@type": "Organization", name: profile.company },
     address: {
@@ -91,6 +92,8 @@ export function articleJsonLd(post: {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    // The 1200x630 card each post already renders - required for article rich results.
+    image: [`${BASE}/blog/${post.slug}/opengraph-image`],
     keywords: post.tags.join(", "),
     url,
     mainEntityOfPage: url,

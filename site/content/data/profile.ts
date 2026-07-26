@@ -7,6 +7,10 @@ export const profile = {
   handle: "adityakdevin",
   headline: "Full Stack Developer · AI Engineer · Solution Architect",
   valueLine: "I build Laravel & AI products that ship.",
+  // The sharp version, rendered in the hero and on /hire. valueLine stays broad
+  // because llms.txt, JSON-LD and the bot corpus all read it and should keep the
+  // full-stack breadth. This used to be a second copy inside app/hire/page.tsx.
+  heroLine: "I ship production AI/LLM features into Laravel & Node apps - not demos.",
   role: "Tech Lead",
   company: "MM Nova Tech",
   yearsExperience: "9+",
@@ -28,7 +32,10 @@ export const profile = {
     { value: "9+", label: "years shipping" },
     { value: "60+", label: "projects delivered" },
     { value: "8.3k+", label: "GitHub contributions" },
-    { value: "1", label: "Laravel + AI series" },
+    // Was "1 Laravel + AI series", which at 48px read as padding next to 8.3k+.
+    // Hardcoded, not derived: only 3 of 4 posts are series posts and a unit test
+    // pins that array at 4.
+    { value: "2", label: "case studies" },
   ],
 
   services: [
@@ -38,13 +45,13 @@ export const profile = {
       claim: "Chatbots, automations, and AI workflows that survive real users",
       lines: [
         "LLM chatbots, streaming interfaces, and automation wired into real products - not demos.",
-        "OpenAI & Claude APIs, prompt architecture, cost-hardened endpoints.",
+        "OpenAI & Claude APIs with rate limits, spend caps, streaming and evals - because an AI feature is judged by what happens when the API is slow, wrong, or down.",
       ],
     },
     {
       n: "02",
       title: "Full Stack Delivery",
-      claim: "End-to-end web products, backend to pixels",
+      claim: "I own the thing after it ships, not just until it merges",
       lines: [
         "Laravel, Vue/Nuxt, React/Next.js - 9+ years of shipped systems for real businesses.",
         "Payments (Stripe, Razorpay), integrations, and the unglamorous plumbing done right.",
@@ -53,10 +60,10 @@ export const profile = {
     {
       n: "03",
       title: "Architecture & Leadership",
-      claim: "Solution design and teams that deliver",
+      claim: "Solution design without the enterprise theater",
       lines: [
         "Tech Lead at MM Nova Tech: system design, code review culture, and delivery cadence.",
-        "From requirements to running infrastructure without the enterprise theater.",
+        "From requirements to running infrastructure, with the decisions written down where the next engineer will find them.",
       ],
     },
   ],
@@ -101,6 +108,18 @@ export const profile = {
       claim: "9+ years, currently Tech Lead @ MM Nova Tech",
       href: "https://www.linkedin.com/in/adityakdevin",
       note: "career history on LinkedIn",
+    },
+    // The section is called "verify me yourself" and cited a contribution graph
+    // three times. These two are the ones where the numbers name their source.
+    {
+      claim: "A public LLM endpoint with a $10 hard spend cap",
+      href: "/work/askaditya-terminal-assistant",
+      note: "every guardrail, with the file it lives in",
+    },
+    {
+      claim: "A claims linter that blocks my own unbacked numbers",
+      href: "/work/shipping-a-claims-lens",
+      note: "including the part where it was broken",
     },
   ],
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { profile } from "@/content/data/profile";
 import { getAttribution, track } from "@/lib/track";
 import { EMAIL_RE, withRef } from "@/lib/site";
@@ -31,6 +31,14 @@ export function ContactForm() {
     setErrors((prev) => ({ ...prev, [name]: err ?? "" }));
   }
 
+  // The success panel replaces the form, unmounting the focused button - focus
+  // falls to <body> and a screen-reader user loses their place. Focus in an
+  // effect, not in the fetch handler: the panel is not committed there yet.
+  const successRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
@@ -42,7 +50,13 @@ export function ContactForm() {
       if (err) nextErrors[field] = err;
     }
     setErrors(nextErrors);
-    if (Object.values(nextErrors).some(Boolean)) return;
+    if (Object.values(nextErrors).some(Boolean)) {
+      // Three role="alert" paragraphs can fire at once on an empty submit; the
+      // focus move is what makes that usable rather than just loud.
+      const first = ["name", "email", "message"].find((f) => nextErrors[f]);
+      if (first) form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      return;
+    }
 
     setStatus("submitting");
     try {
@@ -74,8 +88,10 @@ export function ContactForm() {
   if (status === "success") {
     return (
       <div
+        ref={successRef}
+        tabIndex={-1}
         role="status"
-        className="rounded border p-6"
+        className="rounded border p-6 outline-none"
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <p className="mono font-semibold" style={{ color: "var(--accent)" }}>
@@ -115,7 +131,7 @@ export function ContactForm() {
             style={{ borderColor: errors.name ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.name ? (
-            <p id="cf-name-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+            <p id="cf-name-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
               {errors.name}
             </p>
           ) : null}
@@ -136,7 +152,7 @@ export function ContactForm() {
             style={{ borderColor: errors.email ? "var(--error)" : "var(--border)", color: "var(--text)" }}
           />
           {errors.email ? (
-            <p id="cf-email-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+            <p id="cf-email-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
               {errors.email}
             </p>
           ) : null}
@@ -159,7 +175,7 @@ export function ContactForm() {
           style={{ borderColor: errors.message ? "var(--error)" : "var(--border)", color: "var(--text)" }}
         />
         {errors.message ? (
-          <p id="cf-message-err" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+          <p id="cf-message-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
             {errors.message}
           </p>
         ) : null}

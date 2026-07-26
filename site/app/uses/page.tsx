@@ -36,7 +36,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "AI",
     items: [
-      { name: "Claude API", note: "production LLM features and this site's upcoming assistant" },
+      { name: "Claude API", note: "production LLM features and this site's terminal assistant" },
       { name: "OpenAI API", note: "chat integrations from the article series and client work" },
     ],
   },
@@ -53,7 +53,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
 
 export default function UsesPage() {
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> which --all everything
       </p>
@@ -65,7 +65,7 @@ export default function UsesPage() {
 
       {groups.map((g) => (
         <section key={g.h} className="mt-10">
-          <h2 className="mono border-b pb-2 text-xl font-semibold" style={{ borderColor: "var(--border)" }}>
+          <h2 className="mono h-section border-b pb-2" style={{ borderColor: "var(--border)" }}>
             {g.h}
           </h2>
           <ul className="mt-4 space-y-3">

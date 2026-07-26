@@ -22,7 +22,7 @@ describe("case study publication gate (ceo-plan D4b - safety control)", () => {
     const draft: CaseStudy = {
       slug: "draft-client",
       title: "Draft Client Work",
-      query: "x",
+      date: "2026-01-01",
       summary: "unpublished, no permission on file",
       stack: ["Laravel"],
       client: "Client A",
@@ -35,9 +35,39 @@ describe("case study publication gate (ceo-plan D4b - safety control)", () => {
   });
 });
 
+// The honesty invariant. profile.ts asserts it in a prose comment and nothing
+// enforced it: the homepage promises every claim links to a checkable source,
+// so a published number without one is the site lying about itself.
+describe("published numbers are sourced and dated", () => {
+  it("every outcome on a published study carries a non-empty source", () => {
+    for (const c of publishedCaseStudies) {
+      for (const o of c.outcome ?? []) {
+        expect(o.source.trim(), `${c.slug} / ${o.metric}`).not.toBe("");
+      }
+    }
+  });
+
+  it("every published study has an ISO date", () => {
+    for (const c of publishedCaseStudies) {
+      expect(c.date, c.slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("a client study cannot publish without at least one sourced number", () => {
+    // Client attribution is the case where an unbacked figure does real damage.
+    for (const c of publishedCaseStudies) {
+      if (!c.client) continue;
+      expect(c.outcome?.length ?? 0, `${c.slug} names a client`).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe("bot corpus repo guard (ceo-plan row 8)", () => {
-  it("built system prompt contains no literal 'undefined' (repo-less studies safe)", () => {
-    expect(buildSystemPrompt()).not.toContain("undefined");
+  it("built system prompt never interpolates a missing repo (repo-less studies safe)", () => {
+    // The failure shape prompt.ts names: a repo-less study writing "- undefined"
+    // into the corpus. Asserted on that shape, not the bare word, because a case
+    // study about this very bug quotes the word in its prose.
+    expect(buildSystemPrompt()).not.toContain("- undefined");
   });
 
   it("only cites published studies in the corpus", () => {

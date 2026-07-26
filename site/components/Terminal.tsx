@@ -100,7 +100,12 @@ export function Terminal() {
                 ? "rate limit: 10 questions/hour - commands still work meanwhile."
                 : res.status === 422
                   ? "keep it under 300 characters - try a shorter question."
-                  : "AI mode is being wired up - soon I'll answer that. For now, try 'help'.",
+                  : // "being wired up" is TRUE for the deliberate 503 unconfigured
+                    // response and false for everything else, so it stays gated on
+                    // that reason instead of being the catch-all.
+                    data.reason === "unconfigured"
+                    ? "AI mode is being wired up - soon I'll answer that. For now, try 'help'."
+                    : "something went wrong reaching AI mode - commands still work. try 'help'.",
         });
         return;
       }
@@ -255,11 +260,19 @@ export function Terminal() {
             className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-base"
             style={{ color: "var(--dark-muted)" }}
           >
-            
+            {"[x]"}
           </button>
         </div>
 
-        <div ref={scrollRef} className="mono flex-1 space-y-1.5 overflow-y-auto p-4 text-sm">
+        {/* role="log" alone: aria-live="polite" and aria-relevant="additions" are
+            its implicit values. Streaming text is aria-hidden until the chunk
+            loop finishes, so a screen reader announces the finished answer once
+            instead of on every token. */}
+        <div
+          ref={scrollRef}
+          role="log"
+          className="mono flex-1 space-y-1.5 overflow-y-auto p-4 text-sm"
+        >
           {lines.map((line, i) => (
             <p
               key={i}
@@ -269,7 +282,7 @@ export function Terminal() {
               }}
             >
               {line.kind === "cmd" ? <span style={{ color: "var(--dark-accent)" }}>$ </span> : null}
-              {line.text}
+              {line.cursor ? <span aria-hidden>{line.text}</span> : line.text}
               {line.cursor ? <span className="cursor" aria-hidden /> : null}
             </p>
           ))}
@@ -301,7 +314,9 @@ export function Terminal() {
           className="flex items-center gap-2 border-t px-4 py-3"
           style={{ borderColor: "var(--dark-border)" }}
         >
-          <span className="mono text-sm" style={{ color: "var(--dark-accent)" }}>
+          {/* text-base on phones: anything under 16px makes iOS Safari zoom the
+              whole fixed panel on focus and never zoom back out. */}
+          <span className="mono text-base md:text-sm" style={{ color: "var(--dark-accent)" }}>
             $
           </span>
           <input
@@ -312,7 +327,7 @@ export function Terminal() {
             autoComplete="off"
             spellCheck={false}
             maxLength={300}
-            className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
+            className="mono min-h-11 flex-1 bg-transparent text-base outline-none md:text-sm"
             style={{ color: "var(--dark-text)" }}
             placeholder="ask anything - or 'help'"
           />

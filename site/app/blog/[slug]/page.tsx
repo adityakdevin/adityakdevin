@@ -24,7 +24,10 @@ export async function generateMetadata({
     title: post.title,
     description: post.description,
     // Self-canonical unless a legacy import points back at Dev.to.
-    alternates: { canonical: canonicalUrl(post) },
+    alternates: {
+      canonical: canonicalUrl(post),
+      types: { "application/rss+xml": "/blog/rss.xml" },
+    },
   };
 }
 
@@ -33,8 +36,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = getPost(slug);
   if (!post) notFound();
 
+  // w-full: mx-auto kills align-self:stretch on the flex-col body, so without it
+  // <main> shrinks to the min-content of the longest unbreakable token in the
+  // prose and the page scrolls sideways on phones.
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(articleJsonLd(post)) }}

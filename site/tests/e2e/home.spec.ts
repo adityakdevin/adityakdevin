@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { profile } from "@/content/data/profile";
 
 test.describe("homepage", () => {
   test("hero text is server-rendered (visible without JS)", async ({ browser, baseURL }) => {
@@ -6,7 +7,7 @@ test.describe("homepage", () => {
     const page = await ctx.newPage();
     await page.goto(baseURL!);
     await expect(page.getByRole("heading", { level: 1, name: "Aditya Kumar" })).toBeVisible();
-    await expect(page.getByText("I build Laravel & AI products that ship.")).toBeVisible();
+    await expect(page.getByText(profile.heroLine)).toBeVisible();
     await ctx.close();
   });
 
@@ -55,6 +56,24 @@ test.describe("homepage", () => {
     expect(persisted).toBe(flipped);
   });
 
+  // Regression: an ASCII-clean sweep (scripts/text-hygiene.mjs) emptied the
+  // glyphs in these two icon-only buttons and shipped them as blank 44x44
+  // boxes. Nothing caught it - a button with no text still passes every other
+  // assertion here. Replacement glyphs must survive that sweep.
+  test("terminal close button actually renders a glyph", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open AskAditya terminal" }).click();
+    await expect(page.getByRole("button", { name: "Close terminal" })).toHaveText(/\S/);
+  });
+
+  test("theme toggle actually renders a glyph", async ({ page, isMobile }) => {
+    test.skip(isMobile, "theme toggle is desktop-only");
+    await page.goto("/");
+    await page.mouse.wheel(0, 2000);
+    await page.waitForTimeout(300);
+    await expect(page.getByRole("button", { name: /switch to/i }).first()).toHaveText(/\S/);
+  });
+
   test("FAQ answers expand", async ({ page }) => {
     await page.goto("/");
     const q = page.getByText("Do you work with international clients?");
@@ -80,6 +99,9 @@ test.describe("contact form states (S5A)", () => {
     await page.getByLabel(/what are you building/i).fill("A test message long enough to pass.");
     await page.getByRole("button", { name: /send message/i }).click();
     await expect(page.getByText(/I reply within 24 hours/)).toBeVisible();
+    // The panel replaces the form, unmounting the focused button - without the
+    // focus move a screen-reader user is dumped back at <body>.
+    await expect(page.locator('[role="status"]')).toBeFocused();
   });
 
   test("API failure shows retry message with direct email fallback", async ({ page }) => {

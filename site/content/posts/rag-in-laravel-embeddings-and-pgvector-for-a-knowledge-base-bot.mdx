@@ -6,7 +6,7 @@ tags: ["Laravel", "AI", "PHP", "pgvector"]
 devtoId: 4159847
 ---
 
-In the [last post](https://adityadev.in/blog/streaming-ai-responses-in-laravel-with-server-sent-events) we streamed AI responses over SSE. Now let's fix the problem every chatbot hits in week one: the model doesn't know *your* data. Ask it about your refund policy or your API docs and it either hallucinates or shrugs.
+In the [last post](/blog/streaming-ai-responses-in-laravel-with-server-sent-events) we streamed AI responses over SSE. Now let's fix the problem every chatbot hits in week one: the model doesn't know *your* data. Ask it about your refund policy or your API docs and it either hallucinates or shrugs.
 
 RAG - retrieval-augmented generation - fixes that. Instead of hoping the model knows your content, you store your documents as embeddings, retrieve the few chunks relevant to each question, and hand only those to the model. Here's the whole pipeline in Laravel 11 with PostgreSQL and pgvector - no vector-database SaaS required.
 
@@ -243,7 +243,7 @@ Wire `KnowledgeBot::answer()` into the streaming controller from part 2 of this 
 
 ## What's next
 
-Retrieval makes the model *knowledgeable*. The next step makes it *capable*: in part 4 we'll build AI agents in PHP - giving the model tools it can call (search orders, create tickets, query your database) and handling the tool-calling loop safely in Laravel. That's where chatbots turn into products.
+Retrieval makes the model *knowledgeable*. The next step makes it *capable*: in part 4 we [build AI agents in PHP](/blog/building-ai-agents-in-php-tool-calling-with-laravel) - giving the model tools it can call (search orders, create tickets, query your database) and handling the tool-calling loop safely in Laravel. That's where chatbots turn into products.
 
 ---
 

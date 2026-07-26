@@ -38,6 +38,68 @@ test.describe("case study /work/budgetgen", () => {
   });
 });
 
+// /work 404s below MIN_STUDIES and stayed 404 for the whole launch. It is live
+// now on two own-work studies, which is the point: no client inbox was involved.
+test.describe("/work index", () => {
+  test("lists every published study, newest first", async ({ page }) => {
+    const res = await page.goto("/work");
+    expect(res?.status()).toBe(200);
+    const hrefs = await page.locator("main ul li h2 a").evaluateAll((as) =>
+      as.map((a) => a.getAttribute("href")),
+    );
+    expect(hrefs.length).toBeGreaterThanOrEqual(2);
+    expect(hrefs[hrefs.length - 1]).toBe("/work/budgetgen"); // oldest date, last
+  });
+
+  test("every published stat renders its source", async ({ page }) => {
+    await page.goto("/work/askaditya-terminal-assistant");
+    // The honesty invariant, at the render layer: a number with no visible
+    // provenance is the site breaking its own "check it in ten seconds" promise.
+    await expect(page.getByText("site/app/api/chat/route.ts (SPEND_CAP_USD)")).toBeVisible();
+  });
+
+  // Regression: ISSUE-001 - nav said "work" and went to /#work (a homepage
+  // anchor showing one lead project) while /work, the live index, was reachable
+  // only from the footer. Found by /qa on 2026-07-26.
+  // Report: .gstack/qa-reports/qa-report-adityadev-in-2026-07-26.md
+  test("nav 'work' points at the live index, not the homepage anchor", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto("/uses"); // any subpage: chrome renders immediately off-home
+    const nav = isMobile ? page.locator("nav.md\\:hidden") : page.getByRole("banner");
+    await expect(nav.getByRole("link", { name: /work/i }).first()).toHaveAttribute(
+      "href",
+      "/work",
+    );
+  });
+
+  // Regression: ISSUE-001b - the homepage Proof section summarised an index it
+  // never linked to. Found by /qa on 2026-07-26.
+  test("the homepage proof section links to the work index", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('#work a[href="/work"]')).toHaveCount(1);
+  });
+
+  // Regression: ISSUE-002 - `date` became a required field to drive the index
+  // sort, but the index never rendered it, so the ordering was invisible.
+  // Found by /qa on 2026-07-26.
+  test("the index renders each study's date", async ({ page }) => {
+    await page.goto("/work");
+    // first p in each li is the date; the stack line is also p.mono
+    const dates = await page.locator("main ul li p:first-of-type").allTextContents();
+    expect(dates.length).toBeGreaterThanOrEqual(2);
+    for (const d of dates) expect(d.trim()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // newest first
+    expect([...dates].sort().reverse().join()).toBe(dates.join());
+  });
+
+  test("the case study is not a leaf - it links back to the index", async ({ page }) => {
+    await page.goto("/work/shipping-a-claims-lens");
+    await expect(page.getByRole("link", { name: /all work/i })).toHaveAttribute("href", "/work");
+  });
+});
+
 test.describe("terminal widget (offline mode)", () => {
   test("opens, boots, and answers help + whoami", async ({ page }) => {
     await page.goto("/");

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { profile } from "@/content/data/profile";
+import { publishedCaseStudies } from "@/content/data/work";
 import { withRef } from "@/lib/site";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -112,6 +113,12 @@ function CalendarIcon() {
  * - Every other page: header visible immediately - trunk test requires site ID + nav on landing.
  * - Mobile: fixed bottom tab bar (native-app nav) - always visible, safe-area aware.
  */
+// The nav said "work" and went to a homepage anchor showing ONE lead project,
+// while /work (three case studies) was reachable only from the footer. Gated on
+// the same >=2 rule the index and sitemap use, so it falls back to the anchor
+// rather than a 404 if studies are unpublished.
+const WORK_HREF = publishedCaseStudies.length >= 2 ? "/work" : "/#work";
+
 export function StickyChrome() {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -134,7 +141,10 @@ export function StickyChrome() {
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
         style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-        aria-hidden={!visible}
+        // inert, not aria-hidden: aria-hidden left the 7 links tabbable, so the
+        // first Tab on the page focused a header translated off-screen. inert
+        // removes them from the tab order and implies aria-hidden.
+        inert={!visible}
       >
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <Link
@@ -146,7 +156,7 @@ export function StickyChrome() {
             {profile.handle}
           </Link>
           <nav className="mono flex items-center gap-6 text-sm" aria-label="Site">
-            <Link href="/#work" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+            <Link href={WORK_HREF} className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
               ~/work
             </Link>
             <Link href="/cv" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
@@ -184,6 +194,15 @@ export function StickyChrome() {
             <Logo />
             {profile.handle}
           </Link>
+          {/* Subpages only - this bar does not render on the homepage, where the
+              footer carries the mobile path to /hire. */}
+          <Link
+            href="/hire"
+            className="mono flex min-h-11 items-center text-sm no-underline"
+            style={{ color: "var(--accent)" }}
+          >
+            ~/hire
+          </Link>
         </div>
       ) : null}
 
@@ -202,7 +221,7 @@ export function StickyChrome() {
           <Tab href="/" label="home" active={isHome}>
             <HomeIcon />
           </Tab>
-          <Tab href="/#work" label="work" active={false}>
+          <Tab href={WORK_HREF} label="work" active={pathname.startsWith("/work")}>
             <CodeIcon />
           </Tab>
           <Tab href="/cv" label="cv" active={pathname === "/cv"}>

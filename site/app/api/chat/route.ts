@@ -91,7 +91,14 @@ export async function POST(req: NextRequest) {
 
   const result = streamText({
     model: MODEL,
-    system: SYSTEM_PROMPT,
+    // Object form, not a bare string: the cache breakpoint has to sit ON the
+    // system message. The whole corpus rides here, so every request after the
+    // first in a TTL window reads it from cache instead of re-billing it.
+    system: {
+      role: "system",
+      content: SYSTEM_PROMPT,
+      providerOptions: { anthropic: { cacheControl: { type: "ephemeral" } } },
+    },
     prompt: message,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     providerOptions: { gateway: { tags: ["feature:askaditya"], user: ip } },

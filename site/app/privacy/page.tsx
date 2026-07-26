@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 /** Privacy (SPEC S5, outside voice T5): plain language, no legalese theater. */
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat privacy.md
       </p>
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
 
       <section className="mt-10 space-y-8">
         <div>
-          <h2 className="mono text-xl font-semibold">Analytics</h2>
+          <h2 className="mono h-section">Analytics</h2>
           <p className="mt-2">
             The site uses Google Analytics 4 to count visits and see which pages people read. It
             collects approximate location (city level), device type, and pages visited. I use this
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Contact form</h2>
+          <h2 className="mono h-section">Contact form</h2>
           <p className="mt-2">
             When you send a message, your name, email, and message are emailed to me via Mailtrap
             and land in my inbox ({profile.email}). The form also notes which page you were on
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Newsletter</h2>
+          <h2 className="mono h-section">Newsletter</h2>
           <p className="mt-2">
             If you subscribe to the field notes, your email address is sent to Buttondown, the
             service that delivers the emails and has its own privacy policy. You&apos;ll get a
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Booking</h2>
+          <h2 className="mono h-section">Booking</h2>
           <p className="mt-2">
             &ldquo;Book a call&rdquo; goes to cal.com, which handles the scheduling and has its
             own privacy policy. I receive the details you enter there (name, email, notes).
@@ -62,16 +62,19 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">The AI assistant (when it ships)</h2>
+          <h2 className="mono h-section">The AI assistant</h2>
           <p className="mt-2">
-            A chat widget is planned. When live: messages you type will be sent to Anthropic&apos;s
-            Claude API to generate answers, and may be logged by me to debug quality. Don&apos;t
-            paste anything sensitive into it - it&apos;s for asking about my work.
+            The terminal widget in the corner is live. Messages you type are sent to
+            Anthropic&apos;s Claude API through the Vercel AI Gateway to generate an answer, and
+            may be logged by me to debug quality. Your IP address is attached to the request as
+            the gateway&apos;s user identifier, which is what enforces the per-visitor rate limit
+            of ten questions an hour. Don&apos;t paste anything sensitive into it - it&apos;s for
+            asking about my work.
           </p>
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Cookies &amp; storage</h2>
+          <h2 className="mono h-section">Cookies &amp; storage</h2>
           <p className="mt-2">
             Your theme choice (dark/light) is kept in your browser&apos;s localStorage. GA4 sets
             its standard cookies. That&apos;s the whole list.
@@ -79,7 +82,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Removal</h2>
+          <h2 className="mono h-section">Removal</h2>
           <p className="mt-2">
             Want anything you sent me deleted? Email{" "}
             <a href={`mailto:${profile.email}`}>{profile.email}</a> and it&apos;s gone within a

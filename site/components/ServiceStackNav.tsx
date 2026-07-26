@@ -11,9 +11,20 @@ const STACKS = [
   { key: "python", label: "Python", href: "/services/python-ai-development" },
 ] as const;
 
-export function ServiceStackNav({ current }: { current: "laravel" | "node" | "python" }) {
+/**
+ * `current` is optional so the same row can sit on pages that are not one of the
+ * three (home, /hire), where every stack renders as a link. Those two placements
+ * are the only inbound internal links the service cluster has.
+ */
+export function ServiceStackNav({
+  current,
+  className = "mb-8",
+}: {
+  current?: "laravel" | "node" | "python";
+  className?: string;
+}) {
   return (
-    <p className="mono mb-8 text-sm" style={{ color: "var(--muted)" }}>
+    <p className={`mono text-sm ${className}`} style={{ color: "var(--muted)" }}>
       AI integration for:{" "}
       {STACKS.map((s, i) => (
         <span key={s.key}>

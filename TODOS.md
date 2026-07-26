@@ -80,6 +80,22 @@ to the bottom with their shipping version/date.
 - **Context:** Decided at /plan-eng-review 2026-07-18, deferred through the v1 build 2026-07-18. Renderer is `apps/infographic/templates.mjs` `diagramBody()` - nodes are `.dnode` divs; a logo would sit above the label. Needs an assets dir + a `logo` field on satellites.
 - **Depends on / blocked by:** none (diagram layout ships text-only now).
 
+## Site polish
+
+### /hire and /work have no OG card of their own
+- **What:** Both inherit the root `opengraph-image`. Give each one, ~10 lines against `lib/og.tsx`, matching the pattern already used by `/cv`, the case studies and all four service routes.
+- **Why:** `/hire` ships at sitemap priority 0.9 and is the conversion page; `/work` went live with three case studies. Both are the pages most likely to be shared into a Slack or a DM, and both show the generic site card.
+- **Pros:** Cheap, purely additive, no new dependency.
+- **Cons:** None worth naming.
+- **Context:** Found by /qa on 2026-07-26 (ISSUE-003), branch `feat/site-upgrade-phases-0-4`. Deferred as low severity under Standard tier. Verified NOT broken - the root card resolves 200 - this is an upgrade, not a fix.
+
+### "View it live" is circular on the AskAditya case study
+- **What:** `/work/askaditya-terminal-assistant` sets `liveUrl: https://adityadev.in`, so the button sends a reader from the case study to the homepage. The widget they would be going to look at is already in the corner of the page they are reading.
+- **Why:** Either drop `liveUrl` for own-site studies or relabel the button (e.g. "open the terminal") so the destination matches the promise.
+- **Pros:** One data-file line either way.
+- **Cons:** Needs a small render change if the fix is a relabel rather than a removal.
+- **Context:** Found by /qa on 2026-07-26 (ISSUE-004). Deferred as low severity.
+
 ## Completed
 
 ### Retroactive canonical migration of top Dev.to posts

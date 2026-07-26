@@ -56,8 +56,11 @@ test.describe("post page → CTA flow (runs when posts exist)", () => {
     const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
     await page.goto(hrefs.reduce((a, b) => (b.length > a.length ? b : a)));
     await expect(page.locator("article.prose-post")).toBeVisible();
+    // clientWidth, not window.innerWidth: under Playwright's isMobile emulation
+    // innerWidth reports the 768px layout width while the viewport is 390px, so
+    // innerWidth hid this exact overflow bug.
     const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - window.innerWidth,
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     expect(overflow).toBeLessThanOrEqual(1);
   });
@@ -177,6 +180,7 @@ test.describe("regressions", () => {
       "/uses",
       "/work/budgetgen",
       "/services/laravel-ai-development",
+      "/hire",
     ]) {
       expect(body).toContain(`<loc>https://adityadev.in${path}</loc>`);
     }

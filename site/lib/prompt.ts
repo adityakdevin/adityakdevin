@@ -5,8 +5,9 @@ import { publishedCaseStudies } from "@/content/data/work";
 /**
  * Cached full-corpus system prompt for /api/chat (SPEC S6).
  * Built from the same single-source data files as the pages - no second copy
- * of facts to drift. The whole corpus rides in the system block and is served
- * from Anthropic's prompt cache after the first request of each TTL window.
+ * of facts to drift. The whole corpus rides in the system block, which carries
+ * an ephemeral cache breakpoint (app/api/chat/route.ts) so it is read from
+ * Anthropic's prompt cache after the first request of each TTL window.
  *
  * Prompt-injection posture (S6): no tools, no secrets anywhere in this text,
  * and the widget renders output as plain text only.

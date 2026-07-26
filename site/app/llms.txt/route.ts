@@ -28,7 +28,15 @@ ${services}
 
 ## Pages
 - [Home](${profile.website}/): services, featured work, FAQ, booking
+- [Hire me](${profile.website}/hire): availability, engagement models, and the contact form
+- [AI Integration Audit](${profile.website}/services/ai-integration-audit): one week, fixed price, build-ready spec
+- [Laravel + AI](${profile.website}/services/laravel-ai-development): AI/LLM features in Laravel apps
+- [Node + AI](${profile.website}/services/nodejs-ai-development): AI/LLM features in Node and Next.js apps
+- [Python + AI](${profile.website}/services/python-ai-development): Python AI services alongside a PHP or Node app
+- [Blog](${profile.website}/blog): field notes on shipping Laravel + AI
 - [CV](${profile.website}/cv): full experience, skills, and selected projects
+- [Now](${profile.website}/now): what I am working on this month
+- [Uses](${profile.website}/uses): tools, editor, and stack
 - [Privacy](${profile.website}/privacy): data handling
 
 ## FAQ
