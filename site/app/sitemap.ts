@@ -34,9 +34,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ? [{ url: `${base}/work`, changeFrequency: "monthly" as const, priority: 0.6 }]
       : []),
     ...studies,
+    // The productized offer, stack-neutral - the head term the three per-stack
+    // pages deliberately do not chase.
+    { url: `${base}/services/ai-integration-audit`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/services/laravel-ai-development`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/services/nodejs-ai-development`, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${base}/services/python-ai-development`, changeFrequency: "monthly", priority: 0.9 },
+    // 0.7, not 0.9: the Python page has no Python proof in the repo yet. Restore
+    // it to 0.9 when the eval-harness post and its public repo ship.
+    { url: `${base}/services/python-ai-development`, changeFrequency: "monthly", priority: 0.7 },
     // /blog is listed when ANY post renders the index - legacy imports keep
     // their own canonical but still populate the page (red-team: gate on
     // content, not on the canonical-filtered subset).

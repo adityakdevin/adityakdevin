@@ -8,6 +8,7 @@ import { personJsonLd, profilePageJsonLd, faqJsonLd, jsonLdScript } from "@/lib/
 import { Hero } from "@/components/Hero";
 import { Reveal } from "@/components/Reveal";
 import { ContactForm } from "@/components/ContactForm";
+import { ServiceStackNav } from "@/components/ServiceStackNav";
 
 function Eyebrow({ cmd }: { cmd: string }) {
   return (
@@ -87,6 +88,9 @@ export default async function Home() {
             </div>
           ))}
         </div>
+        {/* The service cluster's only inbound link from the homepage - without it
+            the three /services/* pages ship at sitemap priority 0.9 orphaned. */}
+        <ServiceStackNav className="mt-8" />
       </section>
 
       {/* 4 - Featured work: ONE lead narrative + compact links (cards return in P2 when clickable) */}
@@ -148,7 +152,7 @@ export default async function Home() {
           {profile.verify.map((v) => (
             <li key={v.claim} className="flex flex-wrap items-baseline gap-2">
               <span className="mono" style={{ color: "var(--accent)" }}>
-                
+                [ok]
               </span>
               <a href={v.href} className="font-medium">
                 {v.claim}
@@ -213,9 +217,12 @@ export default async function Home() {
         <Eyebrow cmd="man hiring-aditya" />
         <H2>Before you book</H2>
         <div className="mt-8 max-w-3xl space-y-3">
-          {faq.map((item) => (
+          {faq.map((item, i) => (
             <details
               key={item.q}
+              // The site's only price sits in faq[1]; open it so it is not behind
+              // a guess-which-of-six click. Server component, no handler.
+              open={i === 1}
               className="group rounded border"
               style={{ borderColor: "var(--border)", background: "var(--surface)" }}
             >
@@ -255,7 +262,11 @@ export default async function Home() {
                 <li>
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </li>
-                {profile.phone ? <li>{profile.phone}</li> : null}
+                {profile.phone ? (
+                  <li>
+                    <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>{profile.phone}</a>
+                  </li>
+                ) : null}
                 <li>
                   <a href={profile.linkedin}>LinkedIn</a> · <a href={profile.github}>GitHub</a> ·{" "}
                   <a href={profile.twitter}>X</a>

@@ -69,6 +69,11 @@ main a:not(.btn):not(.no-underline):hover { text-decoration-color: var(--accent)
 main a:not(.btn):not(.no-underline):visited { text-decoration-color: color-mix(in srgb, var(--accent) 50%, var(--muted)); }
 main a:not(.btn).no-underline:hover { color: var(--accent); }
 
+/* Footer sits outside <main>, so the link rules above never reached it -
+   without this its links were indistinguishable from plain text. */
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
 .btn:active { transform: translateY(1px); }
 .btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
 .btn:hover { filter: brightness(1.08); }
