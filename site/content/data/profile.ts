@@ -7,6 +7,10 @@ export const profile = {
   handle: "adityakdevin",
   headline: "Full Stack Developer · AI Engineer · Solution Architect",
   valueLine: "I build Laravel & AI products that ship.",
+  // The sharp version, rendered in the hero and on /hire. valueLine stays broad
+  // because llms.txt, JSON-LD and the bot corpus all read it and should keep the
+  // full-stack breadth. This used to be a second copy inside app/hire/page.tsx.
+  heroLine: "I ship production AI/LLM features into Laravel & Node apps - not demos.",
   role: "Tech Lead",
   company: "MM Nova Tech",
   yearsExperience: "9+",
@@ -41,13 +45,13 @@ export const profile = {
       claim: "Chatbots, automations, and AI workflows that survive real users",
       lines: [
         "LLM chatbots, streaming interfaces, and automation wired into real products - not demos.",
-        "OpenAI & Claude APIs, prompt architecture, cost-hardened endpoints.",
+        "OpenAI & Claude APIs with rate limits, spend caps, streaming and evals - because an AI feature is judged by what happens when the API is slow, wrong, or down.",
       ],
     },
     {
       n: "02",
       title: "Full Stack Delivery",
-      claim: "End-to-end web products, backend to pixels",
+      claim: "I own the thing after it ships, not just until it merges",
       lines: [
         "Laravel, Vue/Nuxt, React/Next.js - 9+ years of shipped systems for real businesses.",
         "Payments (Stripe, Razorpay), integrations, and the unglamorous plumbing done right.",
@@ -56,10 +60,10 @@ export const profile = {
     {
       n: "03",
       title: "Architecture & Leadership",
-      claim: "Solution design and teams that deliver",
+      claim: "Solution design without the enterprise theater",
       lines: [
         "Tech Lead at MM Nova Tech: system design, code review culture, and delivery cadence.",
-        "From requirements to running infrastructure without the enterprise theater.",
+        "From requirements to running infrastructure, with the decisions written down where the next engineer will find them.",
       ],
     },
   ],

@@ -100,7 +100,12 @@ export function Terminal() {
                 ? "rate limit: 10 questions/hour - commands still work meanwhile."
                 : res.status === 422
                   ? "keep it under 300 characters - try a shorter question."
-                  : "AI mode is being wired up - soon I'll answer that. For now, try 'help'.",
+                  : // "being wired up" is TRUE for the deliberate 503 unconfigured
+                    // response and false for everything else, so it stays gated on
+                    // that reason instead of being the catch-all.
+                    data.reason === "unconfigured"
+                    ? "AI mode is being wired up - soon I'll answer that. For now, try 'help'."
+                    : "something went wrong reaching AI mode - commands still work. try 'help'.",
         });
         return;
       }

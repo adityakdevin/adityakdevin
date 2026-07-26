@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { profile } from "@/content/data/profile";
 
 test.describe("homepage", () => {
   test("hero text is server-rendered (visible without JS)", async ({ browser, baseURL }) => {
@@ -6,7 +7,7 @@ test.describe("homepage", () => {
     const page = await ctx.newPage();
     await page.goto(baseURL!);
     await expect(page.getByRole("heading", { level: 1, name: "Aditya Kumar" })).toBeVisible();
-    await expect(page.getByText("I build Laravel & AI products that ship.")).toBeVisible();
+    await expect(page.getByText(profile.heroLine)).toBeVisible();
     await ctx.close();
   });
 

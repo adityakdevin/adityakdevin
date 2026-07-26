@@ -13,11 +13,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hire" },
 };
 
-// /hire-specific wedge (design D1): the sharp Laravel+AI line lives here, at the
-// conversion point. Global profile.headline/valueLine stay broad (home, JSON-LD,
-// llms.txt, bot corpus keep full-stack breadth). See ceo-plan row 3.
-const HIRE_WEDGE = "I ship production AI/LLM features into Laravel & Node apps - not demos.";
-
 // Freelance marketplaces + direct channels, in preference order.
 const channels = [
   { label: "Upwork", href: profile.upwork, note: "Hourly & fixed-scope contracts" },
@@ -34,7 +29,7 @@ export default function HirePage() {
       {/* Header - the hook: wedge line + high-intent CTAs */}
       <header>
         <h1 className="mono h2-rule text-4xl font-semibold">Hire me</h1>
-        <p className="mt-3 text-lg font-medium">{HIRE_WEDGE}</p>
+        <p className="mt-3 text-lg font-medium">{profile.heroLine}</p>
         <p className="mt-2" style={{ color: "var(--muted)" }}>
           {profile.yearsExperience} years shipping Laravel, Node, Python, and production AI/LLM
           features - backend to pixels. Available for contract work worldwide.

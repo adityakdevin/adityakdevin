@@ -37,16 +37,19 @@ export default function NowPage() {
         <div>
           <h2 className="mono text-xl font-semibold">Writing the Laravel + AI series</h2>
           <p className="mt-2">
-            Publishing a hands-on series on <a href={profile.devto}>Dev.to</a> - chatbots,
-            streaming responses with SSE, and next up: RAG with pgvector. New article roughly
-            every two weeks.
+            Publishing a hands-on series - chatbots, streaming with SSE, RAG with pgvector,
+            tool-calling agents, and queue-based AI workflows. Canonical on{" "}
+            <a href="/blog">the blog</a>, syndicated to <a href={profile.devto}>Dev.to</a>. New
+            article on the 1st and the 15th.
           </p>
         </div>
         <div>
           <h2 className="mono text-xl font-semibold">Rebuilding this site</h2>
           <p className="mt-2">
             You&apos;re looking at it - a ground-up rebuild in Next.js with an AI-era focus. The
-            terminal assistant in the corner is part of the same project; its AI mode ships next.
+            terminal assistant in the corner is part of the same project and its AI mode is live;
+            how it is guarded is written up in{" "}
+            <a href="/work/askaditya-terminal-assistant">the case study</a>.
           </p>
         </div>
         <div>

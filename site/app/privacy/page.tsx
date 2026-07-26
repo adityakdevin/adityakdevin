@@ -62,11 +62,14 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">The AI assistant (when it ships)</h2>
+          <h2 className="mono text-xl font-semibold">The AI assistant</h2>
           <p className="mt-2">
-            A chat widget is planned. When live: messages you type will be sent to Anthropic&apos;s
-            Claude API to generate answers, and may be logged by me to debug quality. Don&apos;t
-            paste anything sensitive into it - it&apos;s for asking about my work.
+            The terminal widget in the corner is live. Messages you type are sent to
+            Anthropic&apos;s Claude API through the Vercel AI Gateway to generate an answer, and
+            may be logged by me to debug quality. Your IP address is attached to the request as
+            the gateway&apos;s user identifier, which is what enforces the per-visitor rate limit
+            of ten questions an hour. Don&apos;t paste anything sensitive into it - it&apos;s for
+            asking about my work.
           </p>
         </div>
 

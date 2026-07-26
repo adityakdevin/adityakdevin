@@ -36,7 +36,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "AI",
     items: [
-      { name: "Claude API", note: "production LLM features and this site's upcoming assistant" },
+      { name: "Claude API", note: "production LLM features and this site's terminal assistant" },
       { name: "OpenAI API", note: "chat integrations from the article series and client work" },
     ],
   },
