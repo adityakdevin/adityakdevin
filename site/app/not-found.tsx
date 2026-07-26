@@ -28,6 +28,12 @@ export default function NotFound() {
             <Link href="/#work">./work</Link>
           </li>
           <li>
+            <Link href="/blog">./blog</Link>
+          </li>
+          <li>
+            <Link href="/hire">./hire</Link>
+          </li>
+          <li>
             <Link href="/#contact">./contact</Link>
           </li>
         </ul>

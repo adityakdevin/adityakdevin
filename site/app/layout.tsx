@@ -30,7 +30,9 @@ export const metadata: Metadata = {
     template: `%s · ${profile.name} (${profile.handle})`,
   },
   description: `${profile.name} (${profile.handle}) - ${profile.role} @ ${profile.company}. ${profile.yearsExperience} years building Laravel, Vue & React products, now shipping AI/LLM features into production. Based in Lucknow, India. Available for AI integration and full-stack projects.`,
-  alternates: { canonical: "./" },
+  // Next merges `alternates` shallowly and every content page sets its own, so
+  // the feed link has to be repeated on /blog and /blog/[slug] to render there.
+  alternates: { canonical: "./", types: { "application/rss+xml": "/blog/rss.xml" } },
   openGraph: {
     siteName: `${profile.name} - ${profile.handle}`,
     type: "website",
