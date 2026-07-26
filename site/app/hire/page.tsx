@@ -21,7 +21,7 @@ const channels = [
   { label: "LinkedIn", href: profile.linkedin, note: "Career history & referrals" },
 ] as const;
 
-const sectionHead = "mono border-b pb-2 text-xl font-semibold";
+const sectionHead = "mono h-section border-b pb-2";
 
 export default function HirePage() {
   return (

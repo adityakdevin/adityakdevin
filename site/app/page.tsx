@@ -26,7 +26,7 @@ function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <h2
       id={id}
-      className="mono h2-rule scroll-mt-20 text-3xl font-semibold tracking-tight md:text-4xl"
+      className="mono h-section h2-rule scroll-mt-20 tracking-tight"
     >
       {children}
     </h2>

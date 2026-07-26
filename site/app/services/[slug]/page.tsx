@@ -32,7 +32,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServicePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const service = getService(slug);
   if (!service) notFound();
@@ -56,15 +60,19 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: jsonLdScript(serviceJsonLd) }}
       />
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
-        <span style={{ color: "var(--accent)" }}>$</span> cat services/{service.file}
+        <span style={{ color: "var(--accent)" }}>$</span> cat services/
+        {service.file}
       </p>
-      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">{service.h1}</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">
+        {service.h1}
+      </h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
-        Agencies sell you a bench. I&apos;m {profile.name} - {profile.role} @ {profile.company},{" "}
-        {profile.yearsExperience} years of {service.leadExperience} - and I build AI features
-        into {service.leadObject} with my own hands. The terminal assistant on{" "}
-        <Link href="/">this site&apos;s homepage</Link> runs on the same patterns I ship to
-        clients.
+        Agencies sell you a bench. I&apos;m {profile.name} - {profile.role} @{" "}
+        {profile.company}, {profile.yearsExperience} years of{" "}
+        {service.leadExperience} - and I build AI features into{" "}
+        {service.leadObject} with my own hands. The terminal assistant on{" "}
+        <Link href="/">this site&apos;s homepage</Link> runs on the same
+        patterns I ship to clients.
       </p>
 
       <div className="mt-8">
@@ -73,16 +81,19 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
       {service.capabilities.map((c) => (
         <section key={c.h} className="mt-10">
-          <h2 className="mono h2-rule text-2xl font-semibold">{c.h}</h2>
+          <h2 className="mono h-section h2-rule">{c.h}</h2>
           <p className="mt-6">{c.body}</p>
         </section>
       ))}
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">Who this is for</h2>
+        <h2 className="mono h-section h2-rule">Who this is for</h2>
         <div className="mt-6 grid gap-8 md:grid-cols-2">
           <div>
-            <p className="mono text-sm font-semibold" style={{ color: "var(--accent)" }}>
+            <p
+              className="mono text-sm font-semibold"
+              style={{ color: "var(--accent)" }}
+            >
               A good fit
             </p>
             <ul className="mt-3 space-y-2">
@@ -94,7 +105,10 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           <div>
             {/* Saying who this is NOT for is the cheapest trust signal available
                 and no page on the site had one. */}
-            <p className="mono text-sm font-semibold" style={{ color: "var(--muted)" }}>
+            <p
+              className="mono text-sm font-semibold"
+              style={{ color: "var(--muted)" }}
+            >
               Not a fit
             </p>
             <ul className="mt-3 space-y-2" style={{ color: "var(--muted)" }}>
@@ -107,11 +121,14 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">How an engagement works</h2>
+        <h2 className="mono h-section h2-rule">How an engagement works</h2>
         <ol className="mt-6 space-y-6">
           {PROCESS(service.auditCodebase).map((p) => (
             <li key={p.step} className="flex gap-4">
-              <span className="mono text-sm font-semibold" style={{ color: "var(--accent)" }}>
+              <span
+                className="mono text-sm font-semibold"
+                style={{ color: "var(--accent)" }}
+              >
                 {p.step}
               </span>
               <div>
@@ -130,13 +147,16 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <h2 className="mono text-xl font-semibold">
-          <span style={{ color: "var(--accent)" }}>The offer:</span> AI Integration Audit
+          <span style={{ color: "var(--accent)" }}>The offer:</span> AI
+          Integration Audit
         </h2>
         <p className="mt-2">
-          One week, fixed price, quoted on the call. You get a build-ready spec naming the 2-3 AI
-          integrations with the highest ROI for your {service.offerObject}
-          {" - with cost, latency, and risk spelled out. "} If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo;
-          you&apos;ll get that in writing instead, and it costs you the call.
+          One week, fixed price, quoted on the call. You get a build-ready spec
+          naming the 2-3 AI integrations with the highest ROI for your{" "}
+          {service.offerObject}
+          {" - with cost, latency, and risk spelled out."} If the honest answer
+          is &ldquo;AI doesn&apos;t help here,&rdquo; you&apos;ll get that in
+          writing instead, and it costs you the call.
         </p>
         <div className="mt-5 flex flex-wrap gap-4">
           <a
@@ -157,14 +177,15 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">Proof, not promises</h2>
+        <h2 className="mono h-section h2-rule">Proof, not promises</h2>
         {/* This paragraph used to promise "case studies with named clients and
             real numbers" and link a solo Laravel CRUD app with neither. It now
             describes what the destination actually delivers. Restore the
             named-client wording when client studies land (plan phase 2). */}
         <p className="mt-6">
-          Read the <Link href="/blog">field notes</Link> - end-to-end build walkthroughs of real
-          projects - or the <a href={profile.devto}>{service.devtoSeries}</a>.
+          Read the <Link href="/blog">field notes</Link> - end-to-end build
+          walkthroughs of real projects - or the{" "}
+          <a href={profile.devto}>{service.devtoSeries}</a>.
         </p>
         <ul className="mt-4 space-y-3">
           {service.proof.map((p) => (

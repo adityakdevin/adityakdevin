@@ -23,7 +23,7 @@ export default function PrivacyPage() {
 
       <section className="mt-10 space-y-8">
         <div>
-          <h2 className="mono text-xl font-semibold">Analytics</h2>
+          <h2 className="mono h-section">Analytics</h2>
           <p className="mt-2">
             The site uses Google Analytics 4 to count visits and see which pages people read. It
             collects approximate location (city level), device type, and pages visited. I use this
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Contact form</h2>
+          <h2 className="mono h-section">Contact form</h2>
           <p className="mt-2">
             When you send a message, your name, email, and message are emailed to me via Mailtrap
             and land in my inbox ({profile.email}). The form also notes which page you were on
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Newsletter</h2>
+          <h2 className="mono h-section">Newsletter</h2>
           <p className="mt-2">
             If you subscribe to the field notes, your email address is sent to Buttondown, the
             service that delivers the emails and has its own privacy policy. You&apos;ll get a
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Booking</h2>
+          <h2 className="mono h-section">Booking</h2>
           <p className="mt-2">
             &ldquo;Book a call&rdquo; goes to cal.com, which handles the scheduling and has its
             own privacy policy. I receive the details you enter there (name, email, notes).
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">The AI assistant</h2>
+          <h2 className="mono h-section">The AI assistant</h2>
           <p className="mt-2">
             The terminal widget in the corner is live. Messages you type are sent to
             Anthropic&apos;s Claude API through the Vercel AI Gateway to generate an answer, and
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Cookies &amp; storage</h2>
+          <h2 className="mono h-section">Cookies &amp; storage</h2>
           <p className="mt-2">
             Your theme choice (dark/light) is kept in your browser&apos;s localStorage. GA4 sets
             its standard cookies. That&apos;s the whole list.
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="mono text-xl font-semibold">Removal</h2>
+          <h2 className="mono h-section">Removal</h2>
           <p className="mt-2">
             Want anything you sent me deleted? Email{" "}
             <a href={`mailto:${profile.email}`}>{profile.email}</a> and it&apos;s gone within a

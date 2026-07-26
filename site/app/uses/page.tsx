@@ -65,7 +65,7 @@ export default function UsesPage() {
 
       {groups.map((g) => (
         <section key={g.h} className="mt-10">
-          <h2 className="mono border-b pb-2 text-xl font-semibold" style={{ borderColor: "var(--border)" }}>
+          <h2 className="mono h-section border-b pb-2" style={{ borderColor: "var(--border)" }}>
             {g.h}
           </h2>
           <ul className="mt-4 space-y-3">

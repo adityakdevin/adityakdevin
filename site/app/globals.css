@@ -86,6 +86,11 @@ footer a:hover { color: var(--accent); text-decoration: underline; text-underlin
 .btn { transition: filter 150ms ease-out, transform 100ms ease-out; }
 .btn:hover { filter: brightness(1.08); }
 
+/* Section h2s were 20px on /privacy /now /uses /hire, 24px on services and work,
+   and 30/36px on the homepage - three sizes for one role. Size only: the cyan bar
+   stays an h1 signature, and adding it under ~15 more h2s would be a redesign. */
+.h-section { font-size: 1.5rem; font-weight: 600; }
+
 /* Signature rule: cyan bar under every section heading - carries brand below the hero */
 .h2-rule::after {
   content: "";

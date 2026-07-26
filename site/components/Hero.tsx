@@ -155,7 +155,7 @@ export function Hero() {
       </div>
 
       {/* Fold hint: seam into the light/next content */}
-      <div className="mx-auto w-full max-w-5xl px-6 pb-5">
+      <div className="mx-auto w-full max-w-7xl px-6 pb-5">
         <p className="mono text-xs" style={{ color: "var(--dark-muted)" }}>
           <span style={{ color: "var(--dark-accent)" }}>$</span> scroll --to proof ↓
         </p>

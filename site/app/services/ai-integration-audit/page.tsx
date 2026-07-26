@@ -79,7 +79,7 @@ export default function AuditPage() {
       </p>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">What you get</h2>
+        <h2 className="mono h-section h2-rule">What you get</h2>
         <div className="mt-6 space-y-6">
           {DELIVERABLES.map((d) => (
             <div key={d.h}>
@@ -93,7 +93,7 @@ export default function AuditPage() {
       </section>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">The week</h2>
+        <h2 className="mono h-section h2-rule">The week</h2>
         <ol className="mt-6 space-y-6">
           {WEEK.map((w) => (
             <li key={w.step} className="flex gap-4">
@@ -115,7 +115,7 @@ export default function AuditPage() {
       </section>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">The honest part</h2>
+        <h2 className="mono h-section h2-rule">The honest part</h2>
         <p className="mt-6">
           Sometimes the answer is a queue and a cron job, not a model. If that is what the week
           finds, you get it in writing, and the audit has just saved you the build. I would rather
@@ -157,7 +157,7 @@ export default function AuditPage() {
       </section>
 
       <section className="mt-12">
-        <h2 className="mono h2-rule text-2xl font-semibold">Working in a specific stack?</h2>
+        <h2 className="mono h-section h2-rule">Working in a specific stack?</h2>
         <p className="mt-6">The audit is the same week either way; these go into more detail.</p>
         <div className="mt-4">
           <ServiceStackNav className="mb-0" />

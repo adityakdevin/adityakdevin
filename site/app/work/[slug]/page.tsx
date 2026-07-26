@@ -88,7 +88,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
       {study.sections.map((s) => (
         <section key={s.h} className="mt-10">
-          <h2 className="mono text-2xl font-semibold">{s.h}</h2>
+          <h2 className="mono h-section">{s.h}</h2>
           {(Array.isArray(s.body) ? s.body : [s.body]).map((para) => (
             <p key={para.slice(0, 40)} className="mt-3">
               {para}

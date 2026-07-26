@@ -39,12 +39,11 @@ export default function BlogIndexPage() {
               <p className="mono text-sm" style={{ color: "var(--muted)" }}>
                 {post.date}
               </p>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="mono mt-1 block text-xl font-semibold no-underline"
-              >
-                {post.title}
-              </Link>
+              <h2 className="mt-1 text-xl font-semibold">
+                <Link href={`/blog/${post.slug}`} className="block no-underline">
+                  {post.title}
+                </Link>
+              </h2>
               <p className="mt-2" style={{ color: "var(--muted)" }}>
                 {post.description}
               </p>
