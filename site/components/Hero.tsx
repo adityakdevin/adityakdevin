@@ -23,9 +23,21 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 68% 40%, rgba(34,184,212,0.09), transparent 70%)",
         }}
       />
+      {/* min-w-0 on both tracks: grid items default to min-width:auto, so the
+          track was sized by the widest min-content in it. That is the rotating
+          TypingCaption link below - block + whitespace-nowrap - whose width
+          GROWS as it types. At 320px it pushed the column to 322px and the
+          headline, value line and CTA were clipped by this section's
+          overflow-x: hidden. The card clips its own overflow already. */}
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-10 pt-12 md:grid-cols-[1fr_680px] md:gap-16 md:pb-12 md:pt-16">
-        <div>
-          <p className="mono mb-6 text-sm whitespace-nowrap" style={{ color: "var(--dark-muted)" }}>
+        <div className="min-w-0">
+          {/* No whitespace-nowrap here: .type-reveal already sets it on the one
+              span whose clip-path animation needs it (globals.css). On the <p>
+              it made the whole 322px line unwrappable, and because grid items
+              default to min-width:auto that min-content sized the column - so at
+              320px the headline, value line and CTA all ran past the viewport
+              and were silently clipped by the section's overflow-x: hidden. */}
+          <p className="mono mb-6 text-sm" style={{ color: "var(--dark-muted)" }}>
             <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
             <span className="type-reveal">whoami</span>
             <span className="cursor" aria-hidden />
@@ -64,7 +76,7 @@ export function Hero() {
         </div>
 
         {/* Anchor: gh-ascii GitHub card in a terminal window - same artwork as the profile README */}
-        <div className="relative mx-auto w-full max-w-lg md:max-w-none">
+        <div className="relative mx-auto w-full min-w-0 max-w-lg md:max-w-none">
           <div
             className="overflow-hidden rounded-lg border shadow-2xl"
             style={{ borderColor: "var(--dark-border)", background: "var(--dark-surface)", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
@@ -138,7 +150,11 @@ export function Hero() {
             </div>
             <a
               href={profile.github}
-              className="mono block whitespace-nowrap border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
+              // truncate, not whitespace-nowrap: the phrase rotates and the longest one is
+              // wider than the card at 320px, so it was hard-cut mid-word. truncate keeps
+              // the single line (a wrap would make the card height jump per phrase) and
+              // ends it with an ellipsis inside its own box.
+              className="mono block truncate border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
               style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
             >
               <TypingCaption
