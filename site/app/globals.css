@@ -3,11 +3,17 @@
 /* ── Design tokens (PORTFOLIO_SPEC S4) - no raw hex in components ── */
 :root {
   --bg: #0d1117;
-  --surface: #161b22;
+  /* Was #161b22, two hex steps off --bg: alternating sections read as one
+     continuous dark field. Lifted so a section boundary is actually visible.
+     The theme-locked --dark-surface below stays put, which now reads as depth:
+     the hero and terminal sit BELOW the page surface rather than level with it. */
+  --surface: #1b222c;
   --text: #e6edf3;
   --muted: #8b949e;
   --accent: #22b8d4;
-  --border: #30363d;
+  /* Was #30363d - close enough to the page that dividers and card edges read as
+     smudges rather than structure. */
+  --border: #3d4653;
   --focus: #22b8d4;
   --error: #f85149;
   --on-accent: #06222a; /* text on accent-filled buttons */

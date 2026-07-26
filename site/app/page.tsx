@@ -82,7 +82,7 @@ export default async function Home() {
       </section>
 
       {/* 3 - Services: numbered editorial rows, NOT cards; non-interactive at P1a */}
-      <section className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+      <section className="mx-auto max-w-5xl px-6 py-14 md:py-16">
         <Eyebrow cmd="ls services/" />
         <H2>I ship AI features into production apps</H2>
         <div
@@ -124,7 +124,7 @@ export default async function Home() {
         className="scroll-mt-20 border-y"
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
-        <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-5xl px-6 py-14 md:py-16">
           <Eyebrow cmd="cat work/lead.md" />
           <H2>Proof: systems that run businesses</H2>
           <div className="mt-10 grid gap-10 md:grid-cols-[3fr_2fr]">
@@ -184,24 +184,31 @@ export default async function Home() {
       </section>
 
       {/* 5 - Trust beat: externally verifiable claims; testimonial slot ships hidden */}
-      <section className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+      <section className="mx-auto max-w-5xl px-6 py-14 md:py-16">
         <Eyebrow cmd="checksum --verify claims" />
         <H2>Verify me yourself</H2>
         <p className="mt-3 max-w-2xl" style={{ color: "var(--muted)" }}>
           Don&apos;t take my word for any of this - every claim below links to a
           source you can check in ten seconds.
         </p>
-        <ul className="mt-8 space-y-4">
+        {/* Cards in two columns: as a single-file list this used half the
+            column width and read as the least important block on the page,
+            which is backwards - it is the proof. */}
+        <ul className="mt-8 grid gap-3 md:grid-cols-2">
           {profile.verify.map((v) => (
-            <li key={v.claim} className="flex flex-wrap items-baseline gap-2">
-              <span className="mono" style={{ color: "var(--accent)" }}>
+            <li
+              key={v.claim}
+              className="rounded border p-4"
+              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+            >
+              <span className="mono text-sm" style={{ color: "var(--accent)" }}>
                 [ok]
               </span>
-              <a href={v.href} className="font-medium">
+              <a href={v.href} className="mt-1 block font-medium">
                 {v.claim}
               </a>
-              <span className="text-sm" style={{ color: "var(--muted)" }}>
-                - {v.note}
+              <span className="mt-1 block text-sm" style={{ color: "var(--muted)" }}>
+                {v.note}
               </span>
             </li>
           ))}
@@ -236,27 +243,27 @@ export default async function Home() {
           className="border-y"
           style={{ borderColor: "var(--border)", background: "var(--surface)" }}
         >
-          <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-5xl px-6 py-14 md:py-16">
             <Eyebrow cmd="ls -la ~/writing" />
             <H2>Field notes from Laravel + AI work</H2>
-            <ul className="mono mt-8 space-y-4">
+            {/* Three dated links in a thin left strip used a third of the
+                column. Two columns, each note its own bordered row. */}
+            <ul className="mono mt-8 grid gap-3 md:grid-cols-2">
               {notes.map((n) => (
                 <li
                   key={n.key}
-                  className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6"
+                  className="rounded border p-4"
+                  style={{ borderColor: "var(--border)", background: "var(--bg)" }}
                 >
-                  <span
-                    className="shrink-0 text-sm"
-                    style={{ color: "var(--muted)" }}
-                  >
+                  <span className="block text-sm" style={{ color: "var(--muted)" }}>
                     {n.date}
                   </span>
                   {n.href.startsWith("/") ? (
-                    <Link href={n.href} className="text-base font-medium">
+                    <Link href={n.href} className="mt-1 block text-base font-medium">
                       {n.title}
                     </Link>
                   ) : (
-                    <a href={n.href} className="text-base font-medium">
+                    <a href={n.href} className="mt-1 block text-base font-medium">
                       {n.title}
                     </a>
                   )}
@@ -273,11 +280,14 @@ export default async function Home() {
       {/* 7 - FAQ (single source: faq.ts → section + JSON-LD + bot) */}
       <section
         id="faq"
-        className="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 md:py-24"
+        className="mx-auto max-w-5xl scroll-mt-20 px-6 py-14 md:py-16"
       >
         <Eyebrow cmd="man hiring-aditya" />
         <H2>Before you book</H2>
-        <div className="mt-8 max-w-3xl space-y-3">
+        {/* The constraint moves off the wrapper and onto the answer text: the
+            cards now align with every other section, while the prose keeps a
+            readable measure instead of running to ~113 characters. */}
+        <div className="mt-8 space-y-3">
           {faq.map((item, i) => (
             <details
               key={item.q}
@@ -293,7 +303,7 @@ export default async function Home() {
               <summary className="mono min-h-11 cursor-pointer list-none px-5 py-3.5 font-medium marker:content-none">
                 <span style={{ color: "var(--accent)" }}>?</span> {item.q}
               </summary>
-              <p className="px-5 pb-5 pt-1" style={{ color: "var(--muted)" }}>
+              <p className="max-w-2xl px-5 pb-5 pt-1" style={{ color: "var(--muted)" }}>
                 {item.a}
               </p>
             </details>
@@ -307,7 +317,7 @@ export default async function Home() {
         className="scroll-mt-20 border-t"
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
-        <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-5xl px-6 py-14 md:py-16">
           <Eyebrow cmd="./start-project.sh" />
           <H2>Let&apos;s build your next system</H2>
           <div className="mt-10 grid gap-12 md:grid-cols-[2fr_3fr]">
