@@ -28,7 +28,10 @@ export const profile = {
     { value: "9+", label: "years shipping" },
     { value: "60+", label: "projects delivered" },
     { value: "8.3k+", label: "GitHub contributions" },
-    { value: "1", label: "Laravel + AI series" },
+    // Was "1 Laravel + AI series", which at 48px read as padding next to 8.3k+.
+    // Hardcoded, not derived: only 3 of 4 posts are series posts and a unit test
+    // pins that array at 4.
+    { value: "2", label: "case studies" },
   ],
 
   services: [
@@ -101,6 +104,18 @@ export const profile = {
       claim: "9+ years, currently Tech Lead @ MM Nova Tech",
       href: "https://www.linkedin.com/in/adityakdevin",
       note: "career history on LinkedIn",
+    },
+    // The section is called "verify me yourself" and cited a contribution graph
+    // three times. These two are the ones where the numbers name their source.
+    {
+      claim: "A public LLM endpoint with a $10 hard spend cap",
+      href: "/work/askaditya-terminal-assistant",
+      note: "every guardrail, with the file it lives in",
+    },
+    {
+      claim: "A claims linter that blocks my own unbacked numbers",
+      href: "/work/shipping-a-claims-lens",
+      note: "including the part where it was broken",
     },
   ],
 

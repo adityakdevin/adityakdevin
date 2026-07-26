@@ -53,7 +53,7 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
 
 export default function UsesPage() {
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> which --all everything
       </p>

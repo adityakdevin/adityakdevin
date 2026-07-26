@@ -38,6 +38,32 @@ test.describe("case study /work/budgetgen", () => {
   });
 });
 
+// /work 404s below MIN_STUDIES and stayed 404 for the whole launch. It is live
+// now on two own-work studies, which is the point: no client inbox was involved.
+test.describe("/work index", () => {
+  test("lists every published study, newest first", async ({ page }) => {
+    const res = await page.goto("/work");
+    expect(res?.status()).toBe(200);
+    const hrefs = await page.locator("main ul li h2 a").evaluateAll((as) =>
+      as.map((a) => a.getAttribute("href")),
+    );
+    expect(hrefs.length).toBeGreaterThanOrEqual(2);
+    expect(hrefs[hrefs.length - 1]).toBe("/work/budgetgen"); // oldest date, last
+  });
+
+  test("every published stat renders its source", async ({ page }) => {
+    await page.goto("/work/askaditya-terminal-assistant");
+    // The honesty invariant, at the render layer: a number with no visible
+    // provenance is the site breaking its own "check it in ten seconds" promise.
+    await expect(page.getByText("site/app/api/chat/route.ts (SPEND_CAP_USD)")).toBeVisible();
+  });
+
+  test("the case study is not a leaf - it links back to the index", async ({ page }) => {
+    await page.goto("/work/shipping-a-claims-lens");
+    await expect(page.getByRole("link", { name: /all work/i })).toHaveAttribute("href", "/work");
+  });
+});
+
 test.describe("terminal widget (offline mode)", () => {
   test("opens, boots, and answers help + whoami", async ({ page }) => {
     await page.goto("/");

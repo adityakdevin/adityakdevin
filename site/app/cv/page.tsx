@@ -18,7 +18,7 @@ const PDF_HREF = "/Aditya-Kumar-CV.pdf";
  */
 export default function CvPage() {
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(cvJsonLd()) }}
@@ -92,7 +92,12 @@ export default function CvPage() {
         <ul className="mt-4 space-y-3">
           {profile.projects.map((p) => (
             <li key={p.title}>
-              <strong>{p.title}</strong> - {p.note}{" "}
+              {/* p.href was collected and thrown away: four live client systems
+                  rendering as inert text on the page a recruiter actually reads. */}
+              <strong>
+                <a href={p.href}>{p.title}</a>
+              </strong>{" "}
+              - {p.note}{" "}
               <span className="mono text-sm" style={{ color: "var(--muted)" }}>
                 ({p.stack})
               </span>

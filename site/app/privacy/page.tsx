@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 /** Privacy (SPEC S5, outside voice T5): plain language, no legalese theater. */
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> cat privacy.md
       </p>

@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/work" },
 };
 
+// Newest first. The index had no sort order at all, so it rendered in whatever
+// order the data file happened to be written in.
+const sortedStudies = [...publishedCaseStudies].sort((a, b) => b.date.localeCompare(a.date));
+
 export default function WorkIndexPage() {
   if (publishedCaseStudies.length < MIN_STUDIES) notFound();
 
@@ -23,7 +27,7 @@ export default function WorkIndexPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${SITE_URL}/work#worklist`,
-    itemListElement: publishedCaseStudies.map((c, i) => ({
+    itemListElement: sortedStudies.map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,
       url: `${SITE_URL}/work/${c.slug}`,
@@ -32,7 +36,7 @@ export default function WorkIndexPage() {
   };
 
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>aditya@dev</span>:~$ ls work/
@@ -40,7 +44,7 @@ export default function WorkIndexPage() {
       <h1 className="mono h2-rule text-4xl font-semibold">Work</h1>
 
       <ul className="mt-10">
-        {publishedCaseStudies.map((c) => {
+        {sortedStudies.map((c) => {
           const lead = c.outcome?.[0];
           return (
             <li
