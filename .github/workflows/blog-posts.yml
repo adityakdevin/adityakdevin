@@ -17,6 +17,9 @@ jobs:
         # fails harmlessly until the first dev.to post exists
         continue-on-error: true
         with:
-          feed_list: "https://dev.to/feed/adityakdevin"
+          # Site feed FIRST: posts are canonical on adityadev.in and only some get
+          # syndicated, so a Dev.to-only feed silently hides every site-first post.
+          # Both are listed because the older series lives on Dev.to as canonical.
+          feed_list: "https://adityadev.in/blog/rss.xml,https://dev.to/feed/adityakdevin"
           max_post_count: 5
           commit_message: "chore: update latest blog posts"
