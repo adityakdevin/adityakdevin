@@ -50,6 +50,16 @@ to the bottom with their shipping version/date.
 - **Context:** Decided at /plan-eng-review 2026-07-18 (design doc `adityakdevin-feat-social-poster-v0-design-20260718-183734.md`, Tension 1 → topic-first chosen, verify deferred to v2). Codex outside voice flagged that schema validation checks shape, not truth.
 - **Depends on / blocked by:** v1b (the AI-draft step) shipped and producing schema-valid data.
 
+### Claim detection is reactive, not an allowlist system
+
+- **Priority:** P3
+- **What:** Record (and eventually close) the ceiling on `text-hygiene --phrases`: it matches known-bad phrasings, so a novel first-person client claim passes silently. "A client messaged me after launch" is a claim and no count-shaped regex will catch it.
+- **Why:** Every pattern in `scripts/text-hygiene.mjs:433-450` was added *after* a specific claim leaked into a draft. The system is reactive by construction. Writing this down stops a future session trusting the lens as a complete guard, which is exactly the over-trust that let five claims sit unnoticed in `ops/voice.md`.
+- **Pros:** Names the ceiling before someone relies on it. Cheap to record while the reasoning is fresh.
+- **Cons:** No clean fix exists. An LLM-judge pass over drafts turns a deterministic gate probabilistic, which is the wrong direction for a safety check, and carries its own false-negative problem.
+- **Context:** Raised by the Codex outside voice at /plan-eng-review 2026-07-25 (design doc `adityakdevin-master-design-20260725-222428.md`, TODO 1). The per-category exemption shipped in that plan's PR two makes `ops/voice.md` *checkable*, but does not change what the patterns can express. Same shape of problem as the second-model fact-verify item above: schema and pattern checks verify form, not truth.
+- **Depends on / blocked by:** Nothing. Both PRs of the hardening plan ship regardless.
+
 ### Golden-image regression tests for infographic layout overflow (v2)
 
 - **Priority:** P4
