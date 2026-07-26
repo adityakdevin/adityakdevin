@@ -52,7 +52,12 @@ export default function WorkIndexPage() {
               className="border-b py-8 first:border-t"
               style={{ borderColor: "var(--border)" }}
             >
-              <h2 className="text-xl font-medium">
+              {/* The sort is newest-first; without the date the reader cannot
+                  see that, and `date` exists only to drive it. */}
+              <p className="mono text-sm" style={{ color: "var(--muted)" }}>
+                {c.date}
+              </p>
+              <h2 className="mt-1 text-xl font-medium">
                 <Link href={`/work/${c.slug}`}>{c.title}</Link>
               </h2>
               {c.client || c.period ? (
