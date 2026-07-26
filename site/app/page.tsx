@@ -4,6 +4,7 @@ import { faq } from "@/content/data/faq";
 import { getLatestPosts } from "@/lib/devto";
 import { withRef } from "@/lib/site";
 import { getAllPosts, mergeFieldNotes } from "@/lib/posts";
+import { publishedCaseStudies } from "@/content/data/work";
 import {
   personJsonLd,
   profilePageJsonLd,
@@ -13,6 +14,9 @@ import {
 import { Hero } from "@/components/Hero";
 import { ContactForm } from "@/components/ContactForm";
 import { ServiceStackNav } from "@/components/ServiceStackNav";
+
+// Same gate the index, sitemap, footer and nav use - below it, /work 404s.
+const MIN_WORK_INDEX = 2;
 
 function Eyebrow({ cmd }: { cmd: string }) {
   return (
@@ -157,6 +161,13 @@ export default async function Home() {
               className="space-y-6 md:border-l md:pl-8"
               style={{ borderColor: "var(--border)" }}
             >
+              {/* The section summarised an index it never linked to: /work was
+                  reachable only from the footer. */}
+              {publishedCaseStudies.length >= MIN_WORK_INDEX ? (
+                <Link href="/work" className="mono text-base font-medium">
+                  All {publishedCaseStudies.length} case studies →
+                </Link>
+              ) : null}
               {profile.featuredWork.links.map((l) => (
                 <div key={l.title}>
                   <a href={l.href} className="mono text-base font-medium">
