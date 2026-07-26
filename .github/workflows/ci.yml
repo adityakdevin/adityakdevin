@@ -1,0 +1,25 @@
+# CI gate. Until 2026-07-26 the only enforcement in this repo was a local
+# .git/hooks/pre-commit - not versioned, absent on a fresh clone, and skipped by
+# --no-verify. Both text-hygiene lenses run here so the claims gate cannot be
+# bypassed by the machine that happens to be committing.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run hygiene
+      - run: npm run lint
+      - run: npm test

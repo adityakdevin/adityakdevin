@@ -255,7 +255,7 @@ export function Terminal() {
             className="mono flex min-h-11 min-w-11 cursor-pointer items-center justify-center text-base"
             style={{ color: "var(--dark-muted)" }}
           >
-            
+            {"[x]"}
           </button>
         </div>
 
@@ -301,7 +301,9 @@ export function Terminal() {
           className="flex items-center gap-2 border-t px-4 py-3"
           style={{ borderColor: "var(--dark-border)" }}
         >
-          <span className="mono text-sm" style={{ color: "var(--dark-accent)" }}>
+          {/* text-base on phones: anything under 16px makes iOS Safari zoom the
+              whole fixed panel on focus and never zoom back out. */}
+          <span className="mono text-base md:text-sm" style={{ color: "var(--dark-accent)" }}>
             $
           </span>
           <input
@@ -312,7 +314,7 @@ export function Terminal() {
             autoComplete="off"
             spellCheck={false}
             maxLength={300}
-            className="mono min-h-11 flex-1 bg-transparent text-sm outline-none"
+            className="mono min-h-11 flex-1 bg-transparent text-base outline-none md:text-sm"
             style={{ color: "var(--dark-text)" }}
             placeholder="ask anything - or 'help'"
           />

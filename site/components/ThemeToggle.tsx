@@ -12,18 +12,6 @@ function subscribe(onChange: () => void) {
   return () => observer.disconnect();
 }
 
-const iconProps = {
-  width: 20,
-  height: 20,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.8,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-  "aria-hidden": true,
-} as const;
-
 export function ThemeToggle() {
   const theme = useSyncExternalStore(
     subscribe,
@@ -48,7 +36,9 @@ export function ThemeToggle() {
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       title="Toggle theme"
     >
-      {theme === null ? "◐" : theme === "dark" ? "" : ""}
+      {/* U+25D0/25D1 - survive the text-hygiene ASCII sweep that emptied the
+          previous glyphs and left this button rendering blank. */}
+      {theme === null || theme === "dark" ? "◐" : "◑"}
     </button>
   );
 }

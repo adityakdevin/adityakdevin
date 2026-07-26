@@ -458,6 +458,12 @@ const BANNED_PHRASES = [
     category: 'unpermissioned-claim',
     suggestion: 'asserts a shipped COUNT - allowlist it or drop the number',
   },
+  // Past tense ONLY, deliberately. "it paid for itself" is a retrospective claim
+  // about a specific engagement and needs permission. The present-tense thesis
+  // ("AI automation that pays for itself", the published post slug) asserts
+  // nothing about any one client, so widening this to /pays?/ would block a
+  // general argument and force an allowlist entry for the one file it caught.
+  // Decided 2026-07-26; revisit if a post starts naming a client in that frame.
   { re: /paid for (itself|themselves)/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
   { re: /drop(ped)? ~?\d+% overnight/gi, category: 'unpermissioned-claim', suggestion: 'add to voice.md allowlist or cut' },
   // The sixth audited claim: "A client messaged me six weeks after we shipped
@@ -516,6 +522,25 @@ const PHRASE_LENS_IGNORE = [
   // Fully exempt: these two DEFINE every category, claims included.
   { re: /(^|\/)human-voice\.md$/ },
   { re: /(^|\/)text-hygiene\.mjs$/ },
+  // Test files whose FIXTURES are the banned patterns - a lens that fails on its
+  // own test corpus can only be switched off. text-hygiene.test.mjs asserts every
+  // category; post.test.mjs pins the cross-channel fact-conflict detector, whose
+  // fixtures are by construction two channels citing conflicting numbers.
+  { re: /(^|\/)text-hygiene\.test\.mjs$/ },
+  { re: /(^|\/)post\.test\.mjs$/ },
+  // Documents that QUOTE the banned number patterns to explain them, same case
+  // as voice.md: post.mjs's factConflicts comment names the "1 in 8" vs "10-15%"
+  // pack that shipped, and CONTENT_VOICE_PLAN.md cites detector percentages
+  // about its own drafts and quotes "10-15%" as the example of the tell.
+  // Round numbers only - both stay scanned for un-permissioned claims.
+  { re: /(^|\/)post\.mjs$/, categories: ['round-number'] },
+  { re: /(^|\/)CONTENT_VOICE_PLAN\.md$/, categories: ['round-number'] },
+  // Internal planning docs under site/docs/ (not routes - nothing here is
+  // published). They list the banned vocabulary as the list of things to avoid
+  // and quote a tidy percentage as the example of the tell. Same case as
+  // voice.md, same narrow exemption: still scanned for un-permissioned claims,
+  // which is what a planning doc is actually dangerous for.
+  { re: /(^|\/)site\/docs\/[^/]+\.md$/, categories: ['ai-vocab', 'round-number'] },
 ];
 
 // Called two ways. With no category: "is this file exempt from the lens

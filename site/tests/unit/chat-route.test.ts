@@ -63,7 +63,10 @@ describe("lib/prompt buildSystemPrompt", () => {
 
   it("contains no secrets or env values", () => {
     const p = buildSystemPrompt();
-    expect(p).not.toMatch(/sk-ant|api[_-]?key|GATEWAY|OIDC/i);
+    // Env var NAMES (AI_GATEWAY_API_KEY, VERCEL_OIDC_TOKEN) and key shapes.
+    // Underscore matters: a case study legitimately lists "AI Gateway" as stack,
+    // and a bare /GATEWAY/i would ban the product's name from the corpus.
+    expect(p).not.toMatch(/sk-ant|api[_-]?key|AI_GATEWAY|OIDC/i);
   });
 });
 
@@ -117,7 +120,11 @@ describe("POST /api/chat", () => {
     const params = streamTextMock.mock.calls[0][0];
     expect(params.model).toBe("anthropic/claude-haiku-4.5");
     expect(params.maxOutputTokens).toBe(500);
-    expect(params.system).toContain("Aditya Kumar");
+    // Object form, not a bare string: the corpus is the expensive part of every
+    // request, so the cache breakpoint has to sit on the system message itself.
+    expect(params.system.role).toBe("system");
+    expect(params.system.content).toContain("Aditya Kumar");
+    expect(params.system.providerOptions.anthropic.cacheControl).toEqual({ type: "ephemeral" });
     expect(params.prompt).toBe("who is aditya?");
   });
 

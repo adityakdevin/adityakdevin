@@ -134,7 +134,10 @@ export function StickyChrome() {
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
         style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-        aria-hidden={!visible}
+        // inert, not aria-hidden: aria-hidden left the 7 links tabbable, so the
+        // first Tab on the page focused a header translated off-screen. inert
+        // removes them from the tab order and implies aria-hidden.
+        inert={!visible}
       >
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <Link
@@ -183,6 +186,15 @@ export function StickyChrome() {
           >
             <Logo />
             {profile.handle}
+          </Link>
+          {/* Subpages only - this bar does not render on the homepage, where the
+              footer carries the mobile path to /hire. */}
+          <Link
+            href="/hire"
+            className="mono flex min-h-11 items-center text-sm no-underline"
+            style={{ color: "var(--accent)" }}
+          >
+            ~/hire
           </Link>
         </div>
       ) : null}
