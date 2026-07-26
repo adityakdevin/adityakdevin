@@ -116,6 +116,26 @@ test.describe("terminal widget (offline mode)", () => {
     ).toBeVisible();
   });
 
+  // Regression: the terminal is theme-locked dark in BOTH themes, but
+  // globals.css's `input, textarea { background: var(--bg) }` is UNLAYERED, so
+  // it beat the input's bg-transparent utility whatever the specificity. In
+  // light mode that painted the box #f2f4f7 while the text stayed --dark-text:
+  // near-white on near-white. Reported by Aditya from a screenshot, 2026-07-26.
+  test("terminal input stays legible in light theme", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => localStorage.setItem("theme", "light"));
+    await page.reload();
+    await page.getByRole("button", { name: /open askaditya terminal/i }).click();
+    const input = page.getByLabel("Terminal command input");
+    const { bg, fg } = await input.evaluate((el) => {
+      const c = getComputedStyle(el);
+      return { bg: c.backgroundColor, fg: c.color };
+    });
+    // Transparent over the dark panel, not the light theme's page background.
+    expect(bg).toBe("rgba(0, 0, 0, 0)");
+    expect(fg).toBe("rgb(230, 237, 243)"); // --dark-text
+  });
+
   test("cv command navigates to /cv", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /open askaditya terminal/i }).click();

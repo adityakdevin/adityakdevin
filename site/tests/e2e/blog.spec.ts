@@ -142,6 +142,10 @@ test.describe("attribution (D15)", () => {
     });
     // Land on /blog first - that's the page that "earned" the visit.
     await page.goto("/blog");
+    // stampSession() runs in a useEffect, but goto resolves on `load`, which
+    // fires BEFORE hydration. Racing it passed on a warm local machine and
+    // failed on a cold CI runner, where / got stamped instead of /blog.
+    await page.waitForFunction(() => sessionStorage.getItem("first_landing") !== null);
     await page.goto("/#contact");
     await page.getByLabel(/name \*/i).fill("E2E Visitor");
     await page.getByLabel(/email \*/i).fill("visitor@example.com");

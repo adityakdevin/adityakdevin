@@ -327,8 +327,13 @@ export function Terminal() {
             autoComplete="off"
             spellCheck={false}
             maxLength={300}
-            className="mono min-h-11 flex-1 bg-transparent text-base outline-none md:text-sm"
-            style={{ color: "var(--dark-text)" }}
+            className="mono min-h-11 flex-1 text-base outline-none md:text-sm"
+            // background inline, not bg-transparent: globals.css's `input,
+            // textarea { background: var(--bg) }` is UNLAYERED, and unlayered
+            // CSS beats Tailwind's utilities layer whatever the specificity. In
+            // light mode that painted this box #f2f4f7 while the text stayed
+            // --dark-text, so typing was near-white on near-white.
+            style={{ color: "var(--dark-text)", background: "transparent" }}
             placeholder="ask anything - or 'help'"
           />
           <button
