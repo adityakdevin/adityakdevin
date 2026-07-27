@@ -164,14 +164,14 @@ export default async function ServicePage({
             className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
-            Book the 30-minute call →
+            Book the 30-minute call&nbsp;→
           </a>
           <Link
             href="/#contact"
             className="btn mono min-h-11 rounded border px-5 py-2.5 text-sm font-medium no-underline"
             style={{ borderColor: "var(--border)" }}
           >
-            Or write to me →
+            Or write to me&nbsp;→
           </Link>
         </div>
       </section>
@@ -191,7 +191,7 @@ export default async function ServicePage({
           {service.proof.map((p) => (
             <li key={p.href}>
               <Link href={p.href} className="mono font-medium">
-                {p.title} →
+                {p.title}&nbsp;→
               </Link>
               <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
                 {p.note}

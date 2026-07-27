@@ -26,7 +26,9 @@ export default function CvPage() {
 
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="mono h2-rule text-4xl font-semibold">{profile.name}</h1>
+          <h1 className="mono h2-rule text-4xl font-semibold">
+            {profile.name}
+          </h1>
           <p className="mt-2 text-lg" style={{ color: "var(--muted)" }}>
             {profile.headline}
           </p>
@@ -35,7 +37,9 @@ export default function CvPage() {
             {profile.phone && (
               <>
                 {" · "}
-                <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>{profile.phone}</a>
+                <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>
+                  {profile.phone}
+                </a>
               </>
             )}{" "}
             · <a href={`mailto:${profile.email}`}>{profile.email}</a> ·{" "}
@@ -49,20 +53,25 @@ export default function CvPage() {
           download
           data-no-print
           className="btn mono min-h-11 rounded border px-5 py-2.5 text-sm font-medium no-underline"
-          style={{ borderColor: "var(--accent)", background: "var(--accent)", color: "var(--on-accent)" }}
+          style={{
+            borderColor: "var(--accent)",
+            background: "var(--accent)",
+            color: "var(--on-accent)",
+          }}
         >
-          Download PDF ↓
+          Download PDF&nbsp;↓
         </a>
       </header>
 
       <section className="mt-10">
         <h2 className="cv-section">Summary</h2>
         <p className="mt-4">
-          {profile.role} at {profile.company} with {profile.yearsExperience} years of experience
-          designing and shipping web products end to end - Laravel and PHP backends, Vue and React
-          frontends, and production AI/LLM integrations. Lead architecture and delivery across a
-          team of 10+ engineers, and have delivered 60+ client projects including payments,
-          real-estate platforms, and AI-powered automation. Based in{" "}
+          {profile.role} at {profile.company} with {profile.yearsExperience}{" "}
+          years of experience designing and shipping web products end to end -
+          Laravel and PHP backends, Vue and React frontends, and production
+          AI/LLM integrations. Lead architecture and delivery across a team of
+          10+ engineers, and have delivered 60+ client projects including
+          payments, real-estate platforms, and AI-powered automation. Based in{" "}
           {profile.location.split(",")[0]}; working with clients worldwide.
         </p>
       </section>
@@ -110,8 +119,14 @@ export default function CvPage() {
         <h2 className="cv-section">Skills</h2>
         <dl className="mt-4 space-y-3">
           {Object.entries(profile.skills).map(([group, items]) => (
-            <div key={group} className="flex flex-col gap-1 sm:flex-row sm:gap-4">
-              <dt className="mono w-40 shrink-0 text-sm font-medium" style={{ color: "var(--muted)" }}>
+            <div
+              key={group}
+              className="flex flex-col gap-1 sm:flex-row sm:gap-4"
+            >
+              <dt
+                className="mono w-40 shrink-0 text-sm font-medium"
+                style={{ color: "var(--muted)" }}
+              >
                 {group}
               </dt>
               <dd>{items.join(" · ")}</dd>
@@ -168,7 +183,8 @@ export default function CvPage() {
           {profile.languages.map((l, i) => (
             <span key={l.name}>
               {i > 0 && " · "}
-              {l.name} <span style={{ color: "var(--muted)" }}>- {l.level}</span>
+              {l.name}{" "}
+              <span style={{ color: "var(--muted)" }}>- {l.level}</span>
             </span>
           ))}
         </p>

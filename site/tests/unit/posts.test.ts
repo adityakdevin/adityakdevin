@@ -112,7 +112,7 @@ describe("homepage Field-notes merge (T5 regressions)", () => {
   const local = getAllPosts(FIXTURES); // legacy-import carries devtoId 123456
   const devtoFeed = [
     { id: 123456, title: "Legacy post (Dev.to copy)", url: "https://dev.to/x/legacy", published_at: "2026-01-05T00:00:00Z" },
-    { id: 999, title: "Dev.to only post", url: "https://dev.to/x/only", published_at: "2026-06-01T00:00:00Z" },
+    { id: 999, title: "Dev.to only post", url: "https://dev.to/x/only", published_at: "2026-06-01T00:00:00Z", description: "What the feed says about it." },
   ];
 
   it("merges both sources, dedupes by devtoId, local copy wins, newest first", async () => {
@@ -125,6 +125,8 @@ describe("homepage Field-notes merge (T5 regressions)", () => {
     ]);
     expect(notes[0].href).toBe("/blog/building-the-thing");
     expect(notes[2].href).toBe("https://dev.to/x/only");
+    // The feed carries a description; dropping it renders that card title-only.
+    expect(notes[2].description).toBe("What the feed says about it.");
   });
 
   it("renders local posts even when Dev.to is down (S5.6 now legacy-only)", async () => {

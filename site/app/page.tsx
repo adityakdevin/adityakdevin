@@ -28,10 +28,7 @@ function Eyebrow({ cmd }: { cmd: string }) {
 
 function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <h2
-      id={id}
-      className="mono h-section h2-rule scroll-mt-20 tracking-tight"
-    >
+    <h2 id={id} className="mono h-section h2-rule scroll-mt-20 tracking-tight">
       {children}
     </h2>
   );
@@ -40,7 +37,9 @@ function H2({ children, id }: { children: React.ReactNode; id?: string }) {
 export default async function Home() {
   // Local site-first posts merge with the Dev.to legacy feed, deduped by
   // devtoId - Dev.to being down no longer empties this section (T5).
-  const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3));
+  // 4, not 3: the notes render as a two-column grid, so an odd count leaves a
+  // hole in the last row. Five local posts exist.
+  const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3), 4);
 
   return (
     <main className="flex-1">
@@ -60,22 +59,36 @@ export default async function Home() {
       <Hero />
 
       {/* 2 - Metric strip: one inline strip, no tile boxes; static build-time numbers */}
-      <section className="border-b" style={{ borderColor: "var(--border)" }}>
+      <section
+        className="border-b"
+        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+      >
         {/* Reveal deleted: the class was added AFTER paint with
             animation-fill-mode: both, so the strip snapped to opacity 0 and faded
             back in - the site's only entrance animation read as a flicker. */}
-        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-9 md:flex md:items-baseline md:justify-between md:py-10">
-          {profile.metrics.map((m) => (
-            <div key={m.label} className="flex items-baseline gap-2">
-              <span
+        {/* A band, not four floating pairs: each figure gets its own cell with a
+            rule between them, so the row reads as one object under the hero. */}
+        <div className="mx-auto grid max-w-5xl grid-cols-2 px-6 md:grid-cols-4">
+          {profile.metrics.map((m, i) => (
+            <div
+              key={m.label}
+              className={`px-2 py-7 md:px-6 md:py-9 ${i % 2 === 1 ? "border-l" : ""} ${
+                i >= 2 ? "border-t md:border-t-0" : ""
+              } ${i === 2 ? "md:border-l" : ""} ${i === 3 ? "md:border-l" : ""}`}
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div
                 className="mono text-4xl font-semibold md:text-5xl"
                 style={{ color: "var(--accent)" }}
               >
                 {m.value}
-              </span>
-              <span className="text-sm" style={{ color: "var(--muted)" }}>
+              </div>
+              <div
+                className="mono mt-2 text-xs tracking-widest uppercase"
+                style={{ color: "var(--muted)" }}
+              >
                 {m.label}
-              </span>
+              </div>
             </div>
           ))}
         </div>
@@ -165,13 +178,13 @@ export default async function Home() {
                   reachable only from the footer. */}
               {publishedCaseStudies.length >= MIN_WORK_INDEX ? (
                 <Link href="/work" className="mono text-base font-medium">
-                  All {publishedCaseStudies.length} case studies →
+                  All {publishedCaseStudies.length} case studies&nbsp;→
                 </Link>
               ) : null}
               {profile.featuredWork.links.map((l) => (
                 <div key={l.title}>
                   <a href={l.href} className="mono text-base font-medium">
-                    {l.title} →
+                    {l.title}&nbsp;→
                   </a>
                   <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
                     {l.note}
@@ -199,7 +212,10 @@ export default async function Home() {
             <li
               key={v.claim}
               className="rounded border p-4"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--surface)",
+              }}
             >
               <span className="mono text-sm" style={{ color: "var(--accent)" }}>
                 [ok]
@@ -207,7 +223,10 @@ export default async function Home() {
               <a href={v.href} className="mt-1 block font-medium">
                 {v.claim}
               </a>
-              <span className="mt-1 block text-sm" style={{ color: "var(--muted)" }}>
+              <span
+                className="mt-1 block text-sm"
+                style={{ color: "var(--muted)" }}
+              >
                 {v.note}
               </span>
             </li>
@@ -253,25 +272,50 @@ export default async function Home() {
                 <li
                   key={n.key}
                   className="rounded border p-4"
-                  style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+                  style={{
+                    borderColor: "var(--border)",
+                    background: "var(--bg)",
+                  }}
                 >
-                  <span className="block text-sm" style={{ color: "var(--muted)" }}>
+                  <span
+                    className="block text-sm"
+                    style={{ color: "var(--muted)" }}
+                  >
                     {n.date}
                   </span>
                   {n.href.startsWith("/") ? (
-                    <Link href={n.href} className="mt-1 block text-base font-medium">
+                    <Link
+                      href={n.href}
+                      className="mt-1 block text-base font-medium"
+                    >
                       {n.title}
                     </Link>
                   ) : (
-                    <a href={n.href} className="mt-1 block text-base font-medium">
+                    <a
+                      href={n.href}
+                      className="mt-1 block text-base font-medium"
+                    >
                       {n.title}
                     </a>
                   )}
+                  {/* Both sources carry a summary. A feed item that omits one
+                      degrades to title-only rather than inventing one. */}
+                  {n.description ? (
+                    <p
+                      className="mt-2 text-sm leading-relaxed"
+                      style={{
+                        color: "var(--muted)",
+                        fontFamily: "var(--font-plex-sans)",
+                      }}
+                    >
+                      {n.description}
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ul>
             <p className="mono mt-6 text-sm">
-              <Link href="/blog">all field notes →</Link>
+              <Link href="/blog">all field notes&nbsp;→</Link>
             </p>
           </div>
         </section>
@@ -303,7 +347,10 @@ export default async function Home() {
               <summary className="mono min-h-11 cursor-pointer list-none px-5 py-3.5 font-medium marker:content-none">
                 <span style={{ color: "var(--accent)" }}>?</span> {item.q}
               </summary>
-              <p className="max-w-2xl px-5 pb-5 pt-1" style={{ color: "var(--muted)" }}>
+              <p
+                className="max-w-2xl px-5 pb-5 pt-1"
+                style={{ color: "var(--muted)" }}
+              >
                 {item.a}
               </p>
             </details>
@@ -320,22 +367,71 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl px-6 py-14 md:py-16">
           <Eyebrow cmd="./start-project.sh" />
           <H2>Let&apos;s build your next system</H2>
-          <div className="mt-10 grid gap-12 md:grid-cols-[2fr_3fr]">
-            <div>
-              <a
-                href={withRef(profile.bookingUrl, "home")}
-                className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
-                style={{
-                  background: "var(--accent)",
-                  color: "var(--on-accent)",
-                }}
+          {/* One bordered object split down the middle, instead of a button
+              floating next to a bare form on a flat background. */}
+          <div
+            // 1fr_1fr, was 2fr_3fr: at 2fr the left panel gave the CTA label 277px for
+            // the 283px it needs, so the primary button wrapped by 7px at 1440 and by
+            // 56px at 900. The numbered steps were wrapping to four lines for the same
+            // reason. The form does not need the extra third.
+            className="mt-10 grid overflow-hidden rounded border lg:grid-cols-[1fr_1fr]"
+            style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+          >
+            {/* justify-between: the panel stretches to the form's height, so
+                left-aligned content left a 155px hole under the links. Booking
+                sits at the top, the direct-contact list anchors the bottom. */}
+            <div
+              className="flex flex-col justify-between border-b p-6 lg:border-r lg:border-b-0 lg:p-8"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div>
+                <a
+                  href={withRef(profile.bookingUrl, "home")}
+                  // Sized to fit on one line at every width: the label needs 283px at 18px,
+                  // which the panel only gives it from 768 up. Phones get 16px type and
+                  // tighter padding so it still fits rather than wrapping.
+                  className="btn mono block min-h-11 rounded px-4 py-4 text-center text-base font-semibold no-underline lg:px-6 lg:text-lg"
+                  style={{
+                    background: "var(--accent)",
+                    color: "var(--on-accent)",
+                  }}
+                >
+                  {/* nbsp binds the arrow to the last word: the label wraps in
+                      this panel and the arrow was landing alone on line two.
+                      Not whitespace-nowrap - at 390px the label is wider than
+                      the panel, so nowrap would overflow instead of wrap. */}
+                  Book a free 30-min call&nbsp;→
+                </a>
+                <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
+                  The fastest path - come with the problem, leave with a plan.
+                </p>
+              </div>
+              {/* Fills the panel with the thing a buyer wants next instead of
+                  redistributing empty space. Every line restates a promise the
+                  site already makes: the 24-hour reply is ContactForm's success
+                  panel, the call and the fixed quote are PROCESS steps 01 and
+                  02 in content/data/services.ts. No new claims. */}
+              <ol
+                className="mono mt-6 space-y-3 text-sm"
+                style={{ color: "var(--muted)" }}
               >
-                Book a free 30-min call →
-              </a>
-              <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
-                The fastest path - come with the problem, leave with a plan.
-              </p>
-              <ul className="mono mt-8 space-y-2 text-sm">
+                {[
+                  "You hear back within 24 hours.",
+                  "A 30-minute call: you describe the problem, I tell you honestly whether AI helps.",
+                  "A fixed-scope quote before any work starts.",
+                ].map((step, i) => (
+                  <li key={step} className="flex gap-3">
+                    <span
+                      style={{ color: "var(--accent)" }}
+                    >{`0${i + 1}`}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <ul
+                className="mono mt-8 space-y-2 border-t pt-6 text-sm"
+                style={{ borderColor: "var(--border)" }}
+              >
                 <li>
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </li>
@@ -353,7 +449,7 @@ export default async function Home() {
                 </li>
               </ul>
             </div>
-            <div>
+            <div className="p-6 lg:p-8">
               <p
                 className="mono mb-4 text-sm"
                 style={{ color: "var(--muted)" }}

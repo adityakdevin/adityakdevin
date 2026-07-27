@@ -136,6 +136,58 @@ test.describe("responsive S5B", () => {
     }
   });
 
+  // Regression: at 320px the hero headline, value line and CTA were clipped.
+  // Grid items default to min-width:auto, so the track was sized by the widest
+  // min-content in it - the rotating TypingCaption link (block + nowrap), whose
+  // width GROWS as it types. The section's overflow-x: hidden swallowed the
+  // symptom, which is why a documentElement.scrollWidth check never caught it.
+  // Found by /qa on 2026-07-26.
+  test("hero content stays inside the viewport at 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto("/");
+    const vw = 320;
+    for (const name of ["h1", "hero value line", "primary CTA"]) {
+      const el =
+        name === "h1"
+          ? page.locator("h1").first()
+          : name === "hero value line"
+            ? page.getByText(profile.heroLine)
+            : page.getByRole("link", { name: /book a call/i }).first();
+      const box = await el.boundingBox();
+      expect(box, name).not.toBeNull();
+      expect(box!.x + box!.width, name).toBeLessThanOrEqual(vw);
+    }
+    // The column must not be sized by a descendant's min-content, or it drifts
+    // wider as the caption types.
+    const colWidth = await page
+      .locator("h1")
+      .evaluate((h) => h.parentElement!.getBoundingClientRect().width);
+    expect(colWidth).toBeLessThanOrEqual(vw);
+  });
+
+  // Regression: the booking CTA wraps inside its panel and the trailing arrow
+  // was landing alone on a line by itself. Fixed by binding it to the last word
+  // with a non-breaking space (not whitespace-nowrap - the label is wider than
+  // the panel at 390px, so nowrap would overflow instead of wrap).
+  // Reported by Aditya from a screenshot, 2026-07-26.
+  //
+  // Asserts the INVARIANT, not the rendering: whether the arrow actually widows
+  // depends on the exact width at which the last word fills the line, so a
+  // fixed-viewport geometry check passes at most widths even when unbound.
+  test("trailing arrows are bound to their label with a non-breaking space", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const unbound = await page.evaluate(() =>
+      [...document.querySelectorAll("a")]
+        .map((a) => (a.textContent ?? "").trim())
+        .filter((t) => /[\u2192\u2193]$/.test(t))
+        // A normal space before the arrow lets it wrap away from the label.
+        .filter((t) => / [\u2192\u2193]$/.test(t)),
+    );
+    expect(unbound, `arrows able to wrap away: ${unbound.join(" | ")}`).toEqual([]);
+  });
+
   test("no horizontal scroll on any viewport", async ({ page }) => {
     await page.goto("/");
     const overflow = await page.evaluate(

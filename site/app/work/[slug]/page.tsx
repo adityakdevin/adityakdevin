@@ -26,7 +26,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CaseStudyPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const study = publishedCaseStudies.find((c) => c.slug === slug);
   if (!study) notFound();
@@ -44,11 +48,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
+      />
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
-        <span style={{ color: "var(--accent)" }}>$</span> cat work/{study.slug}.md
+        <span style={{ color: "var(--accent)" }}>$</span> cat work/{study.slug}
+        .md
       </p>
-      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">{study.title}</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">
+        {study.title}
+      </h1>
       {study.client || study.role || study.period ? (
         <p className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
           {[study.client, study.role, study.period].filter(Boolean).join(" · ")}
@@ -69,7 +79,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           <div className="flex flex-wrap gap-x-10 gap-y-4">
             {study.outcome.map((o) => (
               <div key={o.metric} className="max-w-xs">
-                <div className="mono text-2xl font-semibold" style={{ color: "var(--accent)" }}>
+                <div
+                  className="mono text-2xl font-semibold"
+                  style={{ color: "var(--accent)" }}
+                >
                   {o.value}
                 </div>
                 <div className="text-sm" style={{ color: "var(--muted)" }}>
@@ -77,7 +90,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 </div>
                 {/* Required by the type: the homepage promises every claim links
                     to something checkable, so no stat renders without its source. */}
-                <div className="mono mt-1 text-xs" style={{ color: "var(--muted)" }}>
+                <div
+                  className="mono mt-1 text-xs"
+                  style={{ color: "var(--muted)" }}
+                >
                   {o.source}
                 </div>
               </div>
@@ -99,7 +115,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             // wrapper, so a bare pre would widen the page on phones.
             <pre
               className="mono mt-4 overflow-x-auto rounded border p-4 text-xs leading-relaxed"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--surface)",
+              }}
             >
               {s.pre}
             </pre>
@@ -113,7 +132,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           style={{ borderColor: "var(--accent)" }}
         >
           <blockquote className="text-lg">{study.testimonial.quote}</blockquote>
-          <figcaption className="mono mt-2 text-sm" style={{ color: "var(--muted)" }}>
+          <figcaption
+            className="mono mt-2 text-sm"
+            style={{ color: "var(--muted)" }}
+          >
             {study.testimonial.author} · {study.testimonial.role}
           </figcaption>
         </figure>
@@ -126,7 +148,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             className="btn mono min-h-11 rounded border px-5 py-2.5 text-sm font-medium no-underline"
             style={{ borderColor: "var(--border)" }}
           >
-            View the code →
+            View the code&nbsp;→
           </a>
         ) : null}
         {study.liveUrl ? (
@@ -135,7 +157,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             className="btn mono min-h-11 rounded border px-5 py-2.5 text-sm font-medium no-underline"
             style={{ borderColor: "var(--border)" }}
           >
-            View it live →
+            View it live&nbsp;→
           </a>
         ) : null}
         {/* The study used to be a leaf whose only exit was the contact anchor. */}
@@ -151,7 +173,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
           style={{ background: "var(--accent)", color: "var(--on-accent)" }}
         >
-          Build something like this →
+          Build something like this&nbsp;→
         </Link>
       </div>
     </main>

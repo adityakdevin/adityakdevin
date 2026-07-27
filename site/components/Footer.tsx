@@ -9,7 +9,9 @@ import { publishedCaseStudies } from "@/content/data/work";
 const siteLinks = [
   { label: "Blog", href: "/blog" },
   { label: "Hire me", href: "/hire" },
-  ...(publishedCaseStudies.length >= 2 ? [{ label: "Work", href: "/work" }] : []),
+  ...(publishedCaseStudies.length >= 2
+    ? [{ label: "Work", href: "/work" }]
+    : []),
   { label: "AI audit", href: "/services/ai-integration-audit" },
   { label: "Laravel + AI", href: "/services/laravel-ai-development" },
   { label: "Node + AI", href: "/services/nodejs-ai-development" },
@@ -47,12 +49,15 @@ export function Footer() {
               className="mono mt-1 inline-block text-sm"
               style={{ color: "var(--accent)" }}
             >
-              {profile.email} →
+              {profile.email}&nbsp;→
             </a>
           </div>
 
           <div className="flex flex-col gap-4 md:items-end">
-            <nav className="mono flex flex-wrap gap-x-5 text-sm md:justify-end" aria-label="Site">
+            <nav
+              className="mono flex flex-wrap gap-x-5 text-sm md:justify-end"
+              aria-label="Site"
+            >
               {siteLinks.map((l) => (
                 <Link key={l.label} href={l.href} className="py-1">
                   {l.label}
@@ -77,8 +82,8 @@ export function Footer() {
           style={{ borderColor: "var(--border)", color: "var(--muted)" }}
         >
           <p>
-            (C) {new Date().getFullYear()} {profile.name} ({profile.handle}) · Full Stack Developer
-            &amp; AI Engineer · {profile.location}
+            (C) {new Date().getFullYear()} {profile.name} ({profile.handle}) ·
+            Full Stack Developer &amp; AI Engineer · {profile.location}
           </p>
           <Link href="/privacy">Privacy</Link>
         </div>

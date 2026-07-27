@@ -7,7 +7,10 @@ import { NewsletterForm } from "@/components/NewsletterForm";
 export const metadata: Metadata = {
   title: "Blog - field notes from Laravel + AI work",
   description: `${BLOG_DESCRIPTION} By Aditya Kumar.`,
-  alternates: { canonical: "/blog", types: { "application/rss+xml": "/blog/rss.xml" } },
+  alternates: {
+    canonical: "/blog",
+    types: { "application/rss+xml": "/blog/rss.xml" },
+  },
 };
 
 /**
@@ -22,7 +25,9 @@ export default function BlogIndexPage() {
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> ls blog/
       </p>
-      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">Field notes</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold leading-tight">
+        Field notes
+      </h1>
       <p className="mt-4 text-lg" style={{ color: "var(--muted)" }}>
         {BLOG_DESCRIPTION}
       </p>
@@ -30,7 +35,7 @@ export default function BlogIndexPage() {
       {posts.length === 0 ? (
         <p className="mono mt-12 text-sm" style={{ color: "var(--muted)" }}>
           ls: blog/: first posts landing soon -{" "}
-          <a href={profile.devto}>read the series on dev.to →</a>
+          <a href={profile.devto}>read the series on dev.to&nbsp;→</a>
         </p>
       ) : (
         <ul className="mt-12 space-y-8">
@@ -40,7 +45,10 @@ export default function BlogIndexPage() {
                 {post.date}
               </p>
               <h2 className="mt-1 text-xl font-semibold">
-                <Link href={`/blog/${post.slug}`} className="block no-underline">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="block no-underline"
+                >
                   {post.title}
                 </Link>
               </h2>

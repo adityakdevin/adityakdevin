@@ -4,6 +4,11 @@ export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
   retries: 0,
+  // 10s, not the implicit 5s: the suite shares ONE Next server across workers,
+  // and the form tests assert on a mocked round trip with a deliberate 300ms
+  // delay. At 107 tests that fit inside 5s; adding four tipped one test per two
+  // runs over it. The assertions are unchanged - this only widens the wait.
+  expect: { timeout: 10_000 },
   reporter: "list",
   use: {
     baseURL: "http://localhost:3311",

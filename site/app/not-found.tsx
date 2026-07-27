@@ -9,10 +9,12 @@ export default function NotFound() {
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
         <p style={{ color: "var(--muted)" }}>
-          <span style={{ color: "var(--accent)" }}>aditya@dev</span>:~$ open {"<that-page>"}
+          <span style={{ color: "var(--accent)" }}>aditya@dev</span>:~$ open{" "}
+          {"<that-page>"}
         </p>
         <p className="mt-3 text-xl font-semibold">
-          zsh: command not found - <span style={{ color: "var(--accent)" }}>404</span>
+          zsh: command not found -{" "}
+          <span style={{ color: "var(--accent)" }}>404</span>
         </p>
         <p className="mt-6" style={{ color: "var(--muted)" }}>
           <span style={{ color: "var(--accent)" }}>$</span> ls ~/pages

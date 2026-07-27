@@ -8,7 +8,9 @@ import { useSyncExternalStore } from "react";
 // header + mobile tab bar) in sync without duplicated state.
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributeFilter: ["data-theme"] });
+  observer.observe(document.documentElement, {
+    attributeFilter: ["data-theme"],
+  });
   return () => observer.disconnect();
 }
 
@@ -20,7 +22,8 @@ export function ThemeToggle() {
   );
 
   function toggle() {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const next =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next; // MutationObserver re-renders all toggles
     try {
       localStorage.setItem("theme", next);

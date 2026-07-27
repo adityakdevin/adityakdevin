@@ -21,7 +21,14 @@ function Logo({ size = 20 }: { size?: number }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <rect x="13.2" y="15.2" width="5.3" height="1.9" rx="0.6" fill="#22b8d4" />
+      <rect
+        x="13.2"
+        y="15.2"
+        width="5.3"
+        height="1.9"
+        rx="0.6"
+        fill="#22b8d4"
+      />
     </svg>
   );
 }
@@ -127,7 +134,8 @@ export function StickyChrome() {
 
   useEffect(() => {
     if (!isHome) return;
-    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.8);
+    const onScroll = () =>
+      setScrolled(window.scrollY > window.innerHeight * 0.8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -155,17 +163,36 @@ export function StickyChrome() {
             <Logo />
             {profile.handle}
           </Link>
-          <nav className="mono flex items-center gap-6 text-sm" aria-label="Site">
-            <Link href={WORK_HREF} className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+          <nav
+            className="mono flex items-center gap-6 text-sm"
+            aria-label="Site"
+          >
+            <Link
+              href={WORK_HREF}
+              className="no-underline hover:underline"
+              style={{ color: "var(--muted)" }}
+            >
               ~/work
             </Link>
-            <Link href="/cv" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+            <Link
+              href="/cv"
+              className="no-underline hover:underline"
+              style={{ color: "var(--muted)" }}
+            >
               ~/cv
             </Link>
-            <Link href="/#faq" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+            <Link
+              href="/#faq"
+              className="no-underline hover:underline"
+              style={{ color: "var(--muted)" }}
+            >
               ~/faq
             </Link>
-            <Link href="/hire" className="no-underline hover:underline" style={{ color: "var(--muted)" }}>
+            <Link
+              href="/hire"
+              className="no-underline hover:underline"
+              style={{ color: "var(--muted)" }}
+            >
               ~/hire
             </Link>
             <ThemeToggle />
@@ -174,7 +201,7 @@ export function StickyChrome() {
               className="btn mono rounded px-4 py-1.5 text-sm font-semibold no-underline"
               style={{ background: "var(--accent)", color: "var(--on-accent)" }}
             >
-              Book a call →
+              Book a call&nbsp;→
             </a>
           </nav>
         </div>
@@ -221,7 +248,11 @@ export function StickyChrome() {
           <Tab href="/" label="home" active={isHome}>
             <HomeIcon />
           </Tab>
-          <Tab href={WORK_HREF} label="work" active={pathname.startsWith("/work")}>
+          <Tab
+            href={WORK_HREF}
+            label="work"
+            active={pathname.startsWith("/work")}
+          >
             <CodeIcon />
           </Tab>
           <Tab href="/cv" label="cv" active={pathname === "/cv"}>

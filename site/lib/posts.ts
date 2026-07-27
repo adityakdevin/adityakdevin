@@ -146,7 +146,14 @@ export function canonicalUrl(post: Post): string {
   return post.canonical ?? `${SITE_URL}/blog/${post.slug}`;
 }
 
-export type FieldNote = { key: string; date: string; title: string; href: string };
+export type FieldNote = {
+  key: string;
+  date: string;
+  title: string;
+  href: string;
+  /** Both sources carry one; optional only because a feed item may omit it. */
+  description?: string;
+};
 
 /**
  * Homepage "Field notes" merge (design doc 20260717 / eng review T5):
@@ -158,7 +165,15 @@ export type FieldNote = { key: string; date: string; title: string; href: string
  */
 export function mergeFieldNotes(
   local: Post[],
-  legacy: { id: number; title: string; url: string; published_at: string }[] | null,
+  legacy:
+    | {
+        id: number;
+        title: string;
+        url: string;
+        published_at: string;
+        description?: string;
+      }[]
+    | null,
   limit = 3,
 ): FieldNote[] {
   const syndicated = new Set(local.map((p) => p.devtoId).filter(Boolean));
@@ -167,6 +182,7 @@ export function mergeFieldNotes(
     date: p.date,
     title: p.title,
     href: `/blog/${p.slug}`,
+    description: p.description,
   }));
   const legacyNotes: FieldNote[] = (legacy ?? [])
     .filter((p) => !syndicated.has(p.id))
@@ -175,6 +191,7 @@ export function mergeFieldNotes(
       date: p.published_at.slice(0, 10),
       title: p.title,
       href: p.url,
+      description: p.description,
     }));
   return [...localNotes, ...legacyNotes]
     .sort((a, b) => b.date.localeCompare(a.date) || a.key.localeCompare(b.key))

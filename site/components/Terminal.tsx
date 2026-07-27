@@ -49,8 +49,13 @@ export function Terminal() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
       // Focus trap: aria-modal promises Tab stays inside the dialog
-      if (e.key === "Tab" && panelRef.current && !panelRef.current.classList.contains("invisible")) {
-        const focusables = panelRef.current.querySelectorAll<HTMLElement>("button, input");
+      if (
+        e.key === "Tab" &&
+        panelRef.current &&
+        !panelRef.current.classList.contains("invisible")
+      ) {
+        const focusables =
+          panelRef.current.querySelectorAll<HTMLElement>("button, input");
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -74,7 +79,9 @@ export function Terminal() {
   const streamIdx = useRef(-1);
 
   function replaceStreamLine(line: Line) {
-    setLines((prev) => prev.map((l, i) => (i === streamIdx.current ? line : l)));
+    setLines((prev) =>
+      prev.map((l, i) => (i === streamIdx.current ? line : l)),
+    );
   }
 
   async function ask(message: string) {
@@ -90,7 +97,9 @@ export function Terminal() {
         body: JSON.stringify({ message }),
       });
       if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { reason?: string };
+        const data = (await res.json().catch(() => ({}))) as {
+          reason?: string;
+        };
         replaceStreamLine({
           kind: "accent",
           text:
@@ -119,12 +128,18 @@ export function Terminal() {
         replaceStreamLine({ kind: "out", text: acc, cursor: true });
       }
       if (!acc.trim()) {
-        replaceStreamLine({ kind: "accent", text: "no answer came back - ask again, or try 'help'." });
+        replaceStreamLine({
+          kind: "accent",
+          text: "no answer came back - ask again, or try 'help'.",
+        });
       } else {
         replaceStreamLine({ kind: "out", text: acc }); // done - cursor off
       }
     } catch {
-      replaceStreamLine({ kind: "accent", text: "connection dropped - ask again, or try 'help'." });
+      replaceStreamLine({
+        kind: "accent",
+        text: "connection dropped - ask again, or try 'help'.",
+      });
     } finally {
       busy.current = false;
     }
@@ -147,14 +162,20 @@ export function Terminal() {
           { kind: "out", text: "  contact    ways to reach me" },
           { kind: "out", text: "  source     how this terminal works" },
           { kind: "out", text: "  clear      clear the screen" },
-          { kind: "accent", text: "or just type a question - the AI answers from this site." },
+          {
+            kind: "accent",
+            text: "or just type a question - the AI answers from this site.",
+          },
         );
         break;
       case "whoami":
         print(
           { kind: "out", text: `${profile.name} (${profile.handle})` },
           { kind: "out", text: profile.headline },
-          { kind: "out", text: `${profile.role} @ ${profile.company} · ${profile.yearsExperience} yrs · ${profile.location}` },
+          {
+            kind: "out",
+            text: `${profile.role} @ ${profile.company} · ${profile.yearsExperience} yrs · ${profile.location}`,
+          },
         );
         break;
       case "skills":
@@ -165,7 +186,10 @@ export function Terminal() {
       case "work":
         print(
           { kind: "out", text: `→ ${profile.featuredWork.lead.title}` },
-          ...profile.featuredWork.links.map((l) => ({ kind: "out" as const, text: `→ ${l.title}` })),
+          ...profile.featuredWork.links.map((l) => ({
+            kind: "out" as const,
+            text: `→ ${l.title}`,
+          })),
           { kind: "accent", text: "opening /work/budgetgen..." },
         );
         setTimeout(() => {
@@ -188,7 +212,15 @@ export function Terminal() {
             ? "[sudo] permission granted. opening calendar..."
             : "opening calendar...",
         });
-        setTimeout(() => window.open(withRef(profile.bookingUrl, "terminal"), "_blank", "noopener"), 500);
+        setTimeout(
+          () =>
+            window.open(
+              withRef(profile.bookingUrl, "terminal"),
+              "_blank",
+              "noopener",
+            ),
+          500,
+        );
         break;
       case "contact":
         print(
@@ -199,9 +231,18 @@ export function Terminal() {
         break;
       case "source":
         print(
-          { kind: "out", text: "offline commands: plain TypeScript, zero API calls." },
-          { kind: "out", text: "AI mode: Claude Haiku + a prompt-cached corpus of this site's content -" },
-          { kind: "out", text: "the architecture from my Laravel+AI article series:" },
+          {
+            kind: "out",
+            text: "offline commands: plain TypeScript, zero API calls.",
+          },
+          {
+            kind: "out",
+            text: "AI mode: Claude Haiku + a prompt-cached corpus of this site's content -",
+          },
+          {
+            kind: "out",
+            text: "the architecture from my Laravel+AI article series:",
+          },
           { kind: "accent", text: profile.devto },
         );
         break;
@@ -213,7 +254,10 @@ export function Terminal() {
         break;
       default:
         if (busy.current) {
-          print({ kind: "accent", text: "still answering - one question at a time." });
+          print({
+            kind: "accent",
+            text: "still answering - one question at a time.",
+          });
         } else {
           void ask(cmd);
         }
@@ -229,7 +273,11 @@ export function Terminal() {
         onClick={() => setOpen(true)}
         aria-label="Open AskAditya terminal"
         className={`mono fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-lg font-semibold shadow-lg transition-opacity duration-250 md:bottom-6 md:right-6 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
-        style={{ background: "var(--surface)", borderColor: "var(--accent)", color: "var(--accent)" }}
+        style={{
+          background: "var(--surface)",
+          borderColor: "var(--accent)",
+          color: "var(--accent)",
+        }}
       >
         {">_"}
       </button>
@@ -242,16 +290,25 @@ export function Terminal() {
         aria-label="AskAditya terminal"
         aria-hidden={!open}
         className={`fixed z-50 flex flex-col overflow-hidden border shadow-2xl transition-all duration-250 ease-in-out ${
-          open ? "visible pointer-events-auto opacity-100" : "invisible pointer-events-none opacity-0"
+          open
+            ? "visible pointer-events-auto opacity-100"
+            : "invisible pointer-events-none opacity-0"
         } inset-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] md:inset-auto md:bottom-6 md:right-6 md:h-[560px] md:w-[460px] md:rounded-lg md:pt-0 md:pb-0`}
-        style={{ background: "var(--dark-bg)", borderColor: "var(--dark-border)" }}
+        style={{
+          background: "var(--dark-bg)",
+          borderColor: "var(--dark-border)",
+        }}
       >
         <div
           className="mono flex items-center justify-between border-b px-4 py-2.5 text-xs"
-          style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
+          style={{
+            borderColor: "var(--dark-border)",
+            color: "var(--dark-muted)",
+          }}
         >
           <span>
-            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~/ask
+            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>
+            :~/ask
           </span>
           <button
             type="button"
@@ -278,10 +335,17 @@ export function Terminal() {
               key={i}
               className="whitespace-pre-wrap"
               style={{
-                color: line.kind === "accent" ? "var(--dark-accent)" : line.kind === "cmd" ? "var(--dark-text)" : "var(--dark-muted)",
+                color:
+                  line.kind === "accent"
+                    ? "var(--dark-accent)"
+                    : line.kind === "cmd"
+                      ? "var(--dark-text)"
+                      : "var(--dark-muted)",
               }}
             >
-              {line.kind === "cmd" ? <span style={{ color: "var(--dark-accent)" }}>$ </span> : null}
+              {line.kind === "cmd" ? (
+                <span style={{ color: "var(--dark-accent)" }}>$ </span>
+              ) : null}
               {line.cursor ? <span aria-hidden>{line.text}</span> : line.text}
               {line.cursor ? <span className="cursor" aria-hidden /> : null}
             </p>
@@ -297,7 +361,10 @@ export function Terminal() {
                 type="button"
                 onClick={() => run(s)}
                 className="term-chip mono cursor-pointer rounded-full border px-3 py-1.5 text-xs"
-                style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
+                style={{
+                  borderColor: "var(--dark-border)",
+                  color: "var(--dark-muted)",
+                }}
               >
                 {s}
               </button>
@@ -316,7 +383,10 @@ export function Terminal() {
         >
           {/* text-base on phones: anything under 16px makes iOS Safari zoom the
               whole fixed panel on focus and never zoom back out. */}
-          <span className="mono text-base md:text-sm" style={{ color: "var(--dark-accent)" }}>
+          <span
+            className="mono text-base md:text-sm"
+            style={{ color: "var(--dark-accent)" }}
+          >
             $
           </span>
           <input
@@ -341,7 +411,10 @@ export function Terminal() {
             aria-label="Send"
             disabled={!input.trim()}
             className="mono flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded border text-base transition-opacity disabled:cursor-default disabled:opacity-40"
-            style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
+            style={{
+              borderColor: "var(--dark-border)",
+              color: "var(--dark-accent)",
+            }}
           >
             ↵
           </button>

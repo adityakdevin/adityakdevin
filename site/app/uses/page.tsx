@@ -11,33 +11,63 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
   {
     h: "Editor & terminal",
     items: [
-      { name: "PhpStorm", note: "primary IDE - the Laravel/PHP tooling is unmatched" },
-      { name: "Claude Code", note: "AI pair programmer in the terminal; a genuine multiplier, not autocomplete" },
-      { name: "zsh on macOS", note: "with the usual git-heavy workflow, gh CLI for everything GitHub" },
+      {
+        name: "PhpStorm",
+        note: "primary IDE - the Laravel/PHP tooling is unmatched",
+      },
+      {
+        name: "Claude Code",
+        note: "AI pair programmer in the terminal; a genuine multiplier, not autocomplete",
+      },
+      {
+        name: "zsh on macOS",
+        note: "with the usual git-heavy workflow, gh CLI for everything GitHub",
+      },
     ],
   },
   {
     h: "Backend",
     items: [
-      { name: "Laravel + PHP", note: "the workhorse - 9+ years of production systems" },
+      {
+        name: "Laravel + PHP",
+        note: "the workhorse - 9+ years of production systems",
+      },
       { name: "Python", note: "AI/data work: embeddings, pipelines, scripts" },
-      { name: "Node.js", note: "tooling and the odd service where JS fits better" },
-      { name: "MySQL / PostgreSQL / Redis", note: "data layer; Redis for queues, cache, and rate limiting" },
+      {
+        name: "Node.js",
+        note: "tooling and the odd service where JS fits better",
+      },
+      {
+        name: "MySQL / PostgreSQL / Redis",
+        note: "data layer; Redis for queues, cache, and rate limiting",
+      },
     ],
   },
   {
     h: "Frontend",
     items: [
       { name: "Vue / Nuxt", note: "first choice for client SPAs" },
-      { name: "React / Next.js", note: "this site runs on it; TypeScript everywhere" },
-      { name: "Tailwind CSS", note: "utility CSS with a real token system on top" },
+      {
+        name: "React / Next.js",
+        note: "this site runs on it; TypeScript everywhere",
+      },
+      {
+        name: "Tailwind CSS",
+        note: "utility CSS with a real token system on top",
+      },
     ],
   },
   {
     h: "AI",
     items: [
-      { name: "Claude API", note: "production LLM features and this site's terminal assistant" },
-      { name: "OpenAI API", note: "chat integrations from the article series and client work" },
+      {
+        name: "Claude API",
+        note: "production LLM features and this site's terminal assistant",
+      },
+      {
+        name: "OpenAI API",
+        note: "chat integrations from the article series and client work",
+      },
     ],
   },
   {
@@ -45,7 +75,10 @@ const groups: { h: string; items: { name: string; note: string }[] }[] = [
     items: [
       { name: "Docker", note: "dev parity and deployment" },
       { name: "AWS", note: "S3, EC2, the usual suspects for client hosting" },
-      { name: "GitHub Actions", note: "CI/CD - this repo alone runs four workflows" },
+      {
+        name: "GitHub Actions",
+        note: "CI/CD - this repo alone runs four workflows",
+      },
       { name: "Vercel", note: "this site's home" },
     ],
   },
@@ -59,13 +92,16 @@ export default function UsesPage() {
       </p>
       <h1 className="mono h2-rule text-4xl font-semibold">Uses</h1>
       <p className="mt-3" style={{ color: "var(--muted)" }}>
-        The tools behind the work. No affiliate links, no gear-acquisition syndrome - just what
-        actually ships software.
+        The tools behind the work. No affiliate links, no gear-acquisition
+        syndrome - just what actually ships software.
       </p>
 
       {groups.map((g) => (
         <section key={g.h} className="mt-10">
-          <h2 className="mono h-section border-b pb-2" style={{ borderColor: "var(--border)" }}>
+          <h2
+            className="mono h-section border-b pb-2"
+            style={{ borderColor: "var(--border)" }}
+          >
             {g.h}
           </h2>
           <ul className="mt-4 space-y-3">
