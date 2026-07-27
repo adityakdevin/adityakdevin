@@ -80,4 +80,55 @@ describe("devto.ts failure contract (S5.6)", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 503 }));
     await expect(getLatestPosts(3)).resolves.not.toThrow();
   });
+
+  it("sends an abort signal so a hung Dev.to can't stall the homepage render", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => [] });
+    vi.stubGlobal("fetch", fetchMock);
+    await getLatestPosts(3);
+    expect(fetchMock.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("drops malformed entries instead of handing them to mergeFieldNotes", async () => {
+    // A 200 with junk shape used to sail through `as DevtoPost[]` and blow up
+    // later at published_at.slice(0, 10) - taking the whole homepage with it.
+    const valid = {
+      id: 7,
+      title: "Real post",
+      url: "https://dev.to/real",
+      published_at: "2026-05-01T00:00:00Z",
+      description: "ok",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [valid, { id: 8, title: "No date", url: "https://dev.to/x" }],
+      }),
+    );
+    const posts = await getLatestPosts(3);
+    expect(posts).toEqual([valid]);
+
+    const { mergeFieldNotes } = await import("@/lib/posts");
+    expect(() => mergeFieldNotes([], posts)).not.toThrow();
+  });
+
+  it("keeps the last-good payload when every entry is malformed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => [{ nope: true }, null, "x"] }),
+    );
+    const posts = await getLatestPosts(3);
+    // Whatever comes back, it is never the junk - and never crashes the merge.
+    expect(posts).not.toContainEqual({ nope: true });
+    const { mergeFieldNotes } = await import("@/lib/posts");
+    expect(() => mergeFieldNotes([], posts)).not.toThrow();
+  });
+
+  it("survives a non-array 200 body", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ error: "rate limited" }) }),
+    );
+    await expect(getLatestPosts(3)).resolves.not.toThrow();
+  });
 });

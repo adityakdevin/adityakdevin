@@ -6,6 +6,7 @@ vi.mock("ai", () => ({ streamText: streamTextMock }));
 import { POST } from "@/app/api/chat/route";
 import { costUsd } from "@/lib/cost";
 import { buildSystemPrompt } from "@/lib/prompt";
+import { spentUsd } from "@/lib/spend";
 
 type Usage = { inputTokens: number; outputTokens: number };
 
@@ -148,6 +149,23 @@ describe("POST /api/chat", () => {
     const res = await POST(makeReq({ message: "one more" }, ip));
     expect(res.status).toBe(429);
     expect((await res.json()).reason).toBe("rate");
+  });
+
+  it("reserves cost before the stream opens, then reconciles down to actual", async () => {
+    const before = spentUsd();
+    const res = await POST(makeReq({ message: "reserve me" }, "8.8.9.1"));
+    expect(res.status).toBe(200);
+
+    // The stream has NOT been drained yet. Under the old record-after-streaming
+    // order the ledger would still read `before` here - which is exactly how a
+    // burst of concurrent callers all passed the cap gate together.
+    const reserved = spentUsd();
+    expect(reserved).toBeGreaterThan(before);
+
+    await res.text(); // drain → reconcile
+    // Reservation is a deliberate over-estimate, so settling refunds the slack.
+    expect(spentUsd()).toBeLessThan(reserved);
+    expect(spentUsd()).toBeGreaterThanOrEqual(before);
   });
 
   // LAST on purpose: trips the module-level monthly spend counter for good.

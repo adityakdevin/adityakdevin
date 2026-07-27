@@ -3,47 +3,50 @@ import { streamText } from "ai";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { costUsd } from "@/lib/cost";
 import { createRateLimiter, clientIp } from "@/lib/ratelimit";
+import { recordSpend, overSpendCap } from "@/lib/spend";
 
 /**
  * /api/chat (SPEC S6) - Claude Haiku streaming via Vercel AI Gateway.
  * Auth is ambient: VERCEL_OIDC_TOKEN on Vercel deployments (auto-injected),
  * AI_GATEWAY_API_KEY elsewhere. Without either it answers 503 "unconfigured"
  * and the widget stays offline-commands-only. Guardrails are non-negotiable:
- * 300-char input cap, 500-token response cap, 10 msg/hr per IP, and a hard
- * monthly spend circuit breaker at $10 - an alarm alone is not enforcement.
+ * 300-char input cap, 500-token response cap, 10 msg/hr per IP, and a monthly
+ * spend circuit breaker at $10 - an alarm alone is not enforcement.
+ *
+ * SCOPE OF THE SPEND CAP - read before trusting it. The ledger (lib/spend.ts)
+ * lives in one server process. It is a per-instance brake, NOT a global one:
+ * parallel Vercel instances and cold starts each get a fresh $10. The hard,
+ * cross-instance cap is the AI Gateway spend limit configured on the Vercel
+ * project - this file cannot enforce that and does not claim to. What it DOES
+ * guarantee is that a burst of concurrent requests can't all read $0 and slip
+ * past together: cost is reserved before the stream opens and reconciled after,
+ * which is the failure the old record-after-streaming order allowed.
  */
 
 const MODEL = "anthropic/claude-haiku-4.5"; // gateway slug - dots, not hyphens
 const MAX_INPUT_CHARS = 300;
 const MAX_OUTPUT_TOKENS = 500;
 
-// ponytail: in-memory per-instance rate limit + spend counter - swap for the
-// gateway's per-user limits + Upstash once traffic justifies it (TODOS/T3).
+// ponytail: in-memory per-instance rate limit - swap for the gateway's per-user
+// limits + Upstash once traffic justifies it (TODOS/T3).
 // Limiter shared with contact/subscribe (lib/ratelimit.ts) - Upstash swap is one file.
 const rateLimited = createRateLimiter(10, 60 * 60 * 1000);
 
 const SPEND_CAP_USD = 10;
-const spend = { month: "", usd: 0 };
-
-function currentMonth(): string {
-  return new Date().toISOString().slice(0, 7); // spend:YYYY-MM
-}
-
-function overSpendCap(): boolean {
-  return spend.month === currentMonth() && spend.usd >= SPEND_CAP_USD;
-}
-
-function recordSpend(usd: number) {
-  const month = currentMonth();
-  if (spend.month !== month) {
-    spend.month = month;
-    spend.usd = 0;
-  }
-  spend.usd += usd;
-}
 
 // Frozen at module load - byte-stable across requests so provider caching can engage.
 const SYSTEM_PROMPT = buildSystemPrompt();
+
+/**
+ * Worst-case bill for one call: the whole system prompt billed uncached (cache
+ * miss / first request of a TTL window) plus a maxed-out response. ~4 chars per
+ * token is the standard rough ratio; it only has to be an over-estimate, since
+ * every request reconciles down to actual usage the moment the stream ends.
+ */
+const MAX_COST_USD = costUsd({
+  input_tokens: Math.ceil(SYSTEM_PROMPT.length / 4) + MAX_INPUT_CHARS,
+  output_tokens: MAX_OUTPUT_TOKENS,
+});
 
 export async function POST(req: NextRequest) {
   // Body-size gate BEFORE parsing (adversarial finding) - input cap is 300
@@ -82,12 +85,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (overSpendCap()) {
+  if (overSpendCap(SPEND_CAP_USD)) {
     return NextResponse.json(
       { error: "AI is resting (monthly budget cap).", reason: "budget" },
       { status: 503 },
     );
   }
+
+  // Reserve the worst case BEFORE opening the stream. Recording after the
+  // stream (the old order) let N concurrent requests all read spend=$0, pass
+  // the gate together, and blow through the cap N-calls deep. Reserving first
+  // means the Nth caller sees the first N-1 reservations already on the books.
+  recordSpend(MAX_COST_USD);
 
   const result = streamText({
     model: MODEL,
@@ -112,13 +121,20 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(chunk));
         }
         const usage = await result.usage;
+        // Reconcile the reservation down to what was actually billed. Negative
+        // delta = refund; the reservation is deliberately generous, so this
+        // almost always gives money back.
         recordSpend(
           costUsd({
             input_tokens: usage.inputTokens ?? 0,
             output_tokens: usage.outputTokens ?? 0,
-          }),
+          }) - MAX_COST_USD,
         );
       } catch (err) {
+        // ponytail: no refund on a failed stream - we don't know what the
+        // provider billed for partial output, so the reservation stands. Errs
+        // toward tripping the cap early, which is the right way for a spend
+        // breaker to be wrong. Revisit if flaky streams start eating budget.
         // Mid-stream failure → friendly line, never a frozen cursor (S6).
         console.error("chat: stream failed", err instanceof Error ? err.message : "unknown");
         controller.enqueue(

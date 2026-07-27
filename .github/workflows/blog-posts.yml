@@ -5,15 +5,21 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
+# Read-only by default; only the job that must commit gets write.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: gautamkrishnar/blog-post-workflow@v1
+      # Actions are pinned to commit SHAs, not mutable tags. A nightly cron with
+      # contents:write is exactly the job you don't want re-pointed under you:
+      # whoever controls the tag would get to commit to this repo as the bot.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: gautamkrishnar/blog-post-workflow@2786e54a01b71aec80a5118c2bd6b5044e842597 # v1
         # fails harmlessly until the first dev.to post exists
         continue-on-error: true
         with:
