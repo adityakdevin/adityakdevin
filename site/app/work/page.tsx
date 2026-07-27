@@ -68,7 +68,12 @@ export default function WorkIndexPage() {
                 background: "var(--surface)",
               }}
             >
-              <div className="grid md:grid-cols-[3fr_2fr]">
+              {/* Two tracks only when there is a diagram to put in the second
+                  one - an unconditional 3fr_2fr squeezed a diagram-less study
+                  into 60% of the card and left the other 40% blank. */}
+              <div
+                className={`grid ${diagram ? "md:grid-cols-[3fr_2fr]" : ""}`}
+              >
                 <div className="p-6">
                   {/* The sort is newest-first; without the date the reader
                       cannot see that, and `date` exists only to drive it. */}

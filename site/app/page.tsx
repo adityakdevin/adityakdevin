@@ -298,9 +298,8 @@ export default async function Home() {
                       {n.title}
                     </a>
                   )}
-                  {/* Local posts carry a summary; the legacy Dev.to feed does
-                      not, so the card degrades to title-only rather than
-                      inventing one. */}
+                  {/* Both sources carry a summary. A feed item that omits one
+                      degrades to title-only rather than inventing one. */}
                   {n.description ? (
                     <p
                       className="mt-2 text-sm leading-relaxed"

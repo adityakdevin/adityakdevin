@@ -151,7 +151,7 @@ export type FieldNote = {
   date: string;
   title: string;
   href: string;
-  /** Local posts only - the Dev.to feed shape carries no summary. */
+  /** Both sources carry one; optional only because a feed item may omit it. */
   description?: string;
 };
 
@@ -165,7 +165,15 @@ export type FieldNote = {
  */
 export function mergeFieldNotes(
   local: Post[],
-  legacy: { id: number; title: string; url: string; published_at: string }[] | null,
+  legacy:
+    | {
+        id: number;
+        title: string;
+        url: string;
+        published_at: string;
+        description?: string;
+      }[]
+    | null,
   limit = 3,
 ): FieldNote[] {
   const syndicated = new Set(local.map((p) => p.devtoId).filter(Boolean));
@@ -183,6 +191,7 @@ export function mergeFieldNotes(
       date: p.published_at.slice(0, 10),
       title: p.title,
       href: p.url,
+      description: p.description,
     }));
   return [...localNotes, ...legacyNotes]
     .sort((a, b) => b.date.localeCompare(a.date) || a.key.localeCompare(b.key))

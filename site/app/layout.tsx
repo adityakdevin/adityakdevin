@@ -63,7 +63,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-theme="dark"
+      // globals.css sets scroll-behavior: smooth on html. Without this
+      // attribute Next router transitions inherit it, so a route change
+      // animates the scroll to top instead of jumping - and dev warns.
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

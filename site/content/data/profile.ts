@@ -2,6 +2,8 @@
  * Single source of truth (SPEC S3): structured facts only.
  * Consumed by: home, /cv, lib/jsonld.ts, llms.txt generation, bot prompt (P3).
  */
+import { publishedCaseStudies } from "./work";
+
 export const profile = {
   name: "Aditya Kumar",
   handle: "adityakdevin",
@@ -33,9 +35,9 @@ export const profile = {
     { value: "60+", label: "projects delivered" },
     { value: "8.3k+", label: "GitHub contributions" },
     // Was "1 Laravel + AI series", which at 48px read as padding next to 8.3k+.
-    // Hardcoded, not derived: only 3 of 4 posts are series posts and a unit test
-    // pins that array at 4.
-    { value: "2", label: "case studies" },
+    // Derived, not hardcoded: it said 2 while three studies were published, and
+    // the Work section three sections below reads the same array and said 3.
+    { value: `${publishedCaseStudies.length}`, label: "case studies" },
   ],
 
   services: [
