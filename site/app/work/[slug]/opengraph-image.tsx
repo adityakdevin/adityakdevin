@@ -10,7 +10,11 @@ export function generateStaticParams() {
   return publishedCaseStudies.map((c) => ({ slug: c.slug }));
 }
 
-export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const study = publishedCaseStudies.find((c) => c.slug === slug);
   // Unknown/unpublished slugs 404 like the page does - a 200 fallback would make

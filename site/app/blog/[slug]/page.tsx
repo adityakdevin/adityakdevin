@@ -31,7 +31,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) notFound();
@@ -47,8 +51,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       />
       {/* break-all: the slug is one unbreakable mono token - without it, long
           slugs force horizontal page scroll on phones. */}
-      <p className="mono mb-3 break-all text-sm" style={{ color: "var(--muted)" }}>
-        <span style={{ color: "var(--accent)" }}>$</span> cat blog/{post.slug}.md
+      <p
+        className="mono mb-3 break-all text-sm"
+        style={{ color: "var(--muted)" }}
+      >
+        <span style={{ color: "var(--accent)" }}>$</span> cat blog/{post.slug}
+        .md
       </p>
       <h1 className="mono h2-rule text-3xl font-semibold leading-tight md:text-4xl">
         {post.title}
@@ -76,14 +84,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           className="btn mono min-h-11 rounded px-5 py-2.5 text-sm font-semibold no-underline"
           style={{ background: "var(--accent)", color: "var(--on-accent)" }}
         >
-          Book a call →
+          Book a call&nbsp;→
         </a>
         <Link
           href="/#contact"
           className="btn mono min-h-11 rounded border px-5 py-2.5 text-sm font-medium no-underline"
           style={{ borderColor: "var(--border)" }}
         >
-          Build something like this →
+          Build something like this&nbsp;→
         </Link>
       </div>
 

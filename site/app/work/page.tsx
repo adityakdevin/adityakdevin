@@ -18,7 +18,9 @@ export const metadata: Metadata = {
 
 // Newest first. The index had no sort order at all, so it rendered in whatever
 // order the data file happened to be written in.
-const sortedStudies = [...publishedCaseStudies].sort((a, b) => b.date.localeCompare(a.date));
+const sortedStudies = [...publishedCaseStudies].sort((a, b) =>
+  b.date.localeCompare(a.date),
+);
 
 export default function WorkIndexPage() {
   if (publishedCaseStudies.length < MIN_STUDIES) notFound();
@@ -37,7 +39,10 @@ export default function WorkIndexPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
+      />
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>aditya@dev</span>:~$ ls work/
       </p>
@@ -49,12 +54,19 @@ export default function WorkIndexPage() {
           // The card's visual is the study's own architecture diagram, cropped -
           // real content, not decoration, and it survives an NDA the way a
           // screenshot would not. Studies without one just render without it.
-          const diagram = c.sections.find((sec) => sec.pre)?.pre?.split("\n").slice(0, 6).join("\n");
+          const diagram = c.sections
+            .find((sec) => sec.pre)
+            ?.pre?.split("\n")
+            .slice(0, 6)
+            .join("\n");
           return (
             <li
               key={c.slug}
               className="overflow-hidden rounded border"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--surface)",
+              }}
             >
               <div className="grid md:grid-cols-[3fr_2fr]">
                 <div className="p-6">
@@ -67,21 +79,33 @@ export default function WorkIndexPage() {
                     <Link href={`/work/${c.slug}`}>{c.title}</Link>
                   </h2>
                   {c.client || c.period ? (
-                    <p className="mono mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                    <p
+                      className="mono mt-1 text-sm"
+                      style={{ color: "var(--muted)" }}
+                    >
                       {[c.client, c.period].filter(Boolean).join(" · ")}
                     </p>
                   ) : null}
                   <p className="mt-2" style={{ color: "var(--muted)" }}>
                     {c.summary}
                   </p>
-                  <p className="mono mt-3 text-sm" style={{ color: "var(--accent)" }}>
+                  <p
+                    className="mono mt-3 text-sm"
+                    style={{ color: "var(--accent)" }}
+                  >
                     {c.stack.join(" · ")}
                   </p>
                   {/* Its own line: appended to the stack list it read as one
                       more technology rather than as the headline number. */}
                   {lead ? (
-                    <p className="mono mt-2 text-sm" style={{ color: "var(--muted)" }}>
-                      <span className="font-semibold" style={{ color: "var(--text)" }}>
+                    <p
+                      className="mono mt-2 text-sm"
+                      style={{ color: "var(--muted)" }}
+                    >
+                      <span
+                        className="font-semibold"
+                        style={{ color: "var(--text)" }}
+                      >
                         {lead.value}
                       </span>{" "}
                       {lead.metric}
@@ -92,7 +116,10 @@ export default function WorkIndexPage() {
                   <div
                     aria-hidden
                     className="hidden overflow-hidden border-l md:block"
-                    style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+                    style={{
+                      borderColor: "var(--border)",
+                      background: "var(--bg)",
+                    }}
                   >
                     <pre
                       className="mono p-4 text-[10px] leading-snug"

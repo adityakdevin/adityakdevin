@@ -165,6 +165,29 @@ test.describe("responsive S5B", () => {
     expect(colWidth).toBeLessThanOrEqual(vw);
   });
 
+  // Regression: the booking CTA wraps inside its panel and the trailing arrow
+  // was landing alone on a line by itself. Fixed by binding it to the last word
+  // with a non-breaking space (not whitespace-nowrap - the label is wider than
+  // the panel at 390px, so nowrap would overflow instead of wrap).
+  // Reported by Aditya from a screenshot, 2026-07-26.
+  //
+  // Asserts the INVARIANT, not the rendering: whether the arrow actually widows
+  // depends on the exact width at which the last word fills the line, so a
+  // fixed-viewport geometry check passes at most widths even when unbound.
+  test("trailing arrows are bound to their label with a non-breaking space", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const unbound = await page.evaluate(() =>
+      [...document.querySelectorAll("a")]
+        .map((a) => (a.textContent ?? "").trim())
+        .filter((t) => /[\u2192\u2193]$/.test(t))
+        // A normal space before the arrow lets it wrap away from the label.
+        .filter((t) => / [\u2192\u2193]$/.test(t)),
+    );
+    expect(unbound, `arrows able to wrap away: ${unbound.join(" | ")}`).toEqual([]);
+  });
+
   test("no horizontal scroll on any viewport", async ({ page }) => {
     await page.goto("/");
     const overflow = await page.evaluate(

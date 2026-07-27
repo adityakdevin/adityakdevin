@@ -6,7 +6,11 @@ import Link from "next/link";
  * to search engines. The current page renders as plain accented text, not a link.
  */
 const STACKS = [
-  { key: "laravel", label: "Laravel", href: "/services/laravel-ai-development" },
+  {
+    key: "laravel",
+    label: "Laravel",
+    href: "/services/laravel-ai-development",
+  },
   { key: "node", label: "Node.js", href: "/services/nodejs-ai-development" },
   { key: "python", label: "Python", href: "/services/python-ai-development" },
 ] as const;
@@ -24,7 +28,10 @@ export function ServiceStackNav({
   className?: string;
 }) {
   return (
-    <p className={`mono text-sm ${className}`} style={{ color: "var(--muted)" }}>
+    <p
+      className={`mono text-sm ${className}`}
+      style={{ color: "var(--muted)" }}
+    >
       AI integration for:{" "}
       {STACKS.map((s, i) => (
         <span key={s.key}>

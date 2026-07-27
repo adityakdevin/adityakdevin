@@ -17,7 +17,8 @@ export function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function validateField(name: string, value: string): string | null {
-    if (name === "name" && value.trim().length < 2) return "Please enter your name.";
+    if (name === "name" && value.trim().length < 2)
+      return "Please enter your name.";
     if (name === "email" && !EMAIL_RE.test(value))
       return "Please enter a valid email address.";
     if (name === "message" && value.trim().length < 10)
@@ -42,7 +43,10 @@ export function ContactForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    const data = Object.fromEntries(new FormData(form).entries()) as Record<
+      string,
+      string
+    >;
 
     const nextErrors: Record<string, string> = {};
     for (const field of ["name", "email", "message"]) {
@@ -95,10 +99,14 @@ export function ContactForm() {
         style={{ borderColor: "var(--accent)", background: "var(--surface)" }}
       >
         <p className="mono font-semibold" style={{ color: "var(--accent)" }}>
-           Got it - I reply within 24 hours.
+          Got it - I reply within 24 hours.
         </p>
         <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-          Prefer faster? <a href={withRef(profile.bookingUrl, "contact")}>Book a call directly</a>.
+          Prefer faster?{" "}
+          <a href={withRef(profile.bookingUrl, "contact")}>
+            Book a call directly
+          </a>
+          .
         </p>
       </div>
     );
@@ -107,7 +115,10 @@ export function ContactForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       {/* Honeypot - invisible to humans, tempting to bots */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+      >
         <label>
           Company website
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
@@ -116,7 +127,11 @@ export function ContactForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="cf-name" className="mono mb-1 block text-sm" style={{ color: "var(--muted)" }}>
+          <label
+            htmlFor="cf-name"
+            className="mono mb-1 block text-sm"
+            style={{ color: "var(--muted)" }}
+          >
             name *
           </label>
           <input
@@ -128,16 +143,28 @@ export function ContactForm() {
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? "cf-name-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ borderColor: errors.name ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+            style={{
+              borderColor: errors.name ? "var(--error)" : "var(--border)",
+              color: "var(--text)",
+            }}
           />
           {errors.name ? (
-            <p id="cf-name-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+            <p
+              id="cf-name-err"
+              role="alert"
+              className="mt-1 text-sm"
+              style={{ color: "var(--error)" }}
+            >
               {errors.name}
             </p>
           ) : null}
         </div>
         <div>
-          <label htmlFor="cf-email" className="mono mb-1 block text-sm" style={{ color: "var(--muted)" }}>
+          <label
+            htmlFor="cf-email"
+            className="mono mb-1 block text-sm"
+            style={{ color: "var(--muted)" }}
+          >
             email *
           </label>
           <input
@@ -149,10 +176,18 @@ export function ContactForm() {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "cf-email-err" : undefined}
             className="min-h-11 w-full rounded border px-3 py-2"
-            style={{ borderColor: errors.email ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+            style={{
+              borderColor: errors.email ? "var(--error)" : "var(--border)",
+              color: "var(--text)",
+            }}
           />
           {errors.email ? (
-            <p id="cf-email-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+            <p
+              id="cf-email-err"
+              role="alert"
+              className="mt-1 text-sm"
+              style={{ color: "var(--error)" }}
+            >
               {errors.email}
             </p>
           ) : null}
@@ -160,7 +195,11 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="cf-message" className="mono mb-1 block text-sm" style={{ color: "var(--muted)" }}>
+        <label
+          htmlFor="cf-message"
+          className="mono mb-1 block text-sm"
+          style={{ color: "var(--muted)" }}
+        >
           what are you building? *
         </label>
         <textarea
@@ -172,17 +211,29 @@ export function ContactForm() {
           aria-invalid={!!errors.message}
           aria-describedby={errors.message ? "cf-message-err" : undefined}
           className="w-full rounded border px-3 py-2"
-          style={{ borderColor: errors.message ? "var(--error)" : "var(--border)", color: "var(--text)" }}
+          style={{
+            borderColor: errors.message ? "var(--error)" : "var(--border)",
+            color: "var(--text)",
+          }}
         />
         {errors.message ? (
-          <p id="cf-message-err" role="alert" className="mt-1 text-sm" style={{ color: "var(--error)" }}>
+          <p
+            id="cf-message-err"
+            role="alert"
+            className="mt-1 text-sm"
+            style={{ color: "var(--error)" }}
+          >
             {errors.message}
           </p>
         ) : null}
       </div>
 
       {status === "error" ? (
-        <p role="alert" className="rounded border p-3 text-sm" style={{ borderColor: "var(--error)", color: "var(--text)" }}>
+        <p
+          role="alert"
+          className="rounded border p-3 text-sm"
+          style={{ borderColor: "var(--error)", color: "var(--text)" }}
+        >
           Couldn&apos;t send - try again, or email me directly at{" "}
           <a href={`mailto:${profile.email}`}>{profile.email}</a>.
         </p>

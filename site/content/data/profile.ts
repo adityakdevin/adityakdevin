@@ -121,6 +121,12 @@ export const profile = {
       href: "/work/shipping-a-claims-lens",
       note: "including the part where it was broken",
     },
+    // Sixth entry also closes the two-column grid, which had an odd count.
+    {
+      claim: "This site's source is public - endpoint, guardrails and all",
+      href: "https://github.com/adityakdevin/adityakdevin",
+      note: "read the code behind every claim above",
+    },
   ],
 
   // Testimonial slot ships hidden (SPEC S5.5) - first real quote turns it on. No fake quotes, ever.

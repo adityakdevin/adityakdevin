@@ -37,7 +37,9 @@ function H2({ children, id }: { children: React.ReactNode; id?: string }) {
 export default async function Home() {
   // Local site-first posts merge with the Dev.to legacy feed, deduped by
   // devtoId - Dev.to being down no longer empties this section (T5).
-  const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3));
+  // 4, not 3: the notes render as a two-column grid, so an odd count leaves a
+  // hole in the last row. Five local posts exist.
+  const notes = mergeFieldNotes(getAllPosts(), await getLatestPosts(3), 4);
 
   return (
     <main className="flex-1">
@@ -176,13 +178,13 @@ export default async function Home() {
                   reachable only from the footer. */}
               {publishedCaseStudies.length >= MIN_WORK_INDEX ? (
                 <Link href="/work" className="mono text-base font-medium">
-                  All {publishedCaseStudies.length} case studies →
+                  All {publishedCaseStudies.length} case studies&nbsp;→
                 </Link>
               ) : null}
               {profile.featuredWork.links.map((l) => (
                 <div key={l.title}>
                   <a href={l.href} className="mono text-base font-medium">
-                    {l.title} →
+                    {l.title}&nbsp;→
                   </a>
                   <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
                     {l.note}
@@ -314,7 +316,7 @@ export default async function Home() {
               ))}
             </ul>
             <p className="mono mt-6 text-sm">
-              <Link href="/blog">all field notes →</Link>
+              <Link href="/blog">all field notes&nbsp;→</Link>
             </p>
           </div>
         </section>
@@ -369,26 +371,37 @@ export default async function Home() {
           {/* One bordered object split down the middle, instead of a button
               floating next to a bare form on a flat background. */}
           <div
-            className="mt-10 grid overflow-hidden rounded border md:grid-cols-[2fr_3fr]"
+            // 1fr_1fr, was 2fr_3fr: at 2fr the left panel gave the CTA label 277px for
+            // the 283px it needs, so the primary button wrapped by 7px at 1440 and by
+            // 56px at 900. The numbered steps were wrapping to four lines for the same
+            // reason. The form does not need the extra third.
+            className="mt-10 grid overflow-hidden rounded border lg:grid-cols-[1fr_1fr]"
             style={{ borderColor: "var(--border)", background: "var(--bg)" }}
           >
             {/* justify-between: the panel stretches to the form's height, so
                 left-aligned content left a 155px hole under the links. Booking
                 sits at the top, the direct-contact list anchors the bottom. */}
             <div
-              className="flex flex-col justify-between border-b p-6 md:border-r md:border-b-0 md:p-8"
+              className="flex flex-col justify-between border-b p-6 lg:border-r lg:border-b-0 lg:p-8"
               style={{ borderColor: "var(--border)" }}
             >
               <div>
                 <a
                   href={withRef(profile.bookingUrl, "home")}
-                  className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
+                  // Sized to fit on one line at every width: the label needs 283px at 18px,
+                  // which the panel only gives it from 768 up. Phones get 16px type and
+                  // tighter padding so it still fits rather than wrapping.
+                  className="btn mono block min-h-11 rounded px-4 py-4 text-center text-base font-semibold no-underline lg:px-6 lg:text-lg"
                   style={{
                     background: "var(--accent)",
                     color: "var(--on-accent)",
                   }}
                 >
-                  Book a free 30-min call →
+                  {/* nbsp binds the arrow to the last word: the label wraps in
+                      this panel and the arrow was landing alone on line two.
+                      Not whitespace-nowrap - at 390px the label is wider than
+                      the panel, so nowrap would overflow instead of wrap. */}
+                  Book a free 30-min call&nbsp;→
                 </a>
                 <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
                   The fastest path - come with the problem, leave with a plan.
@@ -404,7 +417,7 @@ export default async function Home() {
                 style={{ color: "var(--muted)" }}
               >
                 {[
-                  "I reply within 24 hours.",
+                  "You hear back within 24 hours.",
                   "A 30-minute call: you describe the problem, I tell you honestly whether AI helps.",
                   "A fixed-scope quote before any work starts.",
                 ].map((step, i) => (
@@ -437,7 +450,7 @@ export default async function Home() {
                 </li>
               </ul>
             </div>
-            <div className="p-6 md:p-8">
+            <div className="p-6 lg:p-8">
               <p
                 className="mono mb-4 text-sm"
                 style={{ color: "var(--muted)" }}

@@ -15,10 +15,26 @@ export const metadata: Metadata = {
 
 // Freelance marketplaces + direct channels, in preference order.
 const channels = [
-  { label: "Upwork", href: profile.upwork, note: "Hourly & fixed-scope contracts" },
-  { label: "Freelancer", href: profile.freelancer, note: "Project bids, global" },
-  { label: "PeoplePerHour", href: profile.peopleperhour, note: "EU/UK-friendly gigs" },
-  { label: "LinkedIn", href: profile.linkedin, note: "Career history & referrals" },
+  {
+    label: "Upwork",
+    href: profile.upwork,
+    note: "Hourly & fixed-scope contracts",
+  },
+  {
+    label: "Freelancer",
+    href: profile.freelancer,
+    note: "Project bids, global",
+  },
+  {
+    label: "PeoplePerHour",
+    href: profile.peopleperhour,
+    note: "EU/UK-friendly gigs",
+  },
+  {
+    label: "LinkedIn",
+    href: profile.linkedin,
+    note: "Career history & referrals",
+  },
 ] as const;
 
 const sectionHead = "mono h-section border-b pb-2";
@@ -31,8 +47,9 @@ export default function HirePage() {
         <h1 className="mono h2-rule text-4xl font-semibold">Hire me</h1>
         <p className="mt-3 text-lg font-medium">{profile.heroLine}</p>
         <p className="mt-2" style={{ color: "var(--muted)" }}>
-          {profile.yearsExperience} years shipping Laravel, Node, Python, and production AI/LLM
-          features - backend to pixels. Available for contract work worldwide.
+          {profile.yearsExperience} years shipping Laravel, Node, Python, and
+          production AI/LLM features - backend to pixels. Available for contract
+          work worldwide.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a
@@ -40,7 +57,7 @@ export default function HirePage() {
             className="btn mono inline-flex min-h-11 items-center rounded px-4 py-2 text-sm font-semibold no-underline"
             style={{ background: "var(--accent)", color: "var(--on-accent)" }}
           >
-            Book a call →
+            Book a call&nbsp;→
           </a>
           <a
             href={`mailto:${profile.email}`}
@@ -54,16 +71,21 @@ export default function HirePage() {
 
       {/* What it costs - the site's only price lived inside a collapsed FAQ item
           on the homepage, which direct /hire entrants never see. */}
-      <section className="mt-10 rounded border p-6" style={{ borderColor: "var(--border)" }}>
+      <section
+        className="mt-10 rounded border p-6"
+        style={{ borderColor: "var(--border)" }}
+      >
         <h2 className="mono text-xl font-semibold">
-          <span style={{ color: "var(--accent)" }}>What it costs:</span> start with the audit
+          <span style={{ color: "var(--accent)" }}>What it costs:</span> start
+          with the audit
         </h2>
         <p className="mt-3">
-          Most chatbot and LLM integrations land in the $2,000-$8,000 range. The audit is one
-          week, fixed price, quoted on the call - you get a build-ready spec naming the 2-3
-          highest-ROI integrations for your codebase, with cost, latency, and risk spelled out.
-          If the honest answer is &ldquo;AI doesn&apos;t help here,&rdquo; you&apos;ll get that in
-          writing instead, and it costs you the call.
+          Most chatbot and LLM integrations land in the $2,000-$8,000 range. The
+          audit is one week, fixed price, quoted on the call - you get a
+          build-ready spec naming the 2-3 highest-ROI integrations for your
+          codebase, with cost, latency, and risk spelled out. If the honest
+          answer is &ldquo;AI doesn&apos;t help here,&rdquo; you&apos;ll get
+          that in writing instead, and it costs you the call.
         </p>
       </section>
 
@@ -79,10 +101,16 @@ export default function HirePage() {
               <blockquote
                 key={t.author}
                 className="rounded border p-6"
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                style={{
+                  borderColor: "var(--border)",
+                  background: "var(--surface)",
+                }}
               >
                 <p className="italic">&ldquo;{t.quote}&rdquo;</p>
-                <footer className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
+                <footer
+                  className="mono mt-3 text-sm"
+                  style={{ color: "var(--muted)" }}
+                >
                   - {t.author}, {t.role}
                 </footer>
               </blockquote>
@@ -90,7 +118,9 @@ export default function HirePage() {
           </div>
         ) : null}
         <div className="mt-5">
-          <h3 className="text-lg font-medium">{profile.featuredWork.lead.title}</h3>
+          <h3 className="text-lg font-medium">
+            {profile.featuredWork.lead.title}
+          </h3>
           <p className="mt-1" style={{ color: "var(--muted)" }}>
             {profile.featuredWork.lead.story}
           </p>
@@ -102,7 +132,7 @@ export default function HirePage() {
           {profile.featuredWork.links.map((l) => (
             <li key={l.title}>
               <a href={l.href} className="mono text-base font-medium">
-                {l.title} →
+                {l.title}&nbsp;→
               </a>
               <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
                 {l.note}
@@ -147,7 +177,8 @@ export default function HirePage() {
           Send the project details
         </h2>
         <p className="mono mt-4 mb-4 text-sm" style={{ color: "var(--muted)" }}>
-          Not ready to book a call? Tell me about the project and I&apos;ll reply.
+          Not ready to book a call? Tell me about the project and I&apos;ll
+          reply.
         </p>
         <ContactForm />
       </section>
@@ -162,7 +193,7 @@ export default function HirePage() {
           {channels.map((c) => (
             <li key={c.label} className="flex flex-wrap items-baseline gap-x-3">
               <a href={c.href} className="mono font-semibold">
-                {c.label} →
+                {c.label}&nbsp;→
               </a>
               <span className="text-sm" style={{ color: "var(--muted)" }}>
                 {c.note}
@@ -171,7 +202,8 @@ export default function HirePage() {
           ))}
         </ul>
         <p className="mt-6 text-sm" style={{ color: "var(--muted)" }}>
-          Prefer to work direct? Email or book a call above - same me, no marketplace fees.
+          Prefer to work direct? Email or book a call above - same me, no
+          marketplace fees.
         </p>
       </section>
     </main>

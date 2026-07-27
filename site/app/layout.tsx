@@ -32,14 +32,21 @@ export const metadata: Metadata = {
   description: `${profile.name} (${profile.handle}) - ${profile.role} @ ${profile.company}. ${profile.yearsExperience} years building Laravel, Vue & React products, now shipping AI/LLM features into production. Based in Lucknow, India. Available for AI integration and full-stack projects.`,
   // Next merges `alternates` shallowly and every content page sets its own, so
   // the feed link has to be repeated on /blog and /blog/[slug] to render there.
-  alternates: { canonical: "./", types: { "application/rss+xml": "/blog/rss.xml" } },
+  alternates: {
+    canonical: "./",
+    types: { "application/rss+xml": "/blog/rss.xml" },
+  },
   openGraph: {
     siteName: `${profile.name} - ${profile.handle}`,
     type: "website",
     locale: "en_US",
   },
   twitter: { card: "summary_large_image", creator: `@${profile.handle}` },
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: profile.handle },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: profile.handle,
+  },
 };
 
 export const viewport: Viewport = {
@@ -76,7 +83,11 @@ export default function RootLayout({
           Skip to content
         </a>
         <StickyChrome />
-        <div id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+        <div
+          id="main"
+          tabIndex={-1}
+          className="flex flex-1 flex-col outline-none"
+        >
           {children}
         </div>
         <Footer />

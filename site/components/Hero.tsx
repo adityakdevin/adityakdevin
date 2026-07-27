@@ -37,8 +37,12 @@ export function Hero() {
               default to min-width:auto that min-content sized the column - so at
               320px the headline, value line and CTA all ran past the viewport
               and were silently clipped by the section's overflow-x: hidden. */}
-          <p className="mono mb-6 text-sm" style={{ color: "var(--dark-muted)" }}>
-            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>:~$&nbsp;
+          <p
+            className="mono mb-6 text-sm"
+            style={{ color: "var(--dark-muted)" }}
+          >
+            <span style={{ color: "var(--dark-accent)" }}>aditya@dev</span>
+            :~$&nbsp;
             <span className="type-reveal">whoami</span>
             <span className="cursor" aria-hidden />
           </p>
@@ -47,13 +51,19 @@ export function Hero() {
             {profile.name}
           </h1>
 
-          <p className="mt-5 max-w-xl text-lg md:text-2xl" style={{ color: "var(--dark-text)" }}>
+          <p
+            className="mt-5 max-w-xl text-lg md:text-2xl"
+            style={{ color: "var(--dark-text)" }}
+          >
             {profile.heroLine}
           </p>
 
-          <p className="mono mt-4 text-sm md:text-base" style={{ color: "var(--dark-muted)" }}>
-            {profile.headline} - {profile.role} @ {profile.company} · {profile.yearsExperience} yrs
-            · Lucknow, India
+          <p
+            className="mono mt-4 text-sm md:text-base"
+            style={{ color: "var(--dark-muted)" }}
+          >
+            {profile.headline} - {profile.role} @ {profile.company} ·{" "}
+            {profile.yearsExperience} yrs · Lucknow, India
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -61,16 +71,22 @@ export function Hero() {
               href={withRef(profile.bookingUrl, "hero")}
               className="btn mono min-h-11 rounded px-6 py-3 text-center text-base font-semibold no-underline"
               // theme-locked dark hero: literal pair, NOT tokens (light-theme --on-accent is white)
-              style={{ background: "var(--dark-accent)", color: "var(--dark-on-accent)" }}
+              style={{
+                background: "var(--dark-accent)",
+                color: "var(--dark-on-accent)",
+              }}
             >
-              Book a call →
+              Book a call&nbsp;→
             </a>
             <a
               href="#work"
               className="btn mono min-h-11 rounded border px-6 py-3 text-center text-base no-underline"
-              style={{ borderColor: "var(--dark-border)", color: "var(--dark-text)" }}
+              style={{
+                borderColor: "var(--dark-border)",
+                color: "var(--dark-text)",
+              }}
             >
-              See the work ↓
+              See the work&nbsp;↓
             </a>
           </div>
         </div>
@@ -79,15 +95,35 @@ export function Hero() {
         <div className="relative mx-auto w-full min-w-0 max-w-lg md:max-w-none">
           <div
             className="overflow-hidden rounded-lg border shadow-2xl"
-            style={{ borderColor: "var(--dark-border)", background: "var(--dark-surface)", boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)" }}
+            style={{
+              borderColor: "var(--dark-border)",
+              background: "var(--dark-surface)",
+              boxShadow:
+                "0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(34,184,212,0.08)",
+            }}
           >
             <div
               className="mono flex items-center gap-1.5 border-b px-3 py-2 text-xs"
-              style={{ borderColor: "var(--dark-border)", color: "var(--dark-muted)" }}
+              style={{
+                borderColor: "var(--dark-border)",
+                color: "var(--dark-muted)",
+              }}
             >
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-border)" }} />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--dark-accent)" }} />
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "var(--dark-border)" }}
+              />
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "var(--dark-border)" }}
+              />
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "var(--dark-accent)" }}
+              />
               <span className="ml-2">adityakdevin@github</span>
             </div>
             {/* ASCII portrait (cropped from the README card) + stats as real, legible HTML text.
@@ -101,7 +137,10 @@ export function Hero() {
               />
               {/* ponytail: stats snapshot, refresh when the README card regenerates */}
               <div className="mono flex-1 self-center px-5 py-5 text-[14px] leading-relaxed sm:pl-2 sm:pr-5">
-                <p className="mb-2 font-semibold" style={{ color: "var(--dark-accent)" }}>
+                <p
+                  className="mb-2 font-semibold"
+                  style={{ color: "var(--dark-accent)" }}
+                >
                   - {profile.handle}@github
                 </p>
                 {(
@@ -121,7 +160,10 @@ export function Hero() {
                     <span style={{ color: "var(--dark-text)" }}>{v}</span>
                   </p>
                 ))}
-                <p className="mb-2 mt-4 font-semibold" style={{ color: "var(--dark-accent)" }}>
+                <p
+                  className="mb-2 mt-4 font-semibold"
+                  style={{ color: "var(--dark-accent)" }}
+                >
                   - stats
                 </p>
                 {(
@@ -143,7 +185,9 @@ export function Hero() {
                 ))}
                 <p className="mt-4">
                   <span style={{ color: "var(--dark-accent)" }}>$</span>{" "}
-                  <span style={{ color: "var(--dark-text)" }}>open github/adityakdevin</span>
+                  <span style={{ color: "var(--dark-text)" }}>
+                    open github/adityakdevin
+                  </span>
                   <span className="cursor" />
                 </p>
               </div>
@@ -155,7 +199,10 @@ export function Hero() {
               // the single line (a wrap would make the card height jump per phrase) and
               // ends it with an ellipsis inside its own box.
               className="mono block truncate border-t px-3 py-2.5 text-center text-sm font-medium no-underline transition-colors hover:underline"
-              style={{ borderColor: "var(--dark-border)", color: "var(--dark-accent)" }}
+              style={{
+                borderColor: "var(--dark-border)",
+                color: "var(--dark-accent)",
+              }}
             >
               <TypingCaption
                 phrases={[
@@ -173,10 +220,15 @@ export function Hero() {
       {/* Fold hint: seam into the light/next content */}
       <div className="mx-auto w-full max-w-7xl px-6 pb-5">
         <p className="mono text-xs" style={{ color: "var(--dark-muted)" }}>
-          <span style={{ color: "var(--dark-accent)" }}>$</span> scroll --to proof ↓
+          <span style={{ color: "var(--dark-accent)" }}>$</span> scroll --to
+          proof&nbsp;↓
         </p>
       </div>
-      <div aria-hidden className="h-1 w-full" style={{ background: "linear-gradient(90deg, #22b8d4, transparent)" }} />
+      <div
+        aria-hidden
+        className="h-1 w-full"
+        style={{ background: "linear-gradient(90deg, #22b8d4, transparent)" }}
+      />
     </section>
   );
 }

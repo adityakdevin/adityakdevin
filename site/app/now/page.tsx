@@ -20,7 +20,9 @@ export default function NowPage() {
       <p className="mono mb-3 text-sm" style={{ color: "var(--muted)" }}>
         <span style={{ color: "var(--accent)" }}>$</span> date && cat now.md
       </p>
-      <h1 className="mono h2-rule text-4xl font-semibold">What I&apos;m doing now</h1>
+      <h1 className="mono h2-rule text-4xl font-semibold">
+        What I&apos;m doing now
+      </h1>
       <p className="mono mt-3 text-sm" style={{ color: "var(--muted)" }}>
         last updated: {LAST_UPDATED} · inspired by{" "}
         <a href="https://nownownow.com/about">nownownow.com</a>
@@ -30,34 +32,41 @@ export default function NowPage() {
         <div>
           <h2 className="mono h-section">Shipping AI into client products</h2>
           <p className="mt-2">
-            Day job as {profile.role} at {profile.company}: leading delivery of client web
-            products, with a growing share of the work being LLM features - chatbots, document
-            automation, and AI-assisted workflows wired into existing Laravel systems.
+            Day job as {profile.role} at {profile.company}: leading delivery of
+            client web products, with a growing share of the work being LLM
+            features - chatbots, document automation, and AI-assisted workflows
+            wired into existing Laravel systems.
           </p>
         </div>
         <div>
           <h2 className="mono h-section">Writing the Laravel + AI series</h2>
           <p className="mt-2">
-            Publishing a hands-on series - chatbots, streaming with SSE, RAG with pgvector,
-            tool-calling agents, and queue-based AI workflows. Canonical on{" "}
-            <Link href="/blog">the blog</Link>, syndicated to <a href={profile.devto}>Dev.to</a>. New
-            article on the 1st and the 15th.
+            Publishing a hands-on series - chatbots, streaming with SSE, RAG
+            with pgvector, tool-calling agents, and queue-based AI workflows.
+            Canonical on <Link href="/blog">the blog</Link>, syndicated to{" "}
+            <a href={profile.devto}>Dev.to</a>. New article on the 1st and the
+            15th.
           </p>
         </div>
         <div>
           <h2 className="mono h-section">Rebuilding this site</h2>
           <p className="mt-2">
-            You&apos;re looking at it - a ground-up rebuild in Next.js with an AI-era focus. The
-            terminal assistant in the corner is part of the same project and its AI mode is live;
-            how it is guarded is written up in{" "}
-            <Link href="/work/askaditya-terminal-assistant">the case study</Link>.
+            You&apos;re looking at it - a ground-up rebuild in Next.js with an
+            AI-era focus. The terminal assistant in the corner is part of the
+            same project and its AI mode is live; how it is guarded is written
+            up in{" "}
+            <Link href="/work/askaditya-terminal-assistant">
+              the case study
+            </Link>
+            .
           </p>
         </div>
         <div>
           <h2 className="mono h-section">Learning in public</h2>
           <p className="mt-2">
-            Deepening Python and applied AI engineering: embeddings, retrieval pipelines, and
-            evaluation - the parts of LLM work that separate demos from products.
+            Deepening Python and applied AI engineering: embeddings, retrieval
+            pipelines, and evaluation - the parts of LLM work that separate
+            demos from products.
           </p>
         </div>
       </section>
