@@ -28,10 +28,7 @@ function Eyebrow({ cmd }: { cmd: string }) {
 
 function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <h2
-      id={id}
-      className="mono h-section h2-rule scroll-mt-20 tracking-tight"
-    >
+    <h2 id={id} className="mono h-section h2-rule scroll-mt-20 tracking-tight">
       {children}
     </h2>
   );
@@ -213,7 +210,10 @@ export default async function Home() {
             <li
               key={v.claim}
               className="rounded border p-4"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--surface)",
+              }}
             >
               <span className="mono text-sm" style={{ color: "var(--accent)" }}>
                 [ok]
@@ -221,7 +221,10 @@ export default async function Home() {
               <a href={v.href} className="mt-1 block font-medium">
                 {v.claim}
               </a>
-              <span className="mt-1 block text-sm" style={{ color: "var(--muted)" }}>
+              <span
+                className="mt-1 block text-sm"
+                style={{ color: "var(--muted)" }}
+              >
                 {v.note}
               </span>
             </li>
@@ -267,17 +270,29 @@ export default async function Home() {
                 <li
                   key={n.key}
                   className="rounded border p-4"
-                  style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+                  style={{
+                    borderColor: "var(--border)",
+                    background: "var(--bg)",
+                  }}
                 >
-                  <span className="block text-sm" style={{ color: "var(--muted)" }}>
+                  <span
+                    className="block text-sm"
+                    style={{ color: "var(--muted)" }}
+                  >
                     {n.date}
                   </span>
                   {n.href.startsWith("/") ? (
-                    <Link href={n.href} className="mt-1 block text-base font-medium">
+                    <Link
+                      href={n.href}
+                      className="mt-1 block text-base font-medium"
+                    >
                       {n.title}
                     </Link>
                   ) : (
-                    <a href={n.href} className="mt-1 block text-base font-medium">
+                    <a
+                      href={n.href}
+                      className="mt-1 block text-base font-medium"
+                    >
                       {n.title}
                     </a>
                   )}
@@ -287,7 +302,10 @@ export default async function Home() {
                   {n.description ? (
                     <p
                       className="mt-2 text-sm leading-relaxed"
-                      style={{ color: "var(--muted)", fontFamily: "var(--font-plex-sans)" }}
+                      style={{
+                        color: "var(--muted)",
+                        fontFamily: "var(--font-plex-sans)",
+                      }}
                     >
                       {n.description}
                     </p>
@@ -328,7 +346,10 @@ export default async function Home() {
               <summary className="mono min-h-11 cursor-pointer list-none px-5 py-3.5 font-medium marker:content-none">
                 <span style={{ color: "var(--accent)" }}>?</span> {item.q}
               </summary>
-              <p className="max-w-2xl px-5 pb-5 pt-1" style={{ color: "var(--muted)" }}>
+              <p
+                className="max-w-2xl px-5 pb-5 pt-1"
+                style={{ color: "var(--muted)" }}
+              >
                 {item.a}
               </p>
             </details>
@@ -351,21 +372,54 @@ export default async function Home() {
             className="mt-10 grid overflow-hidden rounded border md:grid-cols-[2fr_3fr]"
             style={{ borderColor: "var(--border)", background: "var(--bg)" }}
           >
-            <div className="border-b p-6 md:border-r md:border-b-0 md:p-8" style={{ borderColor: "var(--border)" }}>
-              <a
-                href={withRef(profile.bookingUrl, "home")}
-                className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
-                style={{
-                  background: "var(--accent)",
-                  color: "var(--on-accent)",
-                }}
+            {/* justify-between: the panel stretches to the form's height, so
+                left-aligned content left a 155px hole under the links. Booking
+                sits at the top, the direct-contact list anchors the bottom. */}
+            <div
+              className="flex flex-col justify-between border-b p-6 md:border-r md:border-b-0 md:p-8"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div>
+                <a
+                  href={withRef(profile.bookingUrl, "home")}
+                  className="btn mono block min-h-11 rounded px-6 py-4 text-center text-lg font-semibold no-underline"
+                  style={{
+                    background: "var(--accent)",
+                    color: "var(--on-accent)",
+                  }}
+                >
+                  Book a free 30-min call →
+                </a>
+                <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
+                  The fastest path - come with the problem, leave with a plan.
+                </p>
+              </div>
+              {/* Fills the panel with the thing a buyer wants next instead of
+                  redistributing empty space. Every line restates a promise the
+                  site already makes: the 24-hour reply is ContactForm's success
+                  panel, the call and the fixed quote are PROCESS steps 01 and
+                  02 in content/data/services.ts. No new claims. */}
+              <ol
+                className="mono mt-6 space-y-3 text-sm"
+                style={{ color: "var(--muted)" }}
               >
-                Book a free 30-min call →
-              </a>
-              <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
-                The fastest path - come with the problem, leave with a plan.
-              </p>
-              <ul className="mono mt-8 space-y-2 text-sm">
+                {[
+                  "I reply within 24 hours.",
+                  "A 30-minute call: you describe the problem, I tell you honestly whether AI helps.",
+                  "A fixed-scope quote before any work starts.",
+                ].map((step, i) => (
+                  <li key={step} className="flex gap-3">
+                    <span
+                      style={{ color: "var(--accent)" }}
+                    >{`0${i + 1}`}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <ul
+                className="mono mt-8 space-y-2 border-t pt-6 text-sm"
+                style={{ borderColor: "var(--border)" }}
+              >
                 <li>
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </li>
@@ -384,7 +438,10 @@ export default async function Home() {
               </ul>
             </div>
             <div className="p-6 md:p-8">
-              <p className="mono mb-4 text-sm" style={{ color: "var(--muted)" }}>
+              <p
+                className="mono mb-4 text-sm"
+                style={{ color: "var(--muted)" }}
+              >
                 or leave a message:
               </p>
               <ContactForm />
