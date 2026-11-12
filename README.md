@@ -110,10 +110,10 @@ $ tail -f ~/blog/latest.log
 
 <!-- BLOG-POST-LIST:START -->
 - [Queue-Based AI Workflows in Laravel: Jobs, Retries, and Cost Control](https://dev.to/adityakdevin/queue-based-ai-workflows-in-laravel-jobs-retries-and-cost-control-58lg)
-- [Queue-Based AI Workflows in Laravel: Jobs, Retries, and Cost Control](https://adityadev.in/blog/queue-based-ai-workflows-in-laravel-jobs-retries-and-cost-control)
-- [AI Automation That Pays for Itself: What to Automate First](https://adityadev.in/blog/ai-automation-that-pays-for-itself)
 - [AI Automation That Pays for Itself: What to Automate First](https://dev.to/adityakdevin/ai-automation-that-pays-for-itself-what-to-automate-first-93l)
 - [Building AI Agents in PHP: Tool Calling with Laravel](https://dev.to/adityakdevin/building-ai-agents-in-php-tool-calling-with-laravel-4fji)
+- [RAG in Laravel: Embeddings and pgvector for a Knowledge-Base Bot](https://dev.to/adityakdevin/rag-in-laravel-embeddings-and-pgvector-for-a-knowledge-base-bot-3l2g)
+- [Streaming AI Responses in Laravel with Server-Sent Events](https://dev.to/adityakdevin/streaming-ai-responses-in-laravel-with-server-sent-events-3bob)
 <!-- BLOG-POST-LIST:END -->
 
 ```bash
